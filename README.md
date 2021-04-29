@@ -39,6 +39,10 @@ scripts/_end.txt
 
 The files _start.txt and _end.txt are not mandatory: they are justa a way to automate actions as authentication
 prior to work with a page or execute a logout after using a given page
+
+###Running version
+You can use the running version at https://drive.google.com/file/d/15_aMOJ-0-RtYJfjQWMotJw_NnhOvQ_dW/view?usp=sharing
+
 ## Español
 WebAppTester: Probador de formularios online
 El programa utiliza Selenium para abrir un navegador web y ejecuta en él, comandos escritos por el usuario.
@@ -150,3 +154,6 @@ Referencias de Selectores CSS:
  https://w3.org/wiki/CSS_/_Selectores_CSS
  
  https://www.w3schools.com/cssref/css_selectors.asp
+
+###Versión compilada
+Si desea utilizar este programa sin compilar nada, use la versión en https://drive.google.com/file/d/15_aMOJ-0-RtYJfjQWMotJw_NnhOvQ_dW/view?usp=sharing

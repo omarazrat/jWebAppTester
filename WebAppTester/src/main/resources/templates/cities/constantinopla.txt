@@ -1,0 +1,16 @@
+ir={https://www.wolframalpha.com/}
+
+esperar={}
+
+escribir={
+ "selector":"#__next > div > div > div > div > div._1YsE2 > section > form > div > div > input",
+ "texto":"Constantinopla"
+}
+
+clic={ 
+  "selector":"button[type='submit']"
+}
+
+esperar={
+  "selector":"#__next > div > div > main > div > div > form"
+}

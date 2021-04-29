@@ -1,0 +1,2 @@
+#Importacion de archivo de Selenium IDE
+#Fecha: {0}

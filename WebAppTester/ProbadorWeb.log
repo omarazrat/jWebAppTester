@@ -1,0 +1,34 @@
+abr. 28, 2021 8:29:20 P. M. oa.com.tests.scriptactionrunners.GoActionRunner run
+INFO: Abriendo direccion {https://duckduckgo.com/}
+abr. 28, 2021 8:29:32 P. M. oa.com.tests.actionrunners.interfaces.AbstractDefaultScriptActionRunner run
+INFO: Ejecutando esperar en {}
+abr. 28, 2021 8:29:32 P. M. oa.com.tests.scriptactionrunners.WriteActionRunner run
+INFO: escribiendo "inicio" en null
+abr. 28, 2021 8:29:33 P. M. oa.com.tests.scriptactionrunners.ClickActionRunner run
+INFO: dando clic en el elemento { "selector":"#search_button_homepage" }
+abr. 28, 2021 8:29:40 P. M. oa.com.tests.actionrunners.interfaces.AbstractDefaultScriptActionRunner run
+INFO: Ejecutando esperar en { "selector":"#duckbar" }
+abr. 28, 2021 8:29:41 P. M. oa.com.tests.actionrunners.interfaces.AbstractDefaultScriptActionRunner run
+INFO: Ejecutando doble clic en { "selector": "body" }
+abr. 28, 2021 8:29:41 P. M. oa.com.tests.actionrunners.interfaces.AbstractDefaultScriptActionRunner run
+INFO: Ejecutando clic derecho en { "selector": "body" }
+abr. 28, 2021 8:29:41 P. M. oa.com.tests.scriptactionrunners.GoActionRunner run
+INFO: Abriendo direccion {https://www.wolframalpha.com/}
+abr. 28, 2021 8:30:06 P. M. oa.com.tests.actionrunners.interfaces.AbstractDefaultScriptActionRunner run
+INFO: Ejecutando esperar en {}
+abr. 28, 2021 8:30:06 P. M. oa.com.tests.scriptactionrunners.WriteActionRunner run
+INFO: escribiendo "uagadugíº" en null
+abr. 28, 2021 8:30:07 P. M. oa.com.tests.scriptactionrunners.ClickActionRunner run
+INFO: dando clic en el elemento { "selector":"button[type='submit']" }
+abr. 28, 2021 8:30:08 P. M. oa.com.tests.actionrunners.interfaces.AbstractDefaultScriptActionRunner run
+INFO: Ejecutando esperar en { "selector":"#__next > div > div > main > div > div > form" }
+abr. 28, 2021 8:30:18 P. M. oa.com.tests.scriptactionrunners.GoActionRunner run
+INFO: Abriendo direccion {https://duckduckgo.com/}
+abr. 28, 2021 8:30:21 P. M. oa.com.tests.actionrunners.interfaces.AbstractDefaultScriptActionRunner run
+INFO: Ejecutando esperar en {}
+abr. 28, 2021 8:30:21 P. M. oa.com.tests.scriptactionrunners.WriteActionRunner run
+INFO: escribiendo "fin" en null
+abr. 28, 2021 8:30:21 P. M. oa.com.tests.scriptactionrunners.ClickActionRunner run
+INFO: dando clic en el elemento { "selector":"#search_button_homepage" }
+abr. 28, 2021 8:30:29 P. M. oa.com.tests.actionrunners.interfaces.AbstractDefaultScriptActionRunner run
+INFO: Ejecutando esperar en { "selector":"#duckbar" }
