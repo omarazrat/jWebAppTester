@@ -12,18 +12,29 @@ If there is a file _end.txt, that file will be read and executed after any other
 
 Folder Tree Examples
 [scripts]
+
 scripts/_start.txt
+
 scripts/_end.txt
+
 [scripts/management]
+
 scripts/management/_start.txt
+
 scripts/management/crearpregunta.txt
+
 scripts/management/listarpreguntas.txt
+
 
 If you request the execution of the command "scripts/management/listarpreguntas", the program will run these 
 commands in order:
+
 scripts/_start.txt
+
 scripts/management/_start.txt
+
 scripts/management/listarpreguntas.txt
+
 scripts/_end.txt
 
 The files _start.txt and _end.txt are not mandatory: they are justa a way to automate actions as authentication
@@ -39,19 +50,30 @@ El árbol se compone de carpetas y de acciones representadas en cada uno de los 
 Si se encuentra un archivo _start.txt en una carpeta, se ejecutará ese archivo antes de ejecutar cualquier otra acción en la carpeta.
 Si se encuentra un archivo _end.txt en una carpeta, se ejecutará ese archivo después de ejecutar cualquier acción en la carpeta.
 Ejemplo de estructura
+
 [scripts]
+
 scripts/_start.txt
+
 scripts/_end.txt
+
 [scripts/administracion]
+
 scripts/administracion/_start.txt
+
 scripts/administracion/crearpregunta.txt
+
 scripts/administracion/listarpreguntas.txt
 
 Si desde el programa se solicita la ejecución del comando "scripts/administracion/listarpreguntas", el programa ejecutará
 los siguientes comandos en orden:
+
 scripts/_start.txt
+
 scripts/administracion/_start.txt
+
 scripts/administracion/listarpreguntas.txt
+
 scripts/_end.txt
 
 Los archivos _start.txt y _end.txt no son obligatorios, son solo una forma de colocar acciones como autenticarse antes de entrar a una 
@@ -63,16 +85,24 @@ Cada instrucción tiene el formato "acción={comando}"
 Descomente los ejemplos a continuación para activar cada uno.
 ir - Abre una página internet. 
 Ejemplo:
+
 ir={https://duckduckgo.com/}
+
 esperar - Espera a que la página cargue completamente despues de un cambio de URL o despues de hacer clic en algun lado.
 esperará a que cierto objeto (dado su selector), aparezca o simplemente a que la página cargue completa
 Ejemplos:
+
 esperar={}
+
 esperar={
+
   "selector":"duckbar"
+  
 }
+
 escribir - Escribe texto en un componente de la pagina dado un selector css.
 Ejemplo:
+
 escribir={
  "selector":"search_form_input_homepage",
  "texto":"inicio"
@@ -80,30 +110,43 @@ escribir={
 
 clic - Hace clic en un componente de la pagina dado un selector css.
 Ejemplo:
+
 clic={ 
   "selector":"search_button_homepage"
 }
+
 doble clic - Hace doble clic en algun elemento de la pagina, dado su selector.
 Ejemplo:
+
 doble clic={
     "selector": "body"
 }
+
 clic derecho - Hace clic derecho en cualquier elemento de la pagina, dado su selector.
 Ejemplo:
+
 clic derecho={
     "selector": "Identificacion"
 }
+
 Cuando ejecute cualquier comando en esta carpeta, también se ejecutará este archivo.
 
 pausa - Espera cierto tiempo, antes de continuar con la siguiente instrucción.
 Formato: NUMERO UNIDADES
 Donde UNIDADES puede tener uno de los siguientes valores: S=milisegundos,s=segundos, m=minutos, h=horas, d=dias
+
 Ejemplos:
+
 Para esperar 3 segundos
+
 pausa={"tiempo":"3 s"}
+
 Para esperar 10 minutos
+
 pausa={"tiempo":"10 m"}
 
 Referencias de Selectores CSS: 
+
  https://w3.org/wiki/CSS_/_Selectores_CSS
+ 
  https://www.w3schools.com/cssref/css_selectors.asp
