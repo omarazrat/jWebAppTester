@@ -92,7 +92,7 @@ public class MainApp extends JFrame {
     private MainApp() {
 //        setResizable(false);
         setIconImage(findImage("/icons/selenium.png"));
-        setTitle("Probador formularios Web");
+        setTitle(globals.getString("app.title"));
         init();
         addWindowListener(new WindowListener() {
             @Override

@@ -11,7 +11,7 @@
 
     <properties>
         <project.build.sourceEncoding>ISO-8859-1</project.build.sourceEncoding>
-        <mainClass>gov.and.tests.webapptester.MainApp</mainClass>
+        <mainClass>oa.com.tests.webapptester.MainApp</mainClass>
     </properties>
 
     <organization>
@@ -34,7 +34,7 @@
                 <configuration>
                     <archive>
                         <manifest>
-                            <mainClass>gov.and.tests.webapptester.MainApp</mainClass>
+                            <mainClass>oa.com.tests.webapptester.MainApp</mainClass>
                         </manifest>
                     </archive>
                     <descriptorRefs>
@@ -50,7 +50,7 @@
                     <archive>
                         <manifest>
                             <addClasspath>true</addClasspath>
-                            <mainClass>gov.and.tests.webapptester.MainApp</mainClass>
+                            <mainClass>oa.com.tests.webapptester.MainApp</mainClass>
                         </manifest>
                     </archive>
                 </configuration>
@@ -118,28 +118,4 @@
         </dependency>
     </dependencies>
 
-    <repositories>
-        <repository>
-            <id>furag.archiva.internal</id>
-            <name>Archiva Managed Internal Repository</name>
-            <url>http://furagdev.and.gov.co:8080/repository/internal/</url>
-            <releases>
-                <enabled>true</enabled>
-            </releases>
-            <snapshots>
-                <enabled>false</enabled>
-            </snapshots>
-        </repository>
-        <repository>
-            <id>furag.archiva.snapshots</id>
-            <name>Archiva Managed Snapshot Repository</name>
-            <url>http://furagdev.and.gov.co:8080/repository/snapshots/</url>
-            <releases>
-                <enabled>false</enabled>
-            </releases>
-            <snapshots>
-                <enabled>true</enabled>
-            </snapshots>
-        </repository>
-    </repositories>
 </project>

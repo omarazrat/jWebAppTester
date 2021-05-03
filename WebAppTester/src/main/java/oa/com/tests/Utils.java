@@ -99,7 +99,7 @@ public abstract class Utils {
         while (resources.hasMoreElements()) {
             URL resource = resources.nextElement();
 //            log.info("resource:"+resource);
-//jar:file:/C:/Users/X512DK/Desktop/CodigoFuente/selenium-tester/target/WebAppTester-0.0.1-jar-with-dependencies.jar!/gov/and/tests/actionrunners
+//jar:file:/C:/Users/X512DK/Desktop/CodigoFuente/selenium-tester/target/WebAppTester-0.0.1-jar-with-dependencies.jar!/oa/com/tests/actionrunners
             final File file = new File(resource.getFile());
 //            log.info("file:"+file.getPath()+"/"+file.exists());
             dirs.add(file);
