@@ -62,7 +62,6 @@
 #clic derecho={
 #    "selector": "#Identificacion"
 #}
-#Cuando ejecute cualquier comando en esta carpeta, también se ejecutará este archivo.
 #
 #pausa - Espera cierto tiempo, antes de continuar con la siguiente instrucción.
 #Formato: NUMERO UNIDADES

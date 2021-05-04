@@ -110,7 +110,8 @@ public abstract class Utils {
             final String dirPath = directory.getPath();
             if (dirPath.contains(JAR_EXT + "!")) {
                 final String JARSTART = "file:" + separator;
-                String jarPath = dirPath.substring(0, dirPath.indexOf(JAR_EXT) + JAR_EXT.length());
+                boolean unix=separator.equals("/");
+                String jarPath = unix?separator:""+dirPath.substring(0, dirPath.indexOf(JAR_EXT) + JAR_EXT.length());
                 //Le vuela el "file:\"
 //log.info("jp: : "+jarPath+" // "+JARSTART);
                 jarPath = jarPath.substring(jarPath.indexOf(JARSTART) + JARSTART.length())

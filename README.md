@@ -40,7 +40,59 @@ scripts/_end.txt
 The files _start.txt and _end.txt are not mandatory: they are justa a way to automate actions as authentication
 prior to work with a page or execute a logout after using a given page
 
-###Running version
+Every action is a set of instructions to be executed by your web browser.
+each instruction has the format "action={command}"
+
+[Supported actions]
+
+ir - Opens a web page. 
+Example:
+ir={https://duckduckgo.com/}
+esperar - Waits for a page to be completely loaded after a change in the location bar URL, or after clicking any element.
+The browser will wait until a given object (given its selector), appear or simply the page to be fully loaded
+Examples:
+esperar={}
+esperar={
+  "selector":"duckbar"
+}
+escribir - Writes text in a page component given its css selector.
+-selector: the css selector of the component to write on
+-texto: the text to write
+Example:
+escribir={
+ "selector":"search_form_input_homepage",
+ "texto":"inicio"
+}
+
+clic - Clicks a componente of the page given a css selector
+Example:
+clic={ 
+  "selector":"search_button_homepage"
+}
+doble clic - Double-clicks any element in the page, given its selector.
+Example:
+doble clic={
+    "selector": "body"
+}
+clic derecho - Right clicks any element in the page, given its selector.
+Example:
+clic derecho={
+    "selector": "Identificacion"
+}
+
+pausa - Waits a given time, before proceeding with the next instruction.
+Format: NUMBER UNITS
+Where UNITS can be one of these values: S=milliseconds,s=seconds, m=minutes, h=hours, d=days
+Example:
+To wait three seconds
+pausa={"tiempo":"3 s"}
+To wait 10 minutes
+pausa={"tiempo":"10 m"}
+
+ About CSS Selectors: 
+ https://w3.org/wiki/CSS_/_Selectores_CSS
+ https://www.w3schools.com/cssref/css_selectors.asp
+###Running Binary version
 You can use the running version at https://drive.google.com/file/d/15_aMOJ-0-RtYJfjQWMotJw_NnhOvQ_dW/view?usp=sharing
 
 ## Español
@@ -85,8 +137,9 @@ página en la cual se ejecutará un comando o cerrar sesión después de salir d
 
 Cada acción es un conjunto de instrucciones que serán ejecutadas por el navegador de internet.
 Cada instrucción tiene el formato "acción={comando}"
+
 [Acciones soportadas]
-Descomente los ejemplos a continuación para activar cada uno.
+
 ir - Abre una página internet. 
 Ejemplo:
 
