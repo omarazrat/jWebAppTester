@@ -111,12 +111,12 @@ public abstract class Utils {
             if (dirPath.contains(JAR_EXT + "!")) {
                 final String JARSTART = "file:" + separator;
                 boolean unix=separator.equals("/");
-                String jarPath = unix?separator:""+dirPath.substring(0, dirPath.indexOf(JAR_EXT) + JAR_EXT.length());
+                String jarPath = dirPath.substring(0, dirPath.indexOf(JAR_EXT) + JAR_EXT.length());
                 //Le vuela el "file:\"
-//log.info("jp: : "+jarPath+" // "+JARSTART);
-                jarPath = jarPath.substring(jarPath.indexOf(JARSTART) + JARSTART.length())
+//System.out.println("jp: : "+jarPath+" // "+JARSTART);
+                jarPath = (unix?separator:"")+jarPath.substring(jarPath.indexOf(JARSTART) + JARSTART.length())
                         .replace("%20", " ");
-//log.info("jp: : "+jarPath);
+//System.out.println("jp: : "+jarPath);
                 classes.addAll(findClasesFromJar(new JarFile(jarPath), packageName, clazz));
             }
             classes.addAll(findClasses(directory, packageName, clazz));
