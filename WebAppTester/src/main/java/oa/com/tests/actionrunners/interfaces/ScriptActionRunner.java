@@ -13,41 +13,53 @@
  */
 package oa.com.tests.actionrunners.interfaces;
 
+import java.util.ResourceBundle;
 import oa.com.tests.actions.TestAction;
 import java.util.logging.Logger;
 import org.openqa.selenium.WebDriver;
 
 /**
- * Definicion basica de un lector de instrucciones para el tester.
- * Estas instrucciones se ejecutaran con driver y Selenium.
+ * Definicion basica de un lector de instrucciones para el tester. Estas
+ * instrucciones se ejecutaran con driver y Selenium.
+ *
  * @author nesto
  */
 public interface ScriptActionRunner {
+
     /**
-     * La accion debe ser distintiva, unica entre todos los parsers
-     * Nota: Se maneja en minusculas.
-     * @return 
+     * La accion debe ser distintiva, unica entre todos los parsers Nota: Se
+     * maneja en minusculas.
+     *
+     * @return
      */
-    public String getActionName();
+    public default String getActionName() {
+        return ResourceBundle.getBundle("application").getString(getClass().getSimpleName() + ".action");
+    }
+
     /**
      * Ejecucion del script correspondiente.
+     *
      * @param driver
-     * @throws Exception 
+     * @throws Exception
      */
     public void run(WebDriver driver) throws Exception;
+
     /**
      * Ejecucion del script correspondiente.
+     *
      * @param driver
      * @param log Archivo de registro
-     * @throws Exception 
+     * @throws Exception
      */
-    public void run(WebDriver driver,Logger log) throws Exception;
+    public void run(WebDriver driver, Logger log) throws Exception;
+
     /**
      * Si este parser soporta este comando o no.
+     *
      * @param action
-     * @return 
+     * @return
      */
-    public default boolean matches(TestAction action){
+    public default boolean matches(TestAction action) {
         return action.getName().equals(getActionName());
     }
 }

@@ -33,7 +33,7 @@ import org.openqa.selenium.WebDriver;
  * @author nesto
  */
 @Getter
-public class PauseActionrunner extends AbstractDefaultScriptActionRunner {
+public class PauseActionRunner extends AbstractDefaultScriptActionRunner {
 
     public enum TimeUnit {
         MILLISECOND,
@@ -55,23 +55,17 @@ public class PauseActionrunner extends AbstractDefaultScriptActionRunner {
      */
     private long millis = 0;
 
-    public PauseActionrunner(TestAction action) throws NoActionSupportedException, InvalidActionException {
+    public PauseActionRunner(TestAction action) throws NoActionSupportedException, InvalidActionException {
         super(action);
-        final Pattern pattern = Pattern.compile("^\\{(.*)\\}$");
-        Matcher matcher = pattern.matcher(action.getCommand());
-        if (!matcher.matches()) {
-            throw new InvalidActionException(action.getCommand());
-        }
-        String strAct = matcher.group(1);
         try {
-            JSONObject obj = (JSONObject) new JSONParser().parse(strAct);
+            JSONObject obj = (JSONObject) new JSONParser().parse(action.getCommand());
             final String keyName = "tiempo";
             if (!obj.containsKey(keyName)) {
                 throw new InvalidActionException(action.getCommand());
             }
             String strTime = (String) obj.getOrDefault(keyName, null);
 
-            matcher = Pattern.compile("^.*([0-9]*).*([S|s|m|h|d]).*$").matcher(strTime);
+            final Matcher matcher = Pattern.compile("^([0-9]*).*([S|s|m|h|d]).*$").matcher(strTime);
             if (!matcher.matches()) {
                 throw new InvalidActionException(action.getCommand());
             }
@@ -101,14 +95,9 @@ public class PauseActionrunner extends AbstractDefaultScriptActionRunner {
                     break;
             }
         } catch (ParseException ex) {
-            Logger.getLogger(PauseActionrunner.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(PauseActionRunner.class.getName()).log(Level.SEVERE, null, ex);
             throw new InvalidActionException(action.getCommand());
         }
-    }
-
-    @Override
-    public String getActionName() {
-        return "pausa";
     }
 
     @Override

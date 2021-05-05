@@ -67,21 +67,21 @@ public final class ActionRunnerManager {
             instance.driver.quit();
         }
     }
-
+//TODO: hacer que soporte comandos en otros idiomas.
     public static AbstractDefaultScriptActionRunner findRunner(String actionCommand) throws BadSyntaxException {
-                TestAction action;
-                    action = new TestAction(actionCommand);
-                AbstractDefaultScriptActionRunner runner = null;
-                for (Class runnerCls : ActionRunnerManager.runnersCls) {
-                    try {
-                        final Constructor constructor = runnerCls.getConstructor(TestAction.class);
-                        runner = (AbstractDefaultScriptActionRunner) constructor.newInstance(action);
-                        break;
-                    } catch (IllegalAccessException | IllegalArgumentException | InstantiationException | NoSuchMethodException | SecurityException | InvocationTargetException ex) {
-                        //Runner incorrecto, va con otro.
-                    }
-                }
-                return runner;
+        TestAction action;
+        action = new TestAction(actionCommand);
+        AbstractDefaultScriptActionRunner runner = null;
+        for (Class runnerCls : ActionRunnerManager.runnersCls) {
+            try {
+                final Constructor constructor = runnerCls.getConstructor(TestAction.class);
+                runner = (AbstractDefaultScriptActionRunner) constructor.newInstance(action);
+                break;
+            } catch (IllegalAccessException | IllegalArgumentException | InstantiationException | NoSuchMethodException | SecurityException | InvocationTargetException ex) {
+                //Runner incorrecto, va con otro.
+            }
+        }
+        return runner;
     }
 
     public enum BROWSERTYPE {
@@ -245,10 +245,16 @@ public final class ActionRunnerManager {
     }
 
     private static MutableTreeNode fileAsTree(File file) {
-        final DefaultMutableTreeNode resp = new DefaultMutableTreeNode(file.getName());
-        final File[] children = file.listFiles((pfile, ext) -> 
-            pfile.isDirectory() || ext.toLowerCase().trim().endsWith(".txt")
+        File[] children = file.listFiles((pfile, ext)
+                -> pfile.isDirectory() || ext.toLowerCase().trim().endsWith(".txt")
         );
+        if (file.isDirectory() && children.length == 0) {
+            return null;
+        }
+        if (children != null) {
+            Arrays.sort(children, (f1, f2) -> f1.getName().compareTo(f2.getName()));
+        }
+        final DefaultMutableTreeNode resp = new DefaultMutableTreeNode(file.getName());
         final String[] keyNamesArr = new String[]{"_end.txt", "_start.txt"};
         try {
             for (MutableTreeNode node : Arrays.asList(children)
@@ -257,6 +263,7 @@ public final class ActionRunnerManager {
                     .filter(f -> f.isDirectory()
                     || Arrays.binarySearch(keyNamesArr, f.getName()) < 0)
                     .map(f -> fileAsTree(f))
+                    .filter(n -> n != null)
                     .collect(toList())) {
                 resp.add(node);
             }
@@ -341,8 +348,7 @@ public final class ActionRunnerManager {
 
     private static void throwBadSynstaxEx(final String actionCommand, File file, Logger log) throws HeadlessException {
         String badSyntazMsg = prepareBadSystaxExMsg(actionCommand, file);
-        JOptionPane.showMessageDialog(null, badSyntazMsg,
-                globals.getString("globals.error.title"), JOptionPane.ERROR_MESSAGE);
+//        JOptionPane.showMessageDialog(null, badSyntazMsg,globals.getString("globals.error.title"), JOptionPane.ERROR_MESSAGE);
         log.severe(badSyntazMsg);
     }
 

@@ -13,6 +13,7 @@
  */
 package oa.com.tests.scriptactionrunners;
 
+import java.util.ResourceBundle;
 import oa.com.tests.Utils;
 import oa.com.tests.actions.TestAction;
 import oa.com.tests.actionrunners.exceptions.InvalidActionException;
@@ -35,11 +36,6 @@ public class WriteActionRunner extends AbstractCssSelectorActionRunner{
     public WriteActionRunner(TestAction action) throws NoActionSupportedException, InvalidActionException {
         super(action);
         extractText(action.getCommand());
-    }
-
-    @Override
-    public String getActionName() {
-        return "escribir";
     }
 
     @Override

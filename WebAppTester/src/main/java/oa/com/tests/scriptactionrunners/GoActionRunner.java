@@ -50,10 +50,5 @@ public class GoActionRunner extends AbstractDefaultScriptActionRunner{
         log.log(Level.INFO, "Abriendo direccion {0}", getAction().getCommand());
         run(driver);
     }
-
-    @Override
-    public String getActionName() {
-        return "ir";
-    }
     
 }

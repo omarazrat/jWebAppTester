@@ -31,11 +31,6 @@ public class DoubleClickActionRunner extends AbstractCssSelectorActionRunner{
     }
 
     @Override
-    public String getActionName() {
-        return "doble clic";
-    }
-
-    @Override
     public void run(WebDriver driver) throws Exception {
         Actions actions = new Actions(driver);
         actions.doubleClick(get(driver));

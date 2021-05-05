@@ -50,11 +50,6 @@ public class WaitActionRunner extends AbstractDefaultScriptActionRunner{
     }
 
     @Override
-    public String getActionName() {
-        return "esperar";
-    }
-
-    @Override
     public void run(WebDriver driver) throws Exception {
         new WebDriverWait(driver, 10)
                 .until(ExpectedConditions.elementToBeClickable(By.cssSelector(selector)));

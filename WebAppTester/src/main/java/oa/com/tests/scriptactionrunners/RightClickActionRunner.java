@@ -31,11 +31,6 @@ public class RightClickActionRunner extends AbstractCssSelectorActionRunner{
     }
 
     @Override
-    public String getActionName() {
-        return "clic derecho";
-    }
-
-    @Override
     public void run(WebDriver driver) throws Exception {
         Actions actions = new Actions(driver);
         actions.contextClick(get(driver));

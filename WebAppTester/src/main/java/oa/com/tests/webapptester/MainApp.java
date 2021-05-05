@@ -74,6 +74,7 @@ public class MainApp extends JFrame {
     private Image errImage, warnImage;
     private Canvas imageContainer;
     private final String NEW_LINE = System.getProperty("line.separator");
+    private final String LOG_NAME = "WebTester.log";
 
     public enum PROPS {
         JTREE,
@@ -364,7 +365,7 @@ public class MainApp extends JFrame {
         Logger log = Logger.getLogger("Probador Web");
         final FileHandler fileHandler;
         try {
-            fileHandler = new FileHandler("ProbadorWeb.log");
+            fileHandler = new FileHandler(LOG_NAME);
             fileHandler.setFormatter(new SimpleFormatter());
             log.addHandler(fileHandler);
         } catch (IOException ex) {

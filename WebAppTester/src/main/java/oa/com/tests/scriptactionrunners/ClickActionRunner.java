@@ -40,15 +40,4 @@ public class ClickActionRunner extends AbstractCssSelectorActionRunner {
         get(driver).click();
     }
 
-    @Override
-    public void run(WebDriver driver, Logger log) throws Exception {
-        log.log(Level.INFO, "dando clic en el elemento {0}", getAction().getCommand());
-        run(driver);
-    }
-
-    @Override
-    public String getActionName() {
-        return "clic";
-    }
-
 }
