@@ -104,7 +104,9 @@ public class PauseActionRunner extends AbstractDefaultScriptActionRunner {
     public void run(WebDriver driver, Logger log) throws Exception {
         String templateMsg = getActionLog();
         final ResourceBundle bundle = ResourceBundle.getBundle("application");
-        final String unitName = getClass().getSimpleName()+"."+TimeUnit.class.getSimpleName();
+        final String key = getClass().getSimpleName()+"."
+                +TimeUnit.class.getSimpleName()+"."+unit.name();
+        final String unitName = bundle.getString(key);
         log.log(Level.INFO, templateMsg, new Object[]{this.amount,unitName});
         run(driver);
     }
