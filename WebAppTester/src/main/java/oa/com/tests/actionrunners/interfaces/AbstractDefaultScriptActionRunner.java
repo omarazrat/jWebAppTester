@@ -14,6 +14,7 @@
 package oa.com.tests.actionrunners.interfaces;
 
 import java.util.HashMap;
+import java.util.logging.Level;
 import oa.com.tests.actions.TestAction;
 import oa.com.tests.actionrunners.exceptions.InvalidActionException;
 import oa.com.tests.actionrunners.exceptions.NoActionSupportedException;
@@ -52,7 +53,8 @@ public abstract class AbstractDefaultScriptActionRunner implements ScriptActionR
 
     @Override
     public void run(WebDriver driver, Logger log) throws Exception {
-        log.info("Ejecutando " + getActionName() + " en " + action.getCommand());
+        String templateMsg = getActionLog();
+        log.log(Level.INFO, templateMsg, getAction().getCommand());
         run(driver);
     }
 

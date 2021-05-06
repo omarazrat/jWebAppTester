@@ -13,12 +13,12 @@
  */
 package oa.com.tests.scriptactionrunners;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import oa.com.tests.actions.TestAction;
 import oa.com.tests.actionrunners.exceptions.InvalidActionException;
 import oa.com.tests.actionrunners.exceptions.NoActionSupportedException;
 import oa.com.tests.actionrunners.interfaces.AbstractDefaultScriptActionRunner;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.openqa.selenium.WebDriver;
@@ -47,8 +47,8 @@ public class GoActionRunner extends AbstractDefaultScriptActionRunner{
 
     @Override
     public void run(WebDriver driver, Logger log) throws Exception {
-        log.log(Level.INFO, "Abriendo direccion {0}", getAction().getCommand());
+        String templateMsg = getActionLog();
+        log.log(Level.INFO, templateMsg, url);
         run(driver);
     }
-    
 }

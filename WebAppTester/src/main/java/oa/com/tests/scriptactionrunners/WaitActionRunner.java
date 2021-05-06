@@ -13,6 +13,8 @@
  */
 package oa.com.tests.scriptactionrunners;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import oa.com.tests.actionrunners.exceptions.InvalidActionException;
 import oa.com.tests.actionrunners.exceptions.NoActionSupportedException;
 import oa.com.tests.Utils;
@@ -55,10 +57,11 @@ public class WaitActionRunner extends AbstractDefaultScriptActionRunner{
                 .until(ExpectedConditions.elementToBeClickable(By.cssSelector(selector)));
     }
     
-//    @Override
-//    public void run(WebDriver driver, Logger log) throws Exception {
-//        log.log(Level.INFO, "esperando a que aparezca el elemento {0}", selector);
-//        run(driver);
-//    }
-    
+    @Override
+    public void run(WebDriver driver, Logger log) throws Exception {
+        String templateMsg = getActionLog();
+        log.log(Level.INFO, templateMsg, selector);
+        run(driver);
+    }
+
 }

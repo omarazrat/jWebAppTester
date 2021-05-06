@@ -13,6 +13,8 @@
  */
 package oa.com.tests.actionrunners.interfaces;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import oa.com.tests.actionrunners.exceptions.BadSyntaxException;
 import oa.com.tests.actions.TestAction;
 import oa.com.tests.actionrunners.exceptions.InvalidActionException;
@@ -39,16 +41,24 @@ public abstract class AbstractCssSelectorActionRunner extends AbstractDefaultScr
 
     public AbstractCssSelectorActionRunner(TestAction action) throws NoActionSupportedException, InvalidActionException {
         super(action);
+        String key = "CssSelectorActionRunner.attr.selector";
+        final String actionCommand = getAction().getCommand();
+        this.selector = Utils.getJSONAttributeML(key, actionCommand);
     }
 
     protected WebElement get(WebDriver driver) throws BadSyntaxException {
-        String key = getClass().getSimpleName() + ".attr.selector";
         final String actionCommand = getAction().getCommand();
-        this.selector = Utils.getJSONAttributeML(key, actionCommand);
         if (this.selector == null) {
             throw new BadSyntaxException(actionCommand);
         }
         return driver.findElement(By.cssSelector(selector));
+    }
+
+    @Override
+    public void run(WebDriver driver, Logger log) throws Exception {
+        String templateMsg = getActionLog();
+        log.log(Level.INFO, templateMsg, getSelector());
+        run(driver); 
     }
 
 }

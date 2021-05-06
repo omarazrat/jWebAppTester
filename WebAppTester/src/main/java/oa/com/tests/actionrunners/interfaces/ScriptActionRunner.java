@@ -40,6 +40,15 @@ public interface ScriptActionRunner {
     public default String getActionName() {
         return ResourceBundle.getBundle("application").getString(getClass().getSimpleName() + ".action");
     }
+    /**
+     * Busca el mensaje con el cual debe correr esta accion.
+     * @return 
+     */
+    public default String getActionLog() {
+        final ResourceBundle bundle = ResourceBundle.getBundle("application");
+        final String key = getClass().getSimpleName()+".action.log";
+        return bundle.getString(key);
+    }    
 
     /**
      * Ejecucion del script correspondiente.
@@ -73,7 +82,7 @@ public interface ScriptActionRunner {
         final String key = getClass().getSimpleName() + ".action";
         Optional<String> aliasmatch = I18n.aliases(key)
                 .stream()
-                .filter(alias->alias.equals(key))
+                .filter(alias->alias.equals(actionName))
                 .findFirst();
         return aliasmatch.isPresent();
     }

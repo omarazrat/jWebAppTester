@@ -13,6 +13,7 @@
  */
 package oa.com.tests.scriptactionrunners;
 
+import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
@@ -23,9 +24,6 @@ import oa.com.tests.actionrunners.exceptions.InvalidActionException;
 import oa.com.tests.actionrunners.exceptions.NoActionSupportedException;
 import oa.com.tests.actionrunners.interfaces.AbstractDefaultScriptActionRunner;
 import oa.com.tests.actions.TestAction;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
 import org.openqa.selenium.WebDriver;
 
 /**
@@ -101,4 +99,14 @@ public class PauseActionRunner extends AbstractDefaultScriptActionRunner {
     public void run(WebDriver driver) throws Exception {
         Thread.sleep(millis);
     }
+
+    @Override
+    public void run(WebDriver driver, Logger log) throws Exception {
+        String templateMsg = getActionLog();
+        final ResourceBundle bundle = ResourceBundle.getBundle("application");
+        final String unitName = getClass().getSimpleName()+"."+TimeUnit.class.getSimpleName();
+        log.log(Level.INFO, templateMsg, new Object[]{this.amount,unitName});
+        run(driver);
+    }
+    
 }

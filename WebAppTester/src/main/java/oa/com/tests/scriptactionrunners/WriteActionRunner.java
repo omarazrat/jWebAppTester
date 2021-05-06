@@ -13,7 +13,6 @@
  */
 package oa.com.tests.scriptactionrunners;
 
-import java.util.ResourceBundle;
 import oa.com.tests.Utils;
 import oa.com.tests.actions.TestAction;
 import oa.com.tests.actionrunners.exceptions.InvalidActionException;
@@ -21,8 +20,6 @@ import oa.com.tests.actionrunners.exceptions.NoActionSupportedException;
 import oa.com.tests.actionrunners.interfaces.AbstractCssSelectorActionRunner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import oa.com.utils.I18n;
-import org.json.simple.parser.ParseException;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -46,6 +43,13 @@ public class WriteActionRunner extends AbstractCssSelectorActionRunner {
     @Override
     public void run(WebDriver driver) throws Exception {
         get(driver).sendKeys(text);
+    }
+
+    @Override
+    public void run(WebDriver driver, Logger log) throws Exception {
+        String templateMsg = getActionLog();
+        log.log(Level.INFO, templateMsg, new Object[]{text , getSelector()});
+        run(driver); 
     }
 
     private void extractText(String command) throws InvalidActionException {

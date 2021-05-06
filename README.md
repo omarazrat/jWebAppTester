@@ -1,9 +1,20 @@
 # jWebAppTester
 ## English
+
 WebAppTester: Tester for online forms
 This program uses Selenium to open a web browser and run user written commands.
+
+### Installation
+You need at least Java version >=16
+
 Download Selenium controllers for your favorite browser (check your browser version)
 from https://www.selenium.dev/downloads/ and save it in the same folder with the program.
+
+Once the program is run for the first time, it will create some sample scripts as files you can change with any text editor.
+These files are created in the folder *scripts*
+
+### Syntax of the script files
+
 Every line starting with #, is ignored.
 This program builds a tree the folder "scripts" and subfolders.
 The tree is composed of folders and actions in every txt file.
@@ -47,35 +58,50 @@ each instruction has the format "action={command}"
 
 go - Opens a web page. 
 Example:
+
 go={https://duckduckgo.com/}
+
 wait - Waits for a page to be completely loaded after a change in the location bar URL, or after clicking any element.
 The browser will wait until a given object (given its selector), appear or simply the page to be fully loaded
 Examples:
+
 wait={}
+
 wait={
   "selector":"duckbar"
 }
+
 write - Writes text in a page component given its css selector.
 -selector: the css selector of the component to write on
 -text: the text to write
+
 Example:
+
 write={
  "selector":"search_form_input_homepage",
  "text":"inicio"
 }
 
 click - clickks a componente of the page given a css selector
+
 Example:
+
 click={ 
   "selector":"search_button_homepage"
 }
+
 double click - Double-clickks any element in the page, given its selector.
+
 Example:
+
 double click={
     "selector": "body"
 }
+
 right click - Right clickks any element in the page, given its selector.
+
 Example:
+
 right click={
     "selector": "Identificacion"
 }
@@ -83,23 +109,43 @@ right click={
 pause - Waits a given time, before proceeding with the next instruction.
 Format: NUMBER UNITS
 Where UNITS can be one of these values: S=milliseconds,s=seconds, m=minutes, h=hours, d=days
+
 Example:
+
 To wait three seconds
+
 pause={"time":"3 s"}
+
 To wait 10 minutes
+
 pause={"time":"10 m"}
 
  About CSS Selectors: 
  https://www.w3.org/wiki/CSS/Selectors
  https://www.w3schools.com/cssref/css_selectors.asp
-###Running Binary version
+
+### Running Binary version
+
 You can use the running version at https://drive.google.com/file/d/15_aMOJ-0-RtYJfjQWMotJw_NnhOvQ_dW/view?usp=sharing
+
+### Debugging
+
+This program writes all its output to the file WebTester.log
 
 ## Español
 WebAppTester: Probador de formularios online
 El programa utiliza Selenium para abrir un navegador web y ejecuta en él, comandos escritos por el usuario.
+
+### Instalación
+Descargue e instale Java versión >=16
+
 Descargue el controlador de Selenium para su navegador favorito (recuerde revisar la versión de su navegador) 
 desde https://www.selenium.dev/downloads/ y deje el controlador en la misma carpeta en que ejecutará el programa.
+
+Cuando el programa se ejecute por primera vez, creará algunos archivos con comandos de ejemplo en la carpeta *scripts*, que se pueden cambiar con cualquier editor de texto.
+
+### Sintaxis de los archivos de comandos
+
 Cada línea que comienza con #, no se tiene en cuenta y será tratada como comentario.
 El programa lee la carpeta "scripts" y con todas las carpetas en su interior arma un árbol.
 El árbol se compone de carpetas y de acciones representadas en cada uno de los archivos con extension .txt en cada carpeta
@@ -147,6 +193,7 @@ ir={https://duckduckgo.com/}
 
 esperar - Espera a que la página cargue completamente despues de un cambio de URL o despues de hacer clic en algun lado.
 esperará a que cierto objeto (dado su selector), aparezca o simplemente a que la página cargue completa
+
 Ejemplos:
 
 esperar={}
@@ -166,6 +213,7 @@ escribir={
 }
 
 clic - Hace clic en un componente de la pagina dado un selector css.
+
 Ejemplo:
 
 clic={ 
@@ -173,6 +221,7 @@ clic={
 }
 
 doble clic - Hace doble clic en algun elemento de la pagina, dado su selector.
+
 Ejemplo:
 
 doble clic={
@@ -180,6 +229,7 @@ doble clic={
 }
 
 clic derecho - Hace clic derecho en cualquier elemento de la pagina, dado su selector.
+
 Ejemplo:
 
 clic derecho={
@@ -208,5 +258,10 @@ Referencias de Selectores CSS:
  
  https://www.w3schools.com/cssref/css_selectors.asp
 
-###Versión compilada
+### Versión compilada
+
 Si desea utilizar este programa sin compilar nada, use la versión en https://drive.google.com/file/d/15_aMOJ-0-RtYJfjQWMotJw_NnhOvQ_dW/view?usp=sharing
+
+### Depuración
+
+El programa escribe todo lo que hace en el archivo WebTester.log
