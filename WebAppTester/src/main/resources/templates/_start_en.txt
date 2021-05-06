@@ -1,0 +1,23 @@
+go={https://duckduckgo.com/}
+
+wait={}
+
+write={
+ "selector":"#search_form_input_homepage",
+ "text":"inicio"
+}
+
+click={ 
+  "selector":"#search_button_homepage"
+}
+
+wait={
+  "selector":"#duckbar"
+}
+
+double click={
+    "selector": "body"
+}
+right click={
+    "selector": "body"
+}

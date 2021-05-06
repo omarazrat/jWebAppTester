@@ -174,28 +174,41 @@ public abstract class Utils {
      * @param parent
      */
     public static void buildDefaultFiles(File parent) throws IOException {
-        buildFileFromTemplate(parent, "_start.txt", "templates/_start.txt");
-        buildFileFromTemplate(parent, "_end.txt", "templates/_end.txt");
+        String fname = "_start";
+        final String EXT = ".txt";
+        final String CITYPATH="templates/cities/";
+        buildFileFromTemplate(parent, fname+EXT,"templates/"+I18n.appendLangCode(fname)+EXT);
+        fname = "_end";
+        buildFileFromTemplate(parent, fname+EXT,"templates/"+I18n.appendLangCode(fname)+EXT);
         File europe = new File(parent, "Europa");
         europe.mkdir();
-        buildFileFromTemplate(europe, "constantinopla.txt", "templates/cities/constantinopla.txt");
-        buildFileFromTemplate(europe, "amsterdam.txt", "templates/cities/amsterdam.txt");
+        fname = "constantinopla";
+        buildFileFromTemplate(europe, fname+EXT,CITYPATH+I18n.appendLangCode(fname)+EXT);
+        fname = "amsterdam";
+        buildFileFromTemplate(europe, fname+EXT,CITYPATH+I18n.appendLangCode(fname)+EXT);
         File afrika = new File(parent, "Africa");
         afrika.mkdir();
-        buildFileFromTemplate(afrika, "uagadugú.txt", "templates/cities/uagadugú.txt");
+        fname = "uagadugu";
+        buildFileFromTemplate(afrika, fname+EXT,CITYPATH+I18n.appendLangCode(fname)+EXT);
         File asia = new File(parent, "Asia");
         asia.mkdir();
-        buildFileFromTemplate(asia, "pyongyang.txt", "templates/cities/pyongyang.txt");
+        fname = "pyongyang";
+        buildFileFromTemplate(asia, fname+EXT,CITYPATH+I18n.appendLangCode(fname)+EXT);
     }
 
-    public static void buildFileFromTemplate(File parent, final String initFileName, final String initTemplatePath) throws IOException {
-        File init = new File(parent, initFileName);
+    public static void buildFileFromTemplate(File parent, String destFileName) throws IOException {
+        buildFileFromTemplate(parent, destFileName, "templates/"+destFileName);
+    }
+    public static void buildFileFromTemplate(File parent
+            , String destFileName
+            , String sourceFullFilePath) throws IOException {
+        File init = new File(parent, destFileName);
         if (!init.exists()) {
             init.createNewFile();
         }
         final FileWriter fileWriter = new FileWriter(init);
-        final String filename=I18n.appendLangCode("notas");
-        for (String source : new String[]{initTemplatePath, "templates/"+filename+".txt"}) {
+        final String notes=I18n.appendLangCode("notas");
+        for (String source : new String[]{sourceFullFilePath, "templates/"+notes+".txt"}) {
             appendToWriter(source, fileWriter);
         }
         fileWriter.close();
@@ -379,5 +392,22 @@ public abstract class Utils {
             resp = t.getMessage();
         }
         return resp;
+    }
+
+    /**
+     * Busca un atributo JSON a traves de todos los lenguajes disponibles
+     * @param key La clave por la cual buscar
+     * @param JSONtext Texto en el cual buscar la entrada.
+     * @return 
+     */
+    public static String getJSONAttributeML(String key, String JSONtext) {
+        for (String attrAlias : I18n.aliases(key)) {
+            try {
+                return Utils.getJSONAttribute(JSONtext,attrAlias);
+            } catch (ParseException ex) {
+                ;
+            }
+        }
+        return null;
     }
 }

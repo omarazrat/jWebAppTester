@@ -69,13 +69,13 @@ public final class ActionRunnerManager {
     }
 //TODO: hacer que soporte comandos en otros idiomas.
     public static AbstractDefaultScriptActionRunner findRunner(String actionCommand) throws BadSyntaxException {
-        TestAction action;
-        action = new TestAction(actionCommand);
+        TestAction tester;
+        tester = new TestAction(actionCommand);
         AbstractDefaultScriptActionRunner runner = null;
         for (Class runnerCls : ActionRunnerManager.runnersCls) {
             try {
                 final Constructor constructor = runnerCls.getConstructor(TestAction.class);
-                runner = (AbstractDefaultScriptActionRunner) constructor.newInstance(action);
+                runner = (AbstractDefaultScriptActionRunner) constructor.newInstance(tester);
                 break;
             } catch (IllegalAccessException | IllegalArgumentException | InstantiationException | NoSuchMethodException | SecurityException | InvocationTargetException ex) {
                 //Runner incorrecto, va con otro.

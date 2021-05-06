@@ -13,9 +13,14 @@
  */
 package oa.com.tests.actionrunners.interfaces;
 
+import java.util.Arrays;
+import java.util.List;
+import java.util.Locale;
+import java.util.Optional;
 import java.util.ResourceBundle;
 import oa.com.tests.actions.TestAction;
 import java.util.logging.Logger;
+import oa.com.utils.I18n;
 import org.openqa.selenium.WebDriver;
 
 /**
@@ -54,12 +59,22 @@ public interface ScriptActionRunner {
     public void run(WebDriver driver, Logger log) throws Exception;
 
     /**
-     * Si este parser soporta este comando o no.
+     * Si este runner soporta este comando o no.
      *
      * @param action
      * @return
      */
     public default boolean matches(TestAction action) {
-        return action.getName().equals(getActionName());
+        final String actionName = action.getName();
+        if (getActionName().equals(actionName)) {
+            return true;
+        }
+
+        final String key = getClass().getSimpleName() + ".action";
+        Optional<String> aliasmatch = I18n.aliases(key)
+                .stream()
+                .filter(alias->alias.equals(key))
+                .findFirst();
+        return aliasmatch.isPresent();
     }
 }

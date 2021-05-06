@@ -26,28 +26,29 @@ import org.openqa.selenium.WebElement;
 
 /**
  * Parser basado en seleccion de elementos por seleccion css
+ *
  * @author nesto
  */
 @Getter
-public abstract class AbstractCssSelectorActionRunner extends AbstractDefaultScriptActionRunner{
+public abstract class AbstractCssSelectorActionRunner extends AbstractDefaultScriptActionRunner {
+
     /**
      * El selector usado.
      */
     private String selector;
-    
+
     public AbstractCssSelectorActionRunner(TestAction action) throws NoActionSupportedException, InvalidActionException {
         super(action);
     }
-    
-    protected WebElement get(WebDriver driver) throws BadSyntaxException{
+
+    protected WebElement get(WebDriver driver) throws BadSyntaxException {
+        String key = getClass().getSimpleName() + ".attr.selector";
         final String actionCommand = getAction().getCommand();
-        try {
-            selector =Utils.getJSONAttribute(actionCommand, "selector");
-        } catch (ParseException ex) {
-            final BadSyntaxException badSyntaxException = new BadSyntaxException(actionCommand);
-            throw badSyntaxException;
+        this.selector = Utils.getJSONAttributeML(key, actionCommand);
+        if (this.selector == null) {
+            throw new BadSyntaxException(actionCommand);
         }
         return driver.findElement(By.cssSelector(selector));
     }
-    
+
 }

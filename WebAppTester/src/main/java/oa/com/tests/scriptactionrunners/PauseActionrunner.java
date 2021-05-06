@@ -18,6 +18,7 @@ import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import lombok.Getter;
+import oa.com.tests.Utils;
 import oa.com.tests.actionrunners.exceptions.InvalidActionException;
 import oa.com.tests.actionrunners.exceptions.NoActionSupportedException;
 import oa.com.tests.actionrunners.interfaces.AbstractDefaultScriptActionRunner;
@@ -57,46 +58,42 @@ public class PauseActionRunner extends AbstractDefaultScriptActionRunner {
 
     public PauseActionRunner(TestAction action) throws NoActionSupportedException, InvalidActionException {
         super(action);
-        try {
-            JSONObject obj = (JSONObject) new JSONParser().parse(action.getCommand());
-            final String keyName = "tiempo";
-            if (!obj.containsKey(keyName)) {
-                throw new InvalidActionException(action.getCommand());
-            }
-            String strTime = (String) obj.getOrDefault(keyName, null);
+        String actionCommand = action.getCommand();
 
-            final Matcher matcher = Pattern.compile("^([0-9]*).*([S|s|m|h|d]).*$").matcher(strTime);
-            if (!matcher.matches()) {
-                throw new InvalidActionException(action.getCommand());
-            }
-            int groupIdx = 1;
-            amount = Integer.parseInt(matcher.group(groupIdx++));
-            switch (matcher.group(groupIdx++)) {
-                case "S":
-                    unit = TimeUnit.MILLISECOND;
-                    millis = amount;
-                    break;
-                case "s":
-                    unit = TimeUnit.SECOND;
-                    millis = amount*1000;
-                    break;
-                case "m":
-                    unit = TimeUnit.MINUTE;
-                    millis = amount*1000*60;
-                    break;
-                case "h":
-                    unit = TimeUnit.HOUR;
-                    millis = amount*1000*60*60;
-                    break;
-                case "d":
-                default:
-                    unit = TimeUnit.DAY;
-                    millis = amount*1000*60*60*24;
-                    break;
-            }
-        } catch (ParseException ex) {
-            Logger.getLogger(PauseActionRunner.class.getName()).log(Level.SEVERE, null, ex);
-            throw new InvalidActionException(action.getCommand());
+        final String keyName = getClass().getSimpleName() + ".attr.time";
+        String strTime = Utils.getJSONAttributeML(keyName, actionCommand);
+        if (strTime == null) {
+            throw new InvalidActionException(actionCommand);
+        }
+
+        final Matcher matcher = Pattern.compile("^([0-9]*).*([S|s|m|h|d]).*$").matcher(strTime);
+        if (!matcher.matches()) {
+            throw new InvalidActionException(actionCommand);
+        }
+        int groupIdx = 1;
+        amount = Integer.parseInt(matcher.group(groupIdx++));
+        switch (matcher.group(groupIdx++)) {
+            case "S":
+                unit = TimeUnit.MILLISECOND;
+                millis = amount;
+                break;
+            case "s":
+                unit = TimeUnit.SECOND;
+                millis = amount * 1000;
+                break;
+            case "m":
+                unit = TimeUnit.MINUTE;
+                millis = amount * 1000 * 60;
+                break;
+            case "h":
+                unit = TimeUnit.HOUR;
+                millis = amount * 1000 * 60 * 60;
+                break;
+            case "d":
+            default:
+                unit = TimeUnit.DAY;
+                millis = amount * 1000 * 60 * 60 * 24;
+                break;
         }
     }
 

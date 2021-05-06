@@ -1,3 +1,4 @@
+
 #WebAppTester: Tester for online forms
 #This program uses Selenium to open a web browser and run user written commands.
 #Download Selenium controllers for your favorite browser (check your browser version)
@@ -43,11 +44,11 @@
 #}
 #write - Writes text in a page component given its css selector.
 #-selector: the css selector of the component to write on
-#-texto: the text to write
+#-text: the text to write
 #Example:
 #write={
 # "selector":"#search_form_input_homepage",
-# "texto":"inicio"
+# "text":"inicio"
 #}
 #
 #click - Clicks a componente of the page given a css selector
@@ -71,10 +72,10 @@
 #Where UNITS can be one of these values: S=milliseconds,s=seconds, m=minutes, h=hours, d=days
 #Example:
 #To wait three seconds
-#pause={"tiempo":"3 s"}
+#pause={"time":"3 s"}
 #To wait 10 minutes
-#pause={"tiempo":"10 m"}
+#pause={"time":"10 m"}
 #
 # About CSS Selectors: 
-# https://w3.org/wiki/CSS_/_Selectores_CSS
+# https://www.w3.org/wiki/CSS/Selectors
 # https://www.w3schools.com/cssref/css_selectors.asp

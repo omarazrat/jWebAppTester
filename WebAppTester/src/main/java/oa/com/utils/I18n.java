@@ -14,7 +14,10 @@
 package oa.com.utils;
 
 import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Locale;
+import java.util.ResourceBundle;
 
 /**
  *
@@ -22,7 +25,7 @@ import java.util.Locale;
  */
 public class I18n {
     private static final String defaultLang="en";
-    private static final String []supportedLangs={defaultLang,"es"};
+    public static final String []supportedLangs={defaultLang,"es"};
     /**
      * Agrega el código del lenguaje activo para la máquina virtual actual, al string
      * proporcionado como parámetro
@@ -46,5 +49,34 @@ public class I18n {
      */
     public static String appendLangCode(String str){
         return appendLangCode(str,"_");
+    }
+    /**
+     * Retorna todos los alias de una clave en el archivo de propiedades 
+     * "application"
+     * @param key
+     * @return 
+     */
+    public static List<String> aliases(String key){
+        return aliases("application",key);
+    }
+    /**
+     * Retorna todos los alias de una clave en un archivo de propiedades
+     * @param bundleName
+     * @param key
+     * @return 
+     */
+    public static List<String> aliases(String bundleName,String key){
+        LinkedList<String> resp = new LinkedList<>();
+        for (String langCode : I18n.supportedLangs) {
+            try {
+                final ResourceBundle bundle = ResourceBundle.getBundle(bundleName+"_" + langCode);
+                if (bundle != null
+                        && bundle.containsKey(key)) {
+                    resp.add(bundle.getString(key));
+                }
+            } catch (Exception ex) {;
+            }
+        }
+        return resp;
     }
 }

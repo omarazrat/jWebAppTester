@@ -13,6 +13,7 @@
  */
 package oa.com.tests.actionrunners.interfaces;
 
+import java.util.HashMap;
 import oa.com.tests.actions.TestAction;
 import oa.com.tests.actionrunners.exceptions.InvalidActionException;
 import oa.com.tests.actionrunners.exceptions.NoActionSupportedException;
@@ -27,13 +28,22 @@ import org.openqa.selenium.WebDriver;
 public abstract class AbstractDefaultScriptActionRunner implements ScriptActionRunner {
 
     private TestAction action;
-    
+    private HashMap<String, Boolean> supportedActionCache = new HashMap<>();
+
     public AbstractDefaultScriptActionRunner(TestAction action) throws NoActionSupportedException, InvalidActionException {
+        final String actionName = action.getName();
         if (action == null) {
-            throw new IllegalArgumentException(action.getName());
+            throw new IllegalArgumentException(actionName);
         }
-        if (!matches(action)) {
-            final NoActionSupportedException except = new NoActionSupportedException(action.getName());
+        boolean matches = false;
+        if (supportedActionCache.containsKey(actionName)) {
+            matches = supportedActionCache.get(actionName);
+        } else {
+            matches = matches(action);
+            supportedActionCache.put(actionName, matches);
+        }
+        if (!matches) {
+            final NoActionSupportedException except = new NoActionSupportedException(actionName);
             except.setRunnerAction(getActionName());
             throw except;
         }
@@ -42,7 +52,7 @@ public abstract class AbstractDefaultScriptActionRunner implements ScriptActionR
 
     @Override
     public void run(WebDriver driver, Logger log) throws Exception {
-        log.info("Ejecutando "+getActionName()+" en "+action.getCommand());
+        log.info("Ejecutando " + getActionName() + " en " + action.getCommand());
         run(driver);
     }
 

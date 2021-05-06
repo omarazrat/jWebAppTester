@@ -21,18 +21,23 @@ import oa.com.tests.actionrunners.exceptions.NoActionSupportedException;
 import oa.com.tests.actionrunners.interfaces.AbstractCssSelectorActionRunner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import oa.com.utils.I18n;
 import org.json.simple.parser.ParseException;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 
 /**
- * Usa la funcion {@link WebElement#sendKeys(java.lang.CharSequence...) }, buscando el elemento en
- * el navegador por {@link By#cssSelector(java.lang.String) Selector css}
+ * Usa la funcion {@link WebElement#sendKeys(java.lang.CharSequence...) },
+ * buscando el elemento en el navegador por
+ * {@link By#cssSelector(java.lang.String) Selector css}
+ *
  * @author nesto
  */
-public class WriteActionRunner extends AbstractCssSelectorActionRunner{
+public class WriteActionRunner extends AbstractCssSelectorActionRunner {
+
     private String text;
+
     public WriteActionRunner(TestAction action) throws NoActionSupportedException, InvalidActionException {
         super(action);
         extractText(action.getCommand());
@@ -43,17 +48,14 @@ public class WriteActionRunner extends AbstractCssSelectorActionRunner{
         get(driver).sendKeys(text);
     }
 
-    @Override
-    public void run(WebDriver driver, Logger log) throws Exception {
-        log.log(Level.INFO, "escribiendo \"{0}\" en {1}", new Object[]{text, getSelector()});
-        run(driver);
-    }
-
-    private void extractText(String text) throws InvalidActionException {
-        try {
-            this.text = Utils.getJSONAttribute(text, "texto");
-        } catch (ParseException ex) {
-            throw new InvalidActionException(text);
+    private void extractText(String command) throws InvalidActionException {
+        String key = getClass().getSimpleName() + ".attr.text";
+        String textFound = Utils.getJSONAttributeML(key, command);
+        if (textFound!=null) {
+            this.text = textFound;
+        }else{
+            throw new InvalidActionException(command);
         }
     }
+
 }

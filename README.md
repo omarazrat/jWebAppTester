@@ -45,52 +45,52 @@ each instruction has the format "action={command}"
 
 [Supported actions]
 
-ir - Opens a web page. 
+go - Opens a web page. 
 Example:
-ir={https://duckduckgo.com/}
-esperar - Waits for a page to be completely loaded after a change in the location bar URL, or after clicking any element.
+go={https://duckduckgo.com/}
+wait - Waits for a page to be completely loaded after a change in the location bar URL, or after clicking any element.
 The browser will wait until a given object (given its selector), appear or simply the page to be fully loaded
 Examples:
-esperar={}
-esperar={
+wait={}
+wait={
   "selector":"duckbar"
 }
-escribir - Writes text in a page component given its css selector.
+write - Writes text in a page component given its css selector.
 -selector: the css selector of the component to write on
--texto: the text to write
+-text: the text to write
 Example:
-escribir={
+write={
  "selector":"search_form_input_homepage",
- "texto":"inicio"
+ "text":"inicio"
 }
 
-clic - Clicks a componente of the page given a css selector
+click - clickks a componente of the page given a css selector
 Example:
-clic={ 
+click={ 
   "selector":"search_button_homepage"
 }
-doble clic - Double-clicks any element in the page, given its selector.
+double click - Double-clickks any element in the page, given its selector.
 Example:
-doble clic={
+double click={
     "selector": "body"
 }
-clic derecho - Right clicks any element in the page, given its selector.
+right click - Right clickks any element in the page, given its selector.
 Example:
-clic derecho={
+right click={
     "selector": "Identificacion"
 }
 
-pausa - Waits a given time, before proceeding with the next instruction.
+pause - Waits a given time, before proceeding with the next instruction.
 Format: NUMBER UNITS
 Where UNITS can be one of these values: S=milliseconds,s=seconds, m=minutes, h=hours, d=days
 Example:
 To wait three seconds
-pausa={"tiempo":"3 s"}
+pause={"time":"3 s"}
 To wait 10 minutes
-pausa={"tiempo":"10 m"}
+pause={"time":"10 m"}
 
  About CSS Selectors: 
- https://w3.org/wiki/CSS_/_Selectores_CSS
+ https://www.w3.org/wiki/CSS/Selectors
  https://www.w3schools.com/cssref/css_selectors.asp
 ###Running Binary version
 You can use the running version at https://drive.google.com/file/d/15_aMOJ-0-RtYJfjQWMotJw_NnhOvQ_dW/view?usp=sharing

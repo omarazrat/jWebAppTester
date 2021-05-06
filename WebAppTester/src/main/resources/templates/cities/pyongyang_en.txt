@@ -1,0 +1,16 @@
+go={https://www.wolframalpha.com/}
+
+wait={}
+
+write={
+ "selector":"#__next > div > div > div > div > div._1YsE2 > section > form > div > div > input",
+ "text":"pyongyang"
+}
+
+clic={
+  "selector":"button[type='submit']"
+}
+
+wait={
+  "selector":"#__next > div > div > main > div > div > form"
+}
