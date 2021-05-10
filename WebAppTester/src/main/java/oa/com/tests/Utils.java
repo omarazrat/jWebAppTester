@@ -31,7 +31,6 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Locale;
 import java.util.Queue;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
@@ -62,10 +61,22 @@ public abstract class Utils {
      * @return
      * @throws ParseException
      */
-    public static String getJSONAttribute(String JSONtext, String key) throws ParseException {
-        String resp = null;
+    public static String getJSONAttribute(String JSONtext, String key) 
+            throws ParseException {
         JSONParser parser = new JSONParser();
         JSONObject obj = (JSONObject) parser.parse(JSONtext);
+        return getJSONAttribute(obj, key);
+    }
+    /**
+     * Busca un atributo en un objeto JSON
+     * @param obj
+     * @param key
+     * @return
+     * @throws ParseException 
+     */
+    public static String getJSONAttribute(JSONObject obj, String key) 
+            throws ParseException {
+        String resp;
         resp = (String) obj.getOrDefault(key, null);
         if (resp == null) {
             throw new ParseException(0);
@@ -397,8 +408,25 @@ public abstract class Utils {
     /**
      * Busca un atributo JSON a traves de todos los lenguajes disponibles
      * @param key La clave por la cual buscar
+     * @param obj Objeto en el cual buscar la entrada.
+     * @return el valor del atributo o null, si no encontrado.
+     */
+    public static String getJSONAttributeML(String key, JSONObject obj) {
+        for (String attrAlias : I18n.aliases(key)) {
+            try {
+                return Utils.getJSONAttribute(obj,attrAlias);
+            } catch (ParseException ex) {
+                ;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Busca un atributo JSON a traves de todos los lenguajes disponibles
+     * @param key La clave por la cual buscar
      * @param JSONtext Texto en el cual buscar la entrada.
-     * @return 
+     * @return el valor del atributo o null, si no encontrado.
      */
     public static String getJSONAttributeML(String key, String JSONtext) {
         for (String attrAlias : I18n.aliases(key)) {
