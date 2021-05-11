@@ -43,7 +43,7 @@ public abstract class AbstractCssSelectorActionRunner extends AbstractDefaultScr
         super(action);
         String key = "CssSelectorActionRunner.attr.selector";
         final String actionCommand = getAction().getCommand();
-        this.selector = Utils.getJSONAttributeML(key, actionCommand);
+        this.selector = Utils.getJSONAttributeML(actionCommand,key);
     }
 
     protected WebElement get(WebDriver driver) throws BadSyntaxException {

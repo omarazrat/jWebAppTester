@@ -54,7 +54,7 @@ public class WriteActionRunner extends AbstractCssSelectorActionRunner {
 
     private void extractText(String command) throws InvalidActionException {
         String key = getClass().getSimpleName() + ".attr.text";
-        String textFound = Utils.getJSONAttributeML(key, command);
+        String textFound = Utils.getJSONAttributeML(command,key);
         if (textFound!=null) {
             this.text = textFound;
         }else{

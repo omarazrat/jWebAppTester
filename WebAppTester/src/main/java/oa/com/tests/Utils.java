@@ -411,7 +411,7 @@ public abstract class Utils {
      * @param obj Objeto en el cual buscar la entrada.
      * @return el valor del atributo o null, si no encontrado.
      */
-    public static String getJSONAttributeML(String key, JSONObject obj) {
+    public static String getJSONAttributeML(JSONObject obj,String key) {
         for (String attrAlias : I18n.aliases(key)) {
             try {
                 return Utils.getJSONAttribute(obj,attrAlias);
@@ -428,7 +428,7 @@ public abstract class Utils {
      * @param JSONtext Texto en el cual buscar la entrada.
      * @return el valor del atributo o null, si no encontrado.
      */
-    public static String getJSONAttributeML(String key, String JSONtext) {
+    public static String getJSONAttributeML(String JSONtext,String key) {
         for (String attrAlias : I18n.aliases(key)) {
             try {
                 return Utils.getJSONAttribute(JSONtext,attrAlias);

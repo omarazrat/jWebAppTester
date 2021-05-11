@@ -30,10 +30,11 @@ public class WebElementVariable extends Variable{
     private String cssSelector;
     private WebElement value;
 
-    public WebElementVariable(WebElement value,String cssSelector) {
+    public WebElementVariable(WebElement value,String name,String cssSelector) {
         super(TYPE.WEB_ELEMENT);
         setValue(value);
         setCssSelector(cssSelector);
+        this.name=name;
     }
 
     private void setCssSelector(String cssSelector) {

@@ -59,7 +59,7 @@ public class PauseActionRunner extends AbstractDefaultScriptActionRunner {
         String actionCommand = action.getCommand();
 
         final String keyName = getClass().getSimpleName() + ".attr.time";
-        String strTime = Utils.getJSONAttributeML(keyName, actionCommand);
+        String strTime = Utils.getJSONAttributeML(actionCommand,keyName);
         if (strTime == null) {
             throw new InvalidActionException(actionCommand);
         }

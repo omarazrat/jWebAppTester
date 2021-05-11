@@ -13,18 +13,27 @@
  */
 package oa.com.tests.scriptactionrunners;
 
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.HeadlessException;
 import java.util.List;
 import java.util.ResourceBundle;
 import java.util.Vector;
 import java.util.function.Function;
 import java.util.stream.Stream;
 import javax.swing.JComboBox;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JTextArea;
 import oa.com.tests.Utils;
 import oa.com.tests.actionrunners.exceptions.InvalidActionException;
 import oa.com.tests.actionrunners.exceptions.NoActionSupportedException;
+import oa.com.tests.actionrunners.exceptions.UserActionException;
 import oa.com.tests.actionrunners.interfaces.AbstractCssSelectorActionRunner;
 import oa.com.tests.actions.TestAction;
 import oa.com.tests.lang.WebElementVariable;
+import oa.com.utils.I18n;
+import org.apache.commons.lang3.NotImplementedException;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.openqa.selenium.By;
@@ -87,6 +96,7 @@ public class PickChoiceActionRunner extends AbstractCssSelectorActionRunner{
     private WebElementVariable variable;
     public PickChoiceActionRunner(TestAction action) throws NoActionSupportedException, InvalidActionException {
         super(action);
+        throw new NotImplementedException("Still under development");
     }
 
     @Override
@@ -102,8 +112,8 @@ public class PickChoiceActionRunner extends AbstractCssSelectorActionRunner{
         }
         JSONParser parser = new JSONParser();
         JSONObject JSObj = (JSONObject) parser.parse(getAction().getCommand());
-        subSelector = Utils.getJSONAttributeML(clsName+".attr.subselector",JSObj);
-        String ssorted = Utils.getJSONAttribute(JSObj, clsName+".attr.sorted");
+        subSelector = Utils.getJSONAttributeML(JSObj,clsName+".attr.subselector");
+        String ssorted = Utils.getJSONAttributeML(JSObj,clsName+".attr.sorted");
         sorted = ssorted==null?false:ssorted.equals(bundle.getString("options.value.YES"));
         //Combo con opciones
         Stream<String> elementsStr = elements.stream()
@@ -111,8 +121,47 @@ public class PickChoiceActionRunner extends AbstractCssSelectorActionRunner{
         if(sorted){
             elementsStr = elementsStr.sorted();
         }
-        Vector<String> opts = new Vector<>(elementsStr.toList());
-        JComboBox<String> opciones = new JComboBox<>(opts);
+        String title = Utils.getJSONAttributeML(JSObj,clsName+".attr.title");
+        if(title==null){
+            title = bundle.getString("options.title.default");
+        }
+        String msg = Utils.getJSONAttributeML(JSObj,clsName+".attr.msg");
+        if(msg==null){
+            msg = bundle.getString(clsName+".attr.msg.default");
+        }
+        String varName = Utils.getJSONAttributeML(JSObj,clsName+".attr.varName");
+        int idx = promptUser(elementsStr.toList(), msg, title);
+        String fullSelector = getSelector()+":nth-child("+idx+")"+subSelector;
+        //Va por el elemento seleccionado.
+        WebElement elem = driver.findElement(By.cssSelector(fullSelector));
+        this.variable = new WebElementVariable(elem,varName,fullSelector);
+    }
+
+    private int promptUser(List<String> list, String msg, String title) throws UserActionException, HeadlessException {
+        ResourceBundle bundle = ResourceBundle.getBundle("application");
+        //Componente grafico
+        JComboBox<String> opciones = new JComboBox<>(new Vector<>(list));
+        JPanel content = new JPanel(new GridBagLayout());
+        GridBagConstraints gbc = new GridBagConstraints();
+        JTextArea taMsg = new JTextArea(msg, 3, 30);
+        taMsg.setEditable(false);
+        taMsg.setEnabled(false);
+        content.add(taMsg,gbc);
+        final int HEIGHT = 10;
+        gbc.gridheight=HEIGHT;
+        gbc.gridy++;
+        content.add(opciones,gbc);
+        int resp = JOptionPane.showConfirmDialog(null, content, title, JOptionPane.OK_CANCEL_OPTION);
+        if(resp==JOptionPane.CANCEL_OPTION){
+            String message = bundle.getString("options.user.cancelled");
+            throw new UserActionException(message);
+        }
+        if(opciones.getSelectedIndex()==-1){
+            String message = bundle.getString("PickChoiceActionRunner.option.required");
+            throw new UserActionException(message);
+        }
+        int idx = opciones.getSelectedIndex()+1;
+        return idx;
     }
     
     private Function<WebElement,String> webElementToString = (elem)->{
