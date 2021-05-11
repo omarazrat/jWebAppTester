@@ -134,12 +134,12 @@ This program writes all its output to the file WebTester.log
 
 ### Upcoming
 
--Let user pick element from some choices and store it in a variable.
--Use of variables in some actions (about to be defined)
--Mouse Over
--Enter special characters with write command: ESC, ENTER, F1,... etc.
--Use encripted words for passwords
--for_each loops
+* Let user pick element from some choices and store it in a variable.
+* Use of variables in some actions (about to be defined)
+* Mouse Over
+* Enter special characters with write command: ESC, ENTER, F1,... etc.
+* Use encripted words for passwords
+* for_each loops
 
 ## Español
 WebAppTester: Probador de formularios online
@@ -277,9 +277,9 @@ El programa escribe todo lo que hace en el archivo WebTester.log
 
 ### Próximamente
 
--Hacer que el usuario pueda seleccionar opciones de una lista y almacenarlas en una variable.
--Poder usar variables en algunas acciones (aun por definir cuàles)
--Implementar el Mouse Over, esa acción de colocar el cursor sobre un objeto.
--Poder definir caracteres especiales con el comando escribir: ESC, ENTER, F1,... etc.
--Soportar palabras encriptadas para contraseñas en los scripts
--iteraciones al estilo for_each 
+* Hacer que el usuario pueda seleccionar opciones de una lista y almacenarlas en una variable.
+* Poder usar variables en algunas acciones (aun por definir cuàles)
+* Implementar el Mouse Over, esa acción de colocar el cursor sobre un objeto.
+* Poder definir caracteres especiales con el comando escribir: ESC, ENTER, F1,... etc.
+* Soportar palabras encriptadas para contraseñas en los scripts
+* iteraciones al estilo for_each 
