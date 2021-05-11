@@ -132,7 +132,7 @@ You can use the running version at https://drive.google.com/file/d/15_aMOJ-0-RtY
 
 This program writes all its output to the file WebTester.log
 
-### Outcoming
+### Upcoming
 
 -Let user pick element from some choices and store it in a variable.
 -Use of variables in some actions (about to be defined)
