@@ -49,6 +49,7 @@ import org.openqa.selenium.opera.OperaDriver;
 import org.openqa.selenium.safari.SafariDriver;
 import oa.com.tests.actionrunners.interfaces.ScriptActionRunner;
 import java.lang.reflect.InvocationTargetException;
+import oa.com.tests.lang.Variable;
 
 /**
  * Gestor de acciones.
@@ -57,30 +58,6 @@ import java.lang.reflect.InvocationTargetException;
  */
 @Data
 public final class ActionRunnerManager {
-
-    private static ResourceBundle globals = ResourceBundle.getBundle("application");
-
-    public static void quit() {
-        if (instance.driver != null) {
-            instance.driver.quit();
-        }
-    }
-//TODO: hacer que soporte comandos en otros idiomas.
-    public static AbstractDefaultScriptActionRunner findRunner(String actionCommand) throws BadSyntaxException {
-        TestAction tester;
-        tester = new TestAction(actionCommand);
-        AbstractDefaultScriptActionRunner runner = null;
-        for (Class runnerCls : ActionRunnerManager.runnersCls) {
-            try {
-                final Constructor constructor = runnerCls.getConstructor(TestAction.class);
-                runner = (AbstractDefaultScriptActionRunner) constructor.newInstance(tester);
-                break;
-            } catch (IllegalAccessException | IllegalArgumentException | InstantiationException | NoSuchMethodException | SecurityException | InvocationTargetException ex) {
-                //Runner incorrecto, va con otro.
-            }
-        }
-        return runner;
-    }
 
     public enum BROWSERTYPE {
         CHROME,
@@ -95,6 +72,9 @@ public final class ActionRunnerManager {
         START,
         END
     }
+
+    private static ResourceBundle globals = ResourceBundle.getBundle("application");
+
     /**
      * Listado con todas las clases de funciones registradas.
      */
@@ -115,7 +95,7 @@ public final class ActionRunnerManager {
     private TreeModel rootTree;
     private BROWSERTYPE browserType;
     private WebDriver driver;
-
+    private List<Variable> variables = new LinkedList();
     private static ActionRunnerManager instance = new ActionRunnerManager();
 
     private ActionRunnerManager() {
@@ -128,6 +108,28 @@ public final class ActionRunnerManager {
         catch (Exception ex) {
             Logger.getLogger("Probador Web").log(Level.SEVERE, null, ex);
         }
+    }
+
+    public static void quit() {
+        if (instance.driver != null) {
+            instance.driver.quit();
+        }
+    }
+
+    private AbstractDefaultScriptActionRunner findRunner(String actionCommand) throws BadSyntaxException {
+        TestAction tester;
+        tester = new TestAction(actionCommand);
+        AbstractDefaultScriptActionRunner runner = null;
+        for (Class runnerCls : ActionRunnerManager.runnersCls) {
+            try {
+                final Constructor constructor = runnerCls.getConstructor(TestAction.class);
+                runner = (AbstractDefaultScriptActionRunner) constructor.newInstance(tester);
+                break;
+            } catch (IllegalAccessException | IllegalArgumentException | InstantiationException | NoSuchMethodException | SecurityException | InvocationTargetException ex) {
+                //Runner incorrecto, va con otro.
+            }
+        }
+        return runner;
     }
 
     @Override
@@ -212,7 +214,7 @@ public final class ActionRunnerManager {
         }
         List<Exception> exceptions = new LinkedList<>();
         for (File f : Utils.getRunnableFiles(item)) {
-            exceptions.addAll(exec(f, log));
+            exceptions.addAll(instance.exec(f, log));
         }
         //Errores de la ejecucion
         if (!exceptions.isEmpty()) {
@@ -284,7 +286,7 @@ public final class ActionRunnerManager {
      * @param file
      * @param log
      */
-    private static List<Exception> exec(File file, Logger log) throws IOException {
+    private List<Exception> exec(File file, Logger log) throws IOException {
         //Uno quiere hacer las vainas bien, pero el universo conspira...
 //        final List<String> filteredLines = Files.lines(FileSystems.getDefault().getPath(file.getAbsolutePath()))
 //                .map(String::trim)

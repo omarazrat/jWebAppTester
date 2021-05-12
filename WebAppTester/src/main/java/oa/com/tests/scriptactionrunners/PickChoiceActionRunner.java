@@ -13,6 +13,7 @@
  */
 package oa.com.tests.scriptactionrunners;
 
+import oa.com.tests.actionrunners.interfaces.VariableProvider;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.HeadlessException;
@@ -32,7 +33,6 @@ import oa.com.tests.actionrunners.exceptions.UserActionException;
 import oa.com.tests.actionrunners.interfaces.AbstractCssSelectorActionRunner;
 import oa.com.tests.actions.TestAction;
 import oa.com.tests.lang.WebElementVariable;
-import oa.com.utils.I18n;
 import org.apache.commons.lang3.NotImplementedException;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -86,7 +86,7 @@ import org.openqa.selenium.WebElement;
  * 
  * @author nesto
  */
-public class PickChoiceActionRunner extends AbstractCssSelectorActionRunner{
+public class PickChoiceActionRunner extends AbstractCssSelectorActionRunner implements VariableProvider{
     private List<WebElement> elements;
     private String subSelector;
     private boolean sorted;
@@ -137,6 +137,16 @@ public class PickChoiceActionRunner extends AbstractCssSelectorActionRunner{
         this.variable = new WebElementVariable(elem,varName,fullSelector);
     }
 
+    /**
+     * Muestra un cuadro de diálogo al usuario con las opciones producto del selector
+     * y le pide seleccionar una.
+     * @param list
+     * @param msg
+     * @param title
+     * @return El índice de la opción seleccionada por el usuario 1= primera.
+     * @throws UserActionException
+     * @throws HeadlessException 
+     */
     private int promptUser(List<String> list, String msg, String title) throws UserActionException, HeadlessException {
         ResourceBundle bundle = ResourceBundle.getBundle("application");
         //Componente grafico
@@ -160,12 +170,18 @@ public class PickChoiceActionRunner extends AbstractCssSelectorActionRunner{
             String message = bundle.getString("PickChoiceActionRunner.option.required");
             throw new UserActionException(message);
         }
-        int idx = opciones.getSelectedIndex()+1;
-        return idx;
+        return list.indexOf(opciones.getSelectedItem())+1;
     }
     
     private Function<WebElement,String> webElementToString = (elem)->{
         WebElement optElement = elem.findElement(By.cssSelector(subSelector));
         return optElement.getText();
     };
+
+    @Override
+    public WebElementVariable getVariable() {
+        return variable;
+    }
+    
+    
 }
