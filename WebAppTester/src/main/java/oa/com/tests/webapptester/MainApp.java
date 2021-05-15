@@ -378,7 +378,7 @@ public class MainApp extends JFrame {
             public void run() {
                 try {
                     ActionRunnerManager.exec(rootTree.getSelectionModel().getSelectionPath(), log);
-                } catch (IOException ex) {
+                } catch (Exception ex) {
                     JOptionPane.showMessageDialog(null, ex.toString(), ERR_TITLE, JOptionPane.ERROR_MESSAGE);
                     log.log(Level.SEVERE, null, ex);
                 }

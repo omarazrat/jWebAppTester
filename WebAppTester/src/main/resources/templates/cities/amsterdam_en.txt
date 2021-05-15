@@ -7,7 +7,7 @@ write={
  "text":"Amsterdam"
 }
 
-clic={
+click={
   "selector":"button[type='submit']"
 }
 

@@ -20,9 +20,7 @@ import oa.com.tests.actionrunners.interfaces.AbstractDefaultScriptActionRunner;
 import oa.com.tests.actions.TestAction;
 import oa.com.tests.webapptester.MainApp;
 import java.awt.HeadlessException;
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileReader;
 import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.util.Arrays;
@@ -49,7 +47,15 @@ import org.openqa.selenium.opera.OperaDriver;
 import org.openqa.selenium.safari.SafariDriver;
 import oa.com.tests.actionrunners.interfaces.ScriptActionRunner;
 import java.lang.reflect.InvocationTargetException;
+import java.nio.file.FileSystems;
+import java.nio.file.Files;
+import java.util.Optional;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import oa.com.tests.actionrunners.exceptions.InvalidVarNameException;
+import oa.com.tests.actionrunners.interfaces.VariableProvider;
 import oa.com.tests.lang.Variable;
+import oa.com.tests.lang.WebElementVariable;
 
 /**
  * Gestor de acciones.
@@ -58,6 +64,25 @@ import oa.com.tests.lang.Variable;
  */
 @Data
 public final class ActionRunnerManager {
+
+    /**
+     * Retorna el selector para una variable que está en
+     * un texto con su nombre.
+     * @param varDef El texto con el nombre de la variable en el 
+     * formato [:NOMBRE_VARIABLE]
+     * @return 
+     */
+    private String resolveSelector4VarDef(String varDef) throws InvalidVarNameException {
+        final String varName = varDef.substring(0,varDef.length()-2)
+                .substring(2);
+        Optional<Variable> varMatch = variables.stream()
+                .filter(var->var.getName().equals(varName))
+                .findAny();
+        if(varMatch.isEmpty())
+            throw new InvalidVarNameException(varName);
+        WebElementVariable var = (WebElementVariable) varMatch.get().getValue();
+        return var.getCssSelector();
+    }
 
     public enum BROWSERTYPE {
         CHROME,
@@ -205,7 +230,7 @@ public final class ActionRunnerManager {
      *
      * @param item
      */
-    public static void exec(TreePath item, Logger log) throws IOException {
+    public static void exec(TreePath item, Logger log) throws IOException, InvalidVarNameException {
         File file = Utils.getFile(item);
         final String ERR_TITLE = globals.getString("globals.error.title");
         if (file.isDirectory()) {
@@ -286,30 +311,31 @@ public final class ActionRunnerManager {
      * @param file
      * @param log
      */
-    private List<Exception> exec(File file, Logger log) throws IOException {
-        //Uno quiere hacer las vainas bien, pero el universo conspira...
-//        final List<String> filteredLines = Files.lines(FileSystems.getDefault().getPath(file.getAbsolutePath()))
-//                .map(String::trim)
-//                .filter(l -> !l.isEmpty() && !l.startsWith("#"))
-//                .collect(toList());
+    private List<Exception> exec(File file, Logger log) throws IOException, InvalidVarNameException {
+        final List<String> filteredLines = Files.lines(FileSystems.getDefault().getPath(file.getAbsolutePath()))
+                .map(String::trim)
+                .filter(l -> !l.isEmpty() && !l.startsWith("#"))
+                .collect(toList());
         List<Exception> resp = new LinkedList<>();
-        final List<String> filteredLines = new LinkedList<>();
-        BufferedReader reader = new BufferedReader(new FileReader(file));
-        for (String line = reader.readLine(); line != null; line = reader.readLine()) {
-            line = line.trim();
-            if (line.isEmpty() || line.startsWith("#")) {
-                continue;
-            }
-            filteredLines.add(line);
-        };
-        reader.close();
+//        final List<String> filteredLines = new LinkedList<>();
+//        BufferedReader reader = new BufferedReader(new FileReader(file));
+//        for (String line = reader.readLine(); line != null; line = reader.readLine()) {
+//            line = line.trim();
+//            if (line.isEmpty() || line.startsWith("#")) {
+//                continue;
+//            }
+//            filteredLines.add(line);
+//        };
+//        reader.close();
 
         List<String> command = new LinkedList<>();
         int lineCounter = 0;
         while (lineCounter < filteredLines.size()) {
             boolean correct = true;
             command.add(filteredLines.get(lineCounter++));
-            final String actionCommand = command.stream().collect(joining(" "));
+            final String actionCommand = parse(
+                    command.stream().collect(joining(" "))
+            );
             correct = !command.isEmpty();
             if (correct) {
                 AbstractDefaultScriptActionRunner runner;
@@ -332,6 +358,12 @@ public final class ActionRunnerManager {
 
                 try {
                     runner.run(instance.getDriver(), log);
+                    if(runner instanceof VariableProvider varprovider){
+                        WebElementVariable variable = varprovider.getVariable();
+                        if(!variables.contains(variable)){
+                            variables.add(variable);
+                        }
+                    }
                 } catch (Exception ex) {
 //                    throwBadSynstaxEx(actionCommand, file, log);
                     resp.add(new BadSyntaxException(prepareBadSystaxExMsg(actionCommand, file)));
@@ -357,6 +389,25 @@ public final class ActionRunnerManager {
                 .replace("{0}", actionCommand)
                 .replace("{1}", file.getAbsolutePath());
         return badSyntazMsg;
+    }
+
+    /**
+     * Corrige el comando de consulta, buscando y reemplazando las variables correspondientes
+     * @param actionCommand
+     * @return 
+     */
+    private String parse(String actionCommand) throws InvalidVarNameException {
+        Pattern pattern = Pattern.compile("(\\[\\:[0-9|a-z|A-Z|\\s]*\\])");
+        Matcher matcher = pattern.matcher(actionCommand);
+        if(!matcher.matches())
+            return actionCommand;
+        String resp = actionCommand;
+        //Acto de fe, sólo hay una variable aquí.
+        for (int i = 1; i <= matcher.groupCount(); i++) {
+            String varDef = matcher.group(i);
+            resp.replace(varDef, resolveSelector4VarDef(varDef));
+        }
+        return resp;
     }
 
 }
