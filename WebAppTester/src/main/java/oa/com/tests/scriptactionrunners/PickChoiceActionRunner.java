@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.ResourceBundle;
 import java.util.Vector;
 import java.util.function.Function;
+import static java.util.stream.Collectors.toList;
 import java.util.stream.Stream;
 import javax.swing.JComboBox;
 import javax.swing.JOptionPane;
@@ -46,7 +47,7 @@ import org.openqa.selenium.WebElement;
  * un elemento y lo deja en una variable.</br>
  * Elementos 
  * <ul>
- *  <ol><b>selector</b>: Obligatorio. El selector css que apunta a los elementos a mostrar</ol>
+ *  <ol><b>selector</b>: Obligatorio. El selector css que corresponde a los elementos HTML a mostrar</ol>
  *  <ol><b>subselector</b>: Opcional. Ruta complementaria, para determinar el valor de cada opciòn
  *  que se mostrará al usuario. Por omisiòn se tomará el texto de cada elemento
  *  web asociado con la ruta en <i>selector</i></ol>
@@ -70,7 +71,7 @@ import org.openqa.selenium.WebElement;
  * # En https://www.wikipedia.org/, lenguajes:
  * seleccionar opcion={
  *      "selector": "div.central-featured-lang",
- *      "subselector": " #js-link-box-es > strong:nth-child(1)",
+ *      "subselector": "a",
  *      "variable": "lenguaje",
  *      "titulo": "wikipedia"
  * }
@@ -96,7 +97,6 @@ public class PickChoiceActionRunner extends AbstractCssSelectorActionRunner impl
     private WebElementVariable variable;
     public PickChoiceActionRunner(TestAction action) throws NoActionSupportedException, InvalidActionException {
         super(action);
-        throw new NotImplementedException("Still under development");
     }
 
     @Override
@@ -104,15 +104,15 @@ public class PickChoiceActionRunner extends AbstractCssSelectorActionRunner impl
         ResourceBundle bundle = ResourceBundle.getBundle("application");
         final String clsName = getClass().getSimpleName();
         //Busca las opciones
-        elements = driver.findElements(By.cssSelector(getSelector()));
+        JSONParser parser = new JSONParser();
+        JSONObject JSObj = (JSONObject) parser.parse(getAction().getCommand());
+        subSelector = Utils.getJSONAttributeML(JSObj,clsName+".attr.subselector");
+        elements = driver.findElements(By.cssSelector(getSelector()+" "));
         if(elements.isEmpty()){
             String message = bundle.getString(clsName+".err.selectorWOChlds")
                     .replace("{0}", getSelector());
             throw new InvalidActionException(message);
         }
-        JSONParser parser = new JSONParser();
-        JSONObject JSObj = (JSONObject) parser.parse(getAction().getCommand());
-        subSelector = Utils.getJSONAttributeML(JSObj,clsName+".attr.subselector");
         String ssorted = Utils.getJSONAttributeML(JSObj,clsName+".attr.sorted");
         sorted = ssorted==null?false:ssorted.equals(bundle.getString("options.value.YES"));
         //Combo con opciones
@@ -130,8 +130,8 @@ public class PickChoiceActionRunner extends AbstractCssSelectorActionRunner impl
             msg = bundle.getString(clsName+".attr.msg.default");
         }
         String varName = Utils.getJSONAttributeML(JSObj,clsName+".attr.varName");
-        int idx = promptUser(elementsStr.toList(), msg, title);
-        String fullSelector = getSelector()+":nth-child("+idx+")"+subSelector;
+        int idx = promptUser(elementsStr.collect(toList()), msg, title);
+        String fullSelector = getSelector()+":nth-child("+idx+")";
         //Va por el elemento seleccionado.
         WebElement elem = driver.findElement(By.cssSelector(fullSelector));
         this.variable = new WebElementVariable(elem,varName,fullSelector);
@@ -153,9 +153,10 @@ public class PickChoiceActionRunner extends AbstractCssSelectorActionRunner impl
         JComboBox<String> opciones = new JComboBox<>(new Vector<>(list));
         JPanel content = new JPanel(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();
+        gbc.gridx = gbc.gridy=0;
         JTextArea taMsg = new JTextArea(msg, 3, 30);
         taMsg.setEditable(false);
-        taMsg.setEnabled(false);
+//        taMsg.setEnabled(false);
         content.add(taMsg,gbc);
         final int HEIGHT = 10;
         gbc.gridheight=HEIGHT;

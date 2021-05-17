@@ -76,6 +76,28 @@
 #To wait 10 minutes
 #pause={"time":"10 m"}
 #
+#pick choice - Prompts user to pick a single choice among a list, stores selected
+#option in a variable.
+#Properties:
+#- selector: Required. This selector must match to a collection of HTML elements</ol>
+#- subselector: Secondary css path, to specify the element of every option to be shown
+# to the user. By default, the text of every element gathered with the "selector" 
+# will be used as option.
+#- variable: Required. Name of the variable used to store user's selection.
+#- title: Title for the promtpt window
+#- message: Message to use in the prompt window.
+#- sorted: Sort options alphabetically? (yes/no)
+#
+#Example:
+#pick choice={
+# "selector":"div.central-featured-lang",
+# "subselector": "a",
+# "sorted":"yes",
+# "title":"Wikipedia",
+# "message":"Select a language",
+# "variable":"Language"
+#}
+#
 # About CSS Selectors: 
 # https://www.w3.org/wiki/CSS/Selectors
 # https://www.w3schools.com/cssref/css_selectors.asp

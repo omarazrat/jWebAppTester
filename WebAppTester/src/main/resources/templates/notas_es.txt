@@ -73,6 +73,29 @@
 #Para esperar 10 minutos
 #pausa={"tiempo":"10 m"}
 #
+#seleccionar opcion - Pide al usuario seleccionar una opción de una lista y guarda el valor seleccionado
+#en una variable.
+#Properties:
+#- selector: Obligatorio. El selector css que corresponde a los elementos HTML a mostrar</ol>
+#- subselector: Opcional. Ruta complementaria, para determinar el valor de cada opciòn
+#  que se mostrará al usuario. Por omisiòn se tomará el texto de cada elemento
+#  web asociado con la ruta en el parámetro "selector"
+#- variable: Obligatorio. Nombre de la variable que se va a asignar con el elemento que el usuario
+#  seleccione
+#- titulo: Opcional. Título que tendrá la caja de texto que se va a mostrar al usuario.
+#- mensaje: Opcional. Mensaje a mostrar en la caja de texto que se va a mostrar al usuario.
+#- orden alfabetico: Opcional. ordenar alfabèticamente las opciones a mostrar (si/no)
+#
+#Example:
+#seleccionar opcion={
+# "selector":"div.central-featured-lang",
+# "subselector": "a",
+# "orden alfabetico":"yes",
+# "titulo":"Wikipedia",
+# "mensaje":"Seleccione un lenguaje",
+# "variable":"Lenguaje"
+#}
+#
 #Referencias de Selectores CSS: 
 # https://w3.org/wiki/CSS_/_Selectores_CSS
 # https://www.w3schools.com/cssref/css_selectors.asp

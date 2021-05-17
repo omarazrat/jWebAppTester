@@ -5,7 +5,7 @@ WebAppTester: Tester for online forms
 This program uses Selenium to open a web browser and run user written commands.
 
 ### Installation
-You need at least Java version >=16
+You need at least Java version >=11
 
 Download Selenium controllers for your favorite browser (check your browser version)
 from https://www.selenium.dev/downloads/ and save it in the same folder with the program.
@@ -146,7 +146,7 @@ WebAppTester: Probador de formularios online
 El programa utiliza Selenium para abrir un navegador web y ejecuta en él, comandos escritos por el usuario.
 
 ### Instalación
-Descargue e instale Java versión >=16
+Descargue e instale Java versión >=11
 
 Descargue el controlador de Selenium para su navegador favorito (recuerde revisar la versión de su navegador) 
 desde https://www.selenium.dev/downloads/ y deje el controlador en la misma carpeta en que ejecutará el programa.

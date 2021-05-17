@@ -425,4 +425,9 @@ public class MainApp extends JFrame {
         }
         return null;
     }
+
+    public static MainApp getInstance() {
+        return instance;
+    }
+    
 }
