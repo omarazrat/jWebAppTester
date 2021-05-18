@@ -130,7 +130,11 @@ public class PickChoiceActionRunner extends AbstractCssSelectorActionRunner impl
             msg = bundle.getString(clsName+".attr.msg.default");
         }
         String varName = Utils.getJSONAttributeML(JSObj,clsName+".attr.varName");
-        int idx = promptUser(elementsStr.collect(toList()), msg, title);
+        String selection = promptUser(elementsStr.collect(toList()), msg, title);
+        final int idx = elements.stream()
+                .map(webElementToString)
+                .collect(toList())
+                .indexOf(selection)+1;
         String fullSelector = getSelector()+":nth-child("+idx+")";
         //Va por el elemento seleccionado.
         WebElement elem = driver.findElement(By.cssSelector(fullSelector));
@@ -147,7 +151,7 @@ public class PickChoiceActionRunner extends AbstractCssSelectorActionRunner impl
      * @throws UserActionException
      * @throws HeadlessException 
      */
-    private int promptUser(List<String> list, String msg, String title) throws UserActionException, HeadlessException {
+    private String promptUser(List<String> list, String msg, String title) throws UserActionException, HeadlessException {
         ResourceBundle bundle = ResourceBundle.getBundle("application");
         //Componente grafico
         JComboBox<String> opciones = new JComboBox<>(new Vector<>(list));
@@ -171,7 +175,7 @@ public class PickChoiceActionRunner extends AbstractCssSelectorActionRunner impl
             String message = bundle.getString("PickChoiceActionRunner.option.required");
             throw new UserActionException(message);
         }
-        return list.indexOf(opciones.getSelectedItem())+1;
+        return (String) opciones.getSelectedItem();
     }
     
     private Function<WebElement,String> webElementToString = (elem)->{

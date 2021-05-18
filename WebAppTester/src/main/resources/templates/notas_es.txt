@@ -75,7 +75,7 @@
 #
 #seleccionar opcion - Pide al usuario seleccionar una opción de una lista y guarda el valor seleccionado
 #en una variable.
-#Properties:
+#Propiedades:
 #- selector: Obligatorio. El selector css que corresponde a los elementos HTML a mostrar</ol>
 #- subselector: Opcional. Ruta complementaria, para determinar el valor de cada opciòn
 #  que se mostrará al usuario. Por omisiòn se tomará el texto de cada elemento
@@ -86,7 +86,7 @@
 #- mensaje: Opcional. Mensaje a mostrar en la caja de texto que se va a mostrar al usuario.
 #- orden alfabetico: Opcional. ordenar alfabèticamente las opciones a mostrar (si/no)
 #
-#Example:
+#Ejemplo:
 #seleccionar opcion={
 # "selector":"div.central-featured-lang",
 # "subselector": "a",
@@ -94,6 +94,14 @@
 # "titulo":"Wikipedia",
 # "mensaje":"Seleccione un lenguaje",
 # "variable":"Lenguaje"
+#}
+#
+#Variables
+#Utilice variables ya definidas como parte de sus instrucciones colocando el nombre 
+#de la variable entre los signos [] así: [:NOMBRE_VARIABLE]
+#Ejemplo:
+#clic={
+# "selector":"[:Lenguaje] > a"
 #}
 #
 #Referencias de Selectores CSS: 

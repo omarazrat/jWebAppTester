@@ -1,18 +1,31 @@
-go={https://duckduckgo.com/}
+pause={"time":"2 s"}
+
+go={https://www.wikipedia.org/}
+
+wait={}
+
+pick choice={
+ "selector":"div.central-featured-lang",
+ "subselector": "a",
+ "sorted":"yes",
+ "title":"Wikipedia",
+ "message":"Select a language",
+ "variable":"Language"
+}
+
+click={
+ "selector":"[:Language] > a"
+}
 
 wait={}
 
 write={
- "selector":"#search_form_input_homepage",
+ "selector":"input[type='search']",
  "text":"inicio"
 }
 
 click={ 
-  "selector":"#search_button_homepage"
-}
-
-wait={
-  "selector":"#duckbar"
+  "selector":"#searchButton"
 }
 
 double click={

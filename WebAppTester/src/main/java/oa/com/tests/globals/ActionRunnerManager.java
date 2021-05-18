@@ -65,28 +65,6 @@ import oa.com.tests.lang.WebElementVariable;
 @Data
 public final class ActionRunnerManager {
 
-    /**
-     * Retorna el selector para una variable que está en
-     * un texto con su nombre.
-     * @param varDef El texto con el nombre de la variable en el 
-     * formato [:NOMBRE_VARIABLE]
-     * @return 
-     */
-    private String resolveSelector4VarDef(String varDef) throws InvalidVarNameException {
-        final String varName = varDef.substring(0,varDef.length()-2)
-                .substring(2);
-        if(varName.isEmpty()){
-            throw new InvalidVarNameException("variable with name "+varName);
-        }
-        Optional<Variable> varMatch = variables.stream()
-                .filter(var->var.getName().equals(varName))
-                .findAny();
-        if(varMatch.isEmpty())
-            throw new InvalidVarNameException(varName);
-        WebElementVariable var = (WebElementVariable) varMatch.get().getValue();
-        return var.getCssSelector();
-    }
-
     public enum BROWSERTYPE {
         CHROME,
         EDGE,
@@ -333,51 +311,56 @@ public final class ActionRunnerManager {
 
         List<String> command = new LinkedList<>();
         int lineCounter = 0;
-        while (lineCounter < filteredLines.size()) {
-            boolean correct = true;
-            command.add(filteredLines.get(lineCounter++));
-            final String actionCommand = parse(
-                    command.stream().collect(joining(" "))
-            );
-            correct = !command.isEmpty();
-            if (correct) {
-                AbstractDefaultScriptActionRunner runner;
-                try {
-                    runner = findRunner(actionCommand);
-                } catch (BadSyntaxException ex) {
-                    continue;
-                }
-                if (runner == null) {
-                    String message = globals.getString("exec.err.noSuchRunnerException")
-                            .replace("{0}", actionCommand)
-                            .replace("{1}", file.getAbsolutePath());
-                    resp.add(new NoActionSupportedException(message));
+        try {
+            while (lineCounter < filteredLines.size()) {
+                boolean correct = true;
+                command.add(filteredLines.get(lineCounter++));
+                final String actionCommand = parse(
+                        command.stream().collect(joining(" "))
+                );
+                correct = !command.isEmpty();
+                if (correct) {
+                    AbstractDefaultScriptActionRunner runner;
+                    try {
+                        runner = findRunner(actionCommand);
+                    } catch (BadSyntaxException ex) {
+                        continue;
+                    }
+                    if (runner == null) {
+                        String message = globals.getString("exec.err.noSuchRunnerException")
+                                .replace("{0}", actionCommand)
+                                .replace("{1}", file.getAbsolutePath());
+                        resp.add(new NoActionSupportedException(message));
 //                    JOptionPane.showMessageDialog(null, message,
 //                            globals.getString("globals.error.title"), JOptionPane.ERROR_MESSAGE);
-                    log.severe(message);
-                    command.clear();
-                    continue;
-                }
+                        log.severe(message);
+                        command.clear();
+                        continue;
+                    }
 
-                try {
-                    runner.run(instance.getDriver(), log);
-                    if(runner instanceof VariableProvider){
-                        VariableProvider varprovider = (VariableProvider) runner;
-                        WebElementVariable variable = varprovider.getVariable();
-                        if(!variables.contains(variable)){
+                    try {
+                        runner.run(instance.getDriver(), log);
+                        if (runner instanceof VariableProvider) {
+                            VariableProvider varprovider = (VariableProvider) runner;
+                            WebElementVariable variable = varprovider.getVariable();
+                            if (variables.contains(variable)) {
+                                variables.remove(variable);
+                            }
                             variables.add(variable);
                         }
-                    }
-                } catch (Exception ex) {
+                    } catch (Exception ex) {
 //                    throwBadSynstaxEx(actionCommand, file, log);
-                    resp.add(new BadSyntaxException(prepareBadSystaxExMsg(actionCommand, file)));
-                } finally {
-                    command.clear();
+                        resp.add(new BadSyntaxException(prepareBadSystaxExMsg(actionCommand, file)));
+                    } finally {
+                        command.clear();
+                    }
                 }
             }
-        }
-        if (!command.isEmpty()) {
-            throwBadSynstaxEx(command.stream().collect(joining(" ")), file, log);
+            if (!command.isEmpty()) {
+                throwBadSynstaxEx(command.stream().collect(joining(" ")), file, log);
+            }
+        } finally {
+            variables.clear();
         }
         return resp;
     }
@@ -396,20 +379,23 @@ public final class ActionRunnerManager {
     }
 
     /**
-     * @fixme
-     * Corrige el comando de consulta, buscando y reemplazando las variables correspondientes
+     * @fixme Corrige el comando de consulta, buscando y reemplazando las
+     * variables correspondientes
      * @param actionCommand
-     * @return 
+     * @return
      */
-    private String parse(String actionCommand) throws InvalidVarNameException {
-        String firstPart = "("+Pattern.quote("[");
-        String thirdPart = Pattern.quote("]");
-        Pattern pattern = Pattern.compile(firstPart+":[0-9|a-z|A-Z|\\s]*"+thirdPart+")");
+    public static String parse(String actionCommand) throws InvalidVarNameException {
+        String sqOpen = Pattern.quote("[");
+        String sqClose = Pattern.quote("]");
+        String regexp = "(" + sqOpen + ":[0-9|a-z|A-Z]*" + sqClose + ")";
+        Pattern pattern = Pattern.compile(regexp);
         Matcher matcher = pattern.matcher(actionCommand);
-        if(!matcher.matches())
+
+        if (!matcher.find()) {
             return actionCommand;
+        }
         String resp = actionCommand;
-        
+
         for (int i = 1; i <= matcher.groupCount(); i++) {
             String varDef = matcher.group(i);
             resp = resp.replace(varDef, resolveSelector4VarDef(varDef));
@@ -417,4 +403,26 @@ public final class ActionRunnerManager {
         return resp;
     }
 
+    /**
+     * Retorna el selector para una variable que está en un texto con su nombre.
+     *
+     * @param varDef El texto con el nombre de la variable en el formato
+     * [:NOMBRE_VARIABLE]
+     * @return
+     */
+    public static String resolveSelector4VarDef(String varDef) throws InvalidVarNameException {
+        final String varName = varDef.substring(0, varDef.length() - 1)
+                .substring(2);
+        if (varName.isEmpty()) {
+            throw new InvalidVarNameException("variable with name " + varName);
+        }
+        Optional<Variable> varMatch = instance.variables.stream()
+                .filter(var -> var.getName().equals(varName))
+                .findAny();
+        if (varMatch.isEmpty()) {
+            throw new InvalidVarNameException(varName);
+        }
+        WebElementVariable var = (WebElementVariable) varMatch.get();
+        return var.getCssSelector();
+    }
 }

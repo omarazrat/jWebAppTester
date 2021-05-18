@@ -1,7 +1,7 @@
 # jWebAppTester
 ## English
 
-WebAppTester: Tester for online forms
+WebAppTester V0.0.3: Tester for online forms
 This program uses Selenium to open a web browser and run user written commands.
 
 ### Installation
@@ -120,6 +120,38 @@ To wait 10 minutes
 
 pause={"time":"10 m"}
 
+pick choice - Prompts user to pick a single choice among a list, stores selected
+option in a variable.
+Properties:
+- selector: Required. This selector must match to a collection of HTML elements</ol>
+- subselector: Secondary css path, to specify the element of every option to be shown to the user. By default, the text of every element gathered with the "selector"  will be used as option.
+- variable: Required. Name of the variable used to store user's selection.
+- title: Title for the promtpt window
+- message: Message to use in the prompt window.
+- sorted: Sort options alphabetically? (yes/no)
+
+Example:
+
+pick choice={
+ "selector":"div.central-featured-lang",
+ "subselector": "a",
+ "sorted":"yes",
+ "title":"Wikipedia",
+ "message":"Select a language",
+ "variable":"Language"
+}
+
+Variables
+
+Use existing variables inside your instructions writing the variable's name between square brackets
+like this: [:VARIABLE_NOMBRE]
+
+Example:
+
+click={
+ "selector":"[:Language] > a"
+}
+
  About CSS Selectors: 
  https://www.w3.org/wiki/CSS/Selectors
  https://www.w3schools.com/cssref/css_selectors.asp
@@ -134,15 +166,13 @@ This program writes all its output to the file WebTester.log
 
 ### Upcoming
 
-* Let user pick element from some choices and store it in a variable.
-* Use of variables in some actions (about to be defined)
-* Mouse Over
-* Enter special characters with write command: ESC, ENTER, F1,... etc.
 * Use encripted words for passwords
+* Enter special characters with write command: ESC, ENTER, F1,... etc.
 * for_each loops
+* Mouse Over
 
 ## Español
-WebAppTester: Probador de formularios online
+WebAppTester V0.0.3: Probador de formularios online
 El programa utiliza Selenium para abrir un navegador web y ejecuta en él, comandos escritos por el usuario.
 
 ### Instalación
@@ -261,6 +291,37 @@ Para esperar 10 minutos
 
 pausa={"tiempo":"10 m"}
 
+seleccionar opcion - Pide al usuario seleccionar una opción de una lista y guarda el valor seleccionado
+en una variable.
+
+Propiedades:
+
+- selector: Obligatorio. El selector css que corresponde a los elementos HTML a mostrar</ol>
+- subselector: Opcional. Ruta complementaria, para determinar el valor de cada opción que se mostrará al usuario. Por omisiòn se tomará el texto de cada elemento web asociado con la ruta en el parámetro "selector"
+- variable: Obligatorio. Nombre de la variable que se va a asignar con el elemento que el usuario seleccione
+- titulo: Opcional. Título que tendrá la caja de texto que se va a mostrar al usuario.
+- mensaje: Opcional. Mensaje a mostrar en la caja de texto que se va a mostrar al usuario.
+- orden alfabetico: Opcional. ordenar alfabèticamente las opciones a mostrar (si/no)
+
+Ejemplo:
+
+seleccionar opcion={
+ "selector":"div.central-featured-lang",
+ "subselector": "a",
+ "orden alfabetico":"yes",
+ "titulo":"Wikipedia",
+ "mensaje":"Seleccione un lenguaje",
+ "variable":"Lenguaje"
+}
+
+Variables
+Utilice variables ya definidas como parte de sus instrucciones colocando el nombre 
+de la variable entre los signos [:] así: [:NOMBRE_VARIABLE]
+Ejemplo:
+clic={
+ "selector":"[:Lenguaje] > a"
+}
+
 Referencias de Selectores CSS: 
 
  https://w3.org/wiki/CSS_/_Selectores_CSS
@@ -277,9 +338,7 @@ El programa escribe todo lo que hace en el archivo WebTester.log
 
 ### Próximamente
 
-* Hacer que el usuario pueda seleccionar opciones de una lista y almacenarlas en una variable.
-* Poder usar variables en algunas acciones (aun por definir cuàles)
-* Implementar el Mouse Over, esa acción de colocar el cursor sobre un objeto.
-* Poder definir caracteres especiales con el comando escribir: ESC, ENTER, F1,... etc.
 * Soportar palabras encriptadas para contraseñas en los scripts
+* Poder definir caracteres especiales con el comando escribir: ESC, ENTER, F1,... etc.
 * iteraciones al estilo for_each 
+* Implementar el Mouse Over, esa acción de colocar el cursor sobre un objeto.

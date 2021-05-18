@@ -98,6 +98,17 @@
 # "variable":"Language"
 #}
 #
+#Variables
+#
+#Use existing variables inside your instructions writing the variable's name between square brackets
+#like this: [:VARIABLE_NOMBRE]
+#
+#Example:
+#
+#click={
+# "selector":"[:Language] > a"
+#}
+#
 # About CSS Selectors: 
 # https://www.w3.org/wiki/CSS/Selectors
 # https://www.w3schools.com/cssref/css_selectors.asp
