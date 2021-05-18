@@ -50,6 +50,20 @@
 # "selector":"#search_form_input_homepage",
 # "text":"inicio"
 #}
+#You can specify special commands (ALT, F1,ENTER, ESCAPE, etc)
+#using this format:
+#[%Keys.CONTROL]
+#The full list of supported constants can be found in https://www.selenium.dev/selenium/docs/api/java/org/openqa/selenium/Keys.html
+#If you need to send command combinations, you can write using this format:
+#[%Keys.CONTROL,Keys.ALT]
+#You can also add non-commands characters, like this:
+#[%Keys.CONTROL,Keys.ALT]r
+#Example:
+#write={
+# "selector":"#search_form_input_homepage",
+# "text":"[%Keys.CONTROL,Keys.ALT]r"
+#}
+#If you need to write the text "[%", instead write "[%%"
 #
 #click - Clicks a componente of the page given a css selector
 #Example:

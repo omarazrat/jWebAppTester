@@ -81,6 +81,28 @@ write={
  "selector":"search_form_input_homepage",
  "text":"inicio"
 }
+You can specify special commands (ALT, F1,ENTER, ESCAPE, etc)
+using this format:
+
+[%Keys.CONTROL]
+
+The full list of supported constants can be found in https://www.selenium.dev/selenium/docs/api/java/org/openqa/selenium/Keys.html
+If you need to send command combinations, you can write using this format:
+
+[%Keys.CONTROL,Keys.ALT]
+
+You can also add non-commands characters, like this:
+
+[%Keys.CONTROL,Keys.ALT]r
+
+Example:
+
+write={
+ "selector":"search_form_input_homepage",
+ "text":"[%Keys.CONTROL,Keys.ALT]r"
+}
+
+If you need to write the text "[%", instead write "[%%"
 
 click - clickks a componente of the page given a css selector
 
@@ -250,6 +272,30 @@ escribir={
  "selector":"search_form_input_homepage",
  "texto":"inicio"
 }
+
+Puede enviar comandos especiales (ALT, F1,ENTER, ESCAPE, etc)
+escribiendolo de la siguiente forma:
+
+[%Keys.CONTROL]
+
+Utilice las constantes definidas en https://www.selenium.dev/selenium/docs/api/java/org/openqa/selenium/Keys.html
+
+Si requiere enviar combinaciones de comandos, puede escribirlo así:
+
+[%Keys.CONTROL,Keys.ALT]
+
+Además puede agregar otras letras así:
+
+[%Keys.CONTROL,Keys.ALT]r
+
+Ejemplo:
+escribir={
+ "selector":"search_form_input_homepage",
+ "texto":"[%Keys.CONTROL,Keys.ALT]r"
+}
+
+Si necesita escribir el texto "[%", sin referirse a ningún comando, escríbalo así:
+"[%%"
 
 clic - Hace clic en un componente de la pagina dado un selector css.
 

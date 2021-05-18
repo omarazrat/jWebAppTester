@@ -117,7 +117,8 @@ public class PickChoiceActionRunner extends AbstractCssSelectorActionRunner impl
         sorted = ssorted==null?false:ssorted.equals(bundle.getString("options.value.YES"));
         //Combo con opciones
         Stream<String> elementsStr = elements.stream()
-                .map(webElementToString);
+                .map(webElementToString)
+                .distinct();
         if(sorted){
             elementsStr = elementsStr.sorted();
         }

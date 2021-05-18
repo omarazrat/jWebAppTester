@@ -56,6 +56,7 @@ import oa.com.tests.actionrunners.exceptions.InvalidVarNameException;
 import oa.com.tests.actionrunners.interfaces.VariableProvider;
 import oa.com.tests.lang.Variable;
 import oa.com.tests.lang.WebElementVariable;
+import org.openqa.selenium.Keys;
 
 /**
  * Gestor de acciones.
@@ -103,6 +104,8 @@ public final class ActionRunnerManager {
     private WebDriver driver;
     private List<Variable> variables = new LinkedList();
     private static ActionRunnerManager instance = new ActionRunnerManager();
+    final private static String sqOpen = Pattern.quote("[");
+    final private static String sqClose = Pattern.quote("]");
 
     private ActionRunnerManager() {
         //Clases
@@ -349,8 +352,9 @@ public final class ActionRunnerManager {
                             variables.add(variable);
                         }
                     } catch (Exception ex) {
-//                    throwBadSynstaxEx(actionCommand, file, log);
-                        resp.add(new BadSyntaxException(prepareBadSystaxExMsg(actionCommand, file)));
+                        BadSyntaxException badSyntaxException = new BadSyntaxException(prepareBadSystaxExMsg(actionCommand, file));
+                        log.log(Level.SEVERE, actionCommand, ex);
+                        resp.add(badSyntaxException);
                     } finally {
                         command.clear();
                     }
@@ -385,8 +389,58 @@ public final class ActionRunnerManager {
      * @return
      */
     public static String parse(String actionCommand) throws InvalidVarNameException {
-        String sqOpen = Pattern.quote("[");
-        String sqClose = Pattern.quote("]");
+        String resp = actionCommand;
+        //Variables [:variable]
+        resp = parseVariables(resp);
+        resp = resp.replace("[::", "¨{:");
+        //Teclas especiales.[%keys]
+        resp = parseKeys(resp);
+        resp = resp.replace("[%%", "¨{%");
+        return resp;
+    }
+    /**
+     * Helper for {@link #parse(java.lang.String)}
+     * @param resp
+     * @param sqOpen
+     * @param sqClose
+     * @return 
+     */
+    public static String parseKeys(String resp){
+        final String SEPARATOR = ",";
+        String regexp = "("+sqOpen + "%[Keys\\.[0-9|a-z|A-Z]*\\"+(SEPARATOR)+"?]*" + sqClose+")";
+        Pattern pattern = Pattern.compile(regexp);
+        Matcher matcher = pattern.matcher(resp);
+        if(!matcher.find()){
+            return resp;
+        }
+        
+        for (int i = 1; i <= matcher.groupCount(); i++) {
+            String original = matcher.group(i);
+            String varDef = original.substring(0, original.length() - 1)
+                .substring(2);
+            String[] varDefs = varDef.contains(SEPARATOR)?
+                    varDef.split(SEPARATOR):
+                    new String[]{varDef};
+            final List<CharSequence> varAsKeys = Arrays.asList(varDefs)
+                    .stream()
+                    .map(token->Keys.valueOf(token.replace("Keys.", "")))
+                    .collect(toList());
+            String command = Keys.chord(varAsKeys);
+            resp = resp.replace(original, command);
+        }
+        return resp;
+    }
+    
+    /**
+     * Helper for {@link #parse(java.lang.String) }
+     * @param actionCommand
+     * @param sqOpen
+     * @param sqClose
+     * @return
+     * @throws InvalidVarNameException 
+     */
+    private static String parseVariables(String actionCommand) 
+            throws InvalidVarNameException{
         String regexp = "(" + sqOpen + ":[0-9|a-z|A-Z]*" + sqClose + ")";
         Pattern pattern = Pattern.compile(regexp);
         Matcher matcher = pattern.matcher(actionCommand);
@@ -394,8 +448,9 @@ public final class ActionRunnerManager {
         if (!matcher.find()) {
             return actionCommand;
         }
-        String resp = actionCommand;
 
+        String resp = actionCommand;
+        
         for (int i = 1; i <= matcher.groupCount(); i++) {
             String varDef = matcher.group(i);
             resp = resp.replace(varDef, resolveSelector4VarDef(varDef));

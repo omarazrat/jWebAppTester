@@ -47,6 +47,21 @@
 # "selector":"#search_form_input_homepage",
 # "texto":"inicio"
 #}
+#Puede enviar comandos especiales (ALT, F1,ENTER, ESCAPE, etc)
+#escribiendolo de la siguiente forma:
+#[%Keys.CONTROL]
+#Utilice las constantes definidas en https://www.selenium.dev/selenium/docs/api/java/org/openqa/selenium/Keys.html
+#Si requiere enviar combinaciones de comandos, puede escribirlo así:
+#[%Keys.CONTROL,Keys.ALT]
+#Además puede agregar otras letras así:
+#[%Keys.CONTROL,Keys.ALT]r
+#Ejemplo:
+#escribir={
+# "selector":"#search_form_input_homepage",
+# "texto":"[%Keys.CONTROL,Keys.ALT]r"
+#}
+#Si necesita escribir el texto "[%", sin referirse a ningún comando, escríbalo así:
+#"[%%"
 #
 #clic - Hace clic en un componente de la pagina dado un selector css.
 #Ejemplo:

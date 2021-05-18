@@ -26,6 +26,7 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import static org.junit.Assert.*;
+import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebDriver;
 
 /**
@@ -288,5 +289,38 @@ public class ActionRunnerManagerTest {
     }
 //    @Test
     public void testResolveSelector4VarDef(){
+    }
+    @Test
+    public void testParseKeys(){
+        String keys="[%Keys.ALT,Keys.F11]1";
+        String actionCommand  = "write={"
+                + " \"selector\":\"#myButton\""
+                + " \"text\":\""+keys+"\""
+                + "}";
+        String calculated=ActionRunnerManager.parseKeys(actionCommand);
+        keys=Keys.chord(Keys.ALT,Keys.F11)+"1";
+        actionCommand  = "write={"
+                + " \"selector\":\"#myButton\""
+                + " \"text\":\""+keys+"\""
+                + "}";
+        System.out.println("Expression 1");
+        System.out.println("Calculated:"+calculated);
+        System.out.println("Manual:"+actionCommand);
+        assertEquals(calculated, actionCommand);
+        keys="[%Keys.ENTER]asdfghjk";
+        actionCommand  = "write={"
+                + " \"selector\":\"#myButton\""
+                + " \"text\":\""+keys+"1\""
+                + "}";
+        calculated=ActionRunnerManager.parseKeys(actionCommand);
+        keys=Keys.chord(Keys.ENTER)+"asdfghjk";
+        actionCommand  = "write={"
+                + " \"selector\":\"#myButton\""
+                + " \"text\":\""+keys+"1\""
+                + "}";
+        System.out.println("Expression 2");
+        System.out.println("Calculated:"+calculated);
+        System.out.println("Manual:"+actionCommand);
+        assertEquals(calculated, actionCommand);
     }
 }
