@@ -56,7 +56,7 @@ each instruction has the format "action={command}"
 
 [Supported actions]
 
-go - Opens a web page. 
+#### go - Opens a web page. 
 Example:
 
 go={https://duckduckgo.com/}
@@ -71,8 +71,9 @@ wait={
   "selector":"duckbar"
 }
 
-write - Writes text in a page component given its css selector.
--selector: the css selector of the component to write on
+#### write - Writes text in a page component given its css selector.
+-selector: Required. The css selector of the component to write on. 
+ if selector=="", then the action is send to the whole page. e.g.: CTRL+P
 -text: the text to write
 
 Example:
@@ -95,16 +96,21 @@ You can also add non-commands characters, like this:
 
 [%Keys.CONTROL,Keys.ALT]r
 
-Example:
+Examples:
 
 write={
  "selector":"search_form_input_homepage",
  "text":"[%Keys.CONTROL,Keys.ALT]r"
 }
 
+write={
+ "selector":"",
+ "text":"[%Keys.CONTROL]p"
+}
+
 If you need to write the text "[%", instead write "[%%"
 
-click - clickks a componente of the page given a css selector
+#### click - clickks a componente of the page given a css selector
 
 Example:
 
@@ -112,7 +118,7 @@ click={
   "selector":"search_button_homepage"
 }
 
-double click - Double-clickks any element in the page, given its selector.
+#### double click - Double-clickks any element in the page, given its selector.
 
 Example:
 
@@ -120,7 +126,7 @@ double click={
     "selector": "body"
 }
 
-right click - Right clickks any element in the page, given its selector.
+#### right click - Right clickks any element in the page, given its selector.
 
 Example:
 
@@ -128,7 +134,7 @@ right click={
     "selector": "Identificacion"
 }
 
-pause - Waits a given time, before proceeding with the next instruction.
+#### pause - Waits a given time, before proceeding with the next instruction.
 Format: NUMBER UNITS
 Where UNITS can be one of these values: S=milliseconds,s=seconds, m=minutes, h=hours, d=days
 
@@ -142,7 +148,7 @@ To wait 10 minutes
 
 pause={"time":"10 m"}
 
-pick choice - Prompts user to pick a single choice among a list, stores selected
+#### pick choice - Prompts user to pick a single choice among a list, stores selected
 option in a variable.
 Properties:
 - selector: Required. This selector must match to a collection of HTML elements</ol>
@@ -163,7 +169,7 @@ pick choice={
  "variable":"Language"
 }
 
-Variables
+#### Variables
 
 Use existing variables inside your instructions writing the variable's name between square brackets
 like this: [:VARIABLE_NOMBRE]
@@ -247,7 +253,7 @@ Cada instrucción tiene el formato "acción={comando}"
 
 [Acciones soportadas]
 
-ir - Abre una página internet. 
+#### ir - Abre una página internet. 
 Ejemplo:
 
 ir={https://duckduckgo.com/}
@@ -265,7 +271,11 @@ esperar={
   
 }
 
-escribir - Escribe texto en un componente de la pagina dado un selector css.
+#### escribir - Escribe texto en un componente de la pagina dado un selector css.
+-selector: Obligatorio. El selector del componente en el cual vamos a escribir.
+ si el selector es igual a "", entonces la accion se envía directamente a toda 
+ la página. p. ej.: el comando CONTROL+P, para imprimir
+-texto: Obligatorio. El texto que se va a escribir.
 Ejemplo:
 
 escribir={
@@ -288,16 +298,21 @@ Además puede agregar otras letras así:
 
 [%Keys.CONTROL,Keys.ALT]r
 
-Ejemplo:
+Ejemplos:
 escribir={
  "selector":"search_form_input_homepage",
  "texto":"[%Keys.CONTROL,Keys.ALT]r"
 }
 
+escribir={
+ "selector":"",
+ "texto":"[%Keys.CONTROL]p"
+}
+
 Si necesita escribir el texto "[%", sin referirse a ningún comando, escríbalo así:
 "[%%"
 
-clic - Hace clic en un componente de la pagina dado un selector css.
+#### clic - Hace clic en un componente de la pagina dado un selector css.
 
 Ejemplo:
 
@@ -305,7 +320,7 @@ clic={
   "selector":"search_button_homepage"
 }
 
-doble clic - Hace doble clic en algun elemento de la pagina, dado su selector.
+#### doble clic - Hace doble clic en algun elemento de la pagina, dado su selector.
 
 Ejemplo:
 
@@ -313,7 +328,7 @@ doble clic={
     "selector": "body"
 }
 
-clic derecho - Hace clic derecho en cualquier elemento de la pagina, dado su selector.
+#### clic derecho - Hace clic derecho en cualquier elemento de la pagina, dado su selector.
 
 Ejemplo:
 
@@ -323,7 +338,7 @@ clic derecho={
 
 Cuando ejecute cualquier comando en esta carpeta, también se ejecutará este archivo.
 
-pausa - Espera cierto tiempo, antes de continuar con la siguiente instrucción.
+#### pausa - Espera cierto tiempo, antes de continuar con la siguiente instrucción.
 Formato: NUMERO UNIDADES
 Donde UNIDADES puede tener uno de los siguientes valores: S=milisegundos,s=segundos, m=minutos, h=horas, d=dias
 
@@ -337,7 +352,7 @@ Para esperar 10 minutos
 
 pausa={"tiempo":"10 m"}
 
-seleccionar opcion - Pide al usuario seleccionar una opción de una lista y guarda el valor seleccionado
+#### seleccionar opcion - Pide al usuario seleccionar una opción de una lista y guarda el valor seleccionado
 en una variable.
 
 Propiedades:
@@ -360,7 +375,7 @@ seleccionar opcion={
  "variable":"Lenguaje"
 }
 
-Variables
+#### Variables
 Utilice variables ya definidas como parte de sus instrucciones colocando el nombre 
 de la variable entre los signos [:] así: [:NOMBRE_VARIABLE]
 Ejemplo:

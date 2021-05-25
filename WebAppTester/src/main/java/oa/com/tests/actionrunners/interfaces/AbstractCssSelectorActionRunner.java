@@ -61,4 +61,8 @@ public abstract class AbstractCssSelectorActionRunner extends AbstractDefaultScr
         run(driver); 
     }
 
+    public void setSelector(String selector) {
+        this.selector = selector;
+    }
+
 }

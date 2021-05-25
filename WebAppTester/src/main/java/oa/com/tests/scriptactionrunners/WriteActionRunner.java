@@ -20,6 +20,7 @@ import oa.com.tests.actionrunners.exceptions.NoActionSupportedException;
 import oa.com.tests.actionrunners.interfaces.AbstractCssSelectorActionRunner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import oa.com.tests.globals.ActionRunnerManager;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -34,6 +35,8 @@ import org.openqa.selenium.WebElement;
 public class WriteActionRunner extends AbstractCssSelectorActionRunner {
 
     private String text;
+    private String originalText;
+    private Boolean hasCommands;
 
     public WriteActionRunner(TestAction action) throws NoActionSupportedException, InvalidActionException {
         super(action);
@@ -48,20 +51,21 @@ public class WriteActionRunner extends AbstractCssSelectorActionRunner {
     @Override
     public void run(WebDriver driver, Logger log) throws Exception {
         String templateMsg = getActionLog();
-        log.log(Level.INFO, templateMsg, new Object[]{text , getSelector()});
-        run(driver); 
+        log.log(Level.INFO, templateMsg, new Object[]{originalText, getSelector()});
+        run(driver);
     }
 
     private void extractText(String command) throws InvalidActionException {
         String key = getClass().getSimpleName() + ".attr.text";
-        String textFound = Utils.getJSONAttributeML(command,key);
-        if (textFound!=null) {
-            this.text = textFound;
-        }else{
+        originalText = Utils.getJSONAttributeML(command, key);
+        if (originalText != null) {
+            this.hasCommands = ActionRunnerManager.hasKeys(originalText);
+            this.text = hasCommands
+                    ? ActionRunnerManager.parseKeys(originalText)
+                    : originalText;
+        } else {
             throw new InvalidActionException(command);
         }
-        //Busca teclas especiales.
-        
     }
 
 }

@@ -106,6 +106,7 @@ public final class ActionRunnerManager {
     private static ActionRunnerManager instance = new ActionRunnerManager();
     final private static String sqOpen = Pattern.quote("[");
     final private static String sqClose = Pattern.quote("]");
+    final private static String KEY_SEPARATOR = ",";
 
     private ActionRunnerManager() {
         //Clases
@@ -318,9 +319,7 @@ public final class ActionRunnerManager {
             while (lineCounter < filteredLines.size()) {
                 boolean correct = true;
                 command.add(filteredLines.get(lineCounter++));
-                final String actionCommand = parse(
-                        command.stream().collect(joining(" "))
-                );
+                final String actionCommand = command.stream().collect(joining(" "));
                 correct = !command.isEmpty();
                 if (correct) {
                     AbstractDefaultScriptActionRunner runner;
@@ -398,49 +397,69 @@ public final class ActionRunnerManager {
         resp = resp.replace("[%%", "¨{%");
         return resp;
     }
+
     /**
      * Helper for {@link #parse(java.lang.String)}
+     *
      * @param resp
-     * @param sqOpen
-     * @param sqClose
-     * @return 
+     * @return
      */
-    public static String parseKeys(String resp){
-        final String SEPARATOR = ",";
-        String regexp = "("+sqOpen + "%[Keys\\.[0-9|a-z|A-Z]*\\"+(SEPARATOR)+"?]*" + sqClose+")";
+    public static String parseKeys(String resp) {
+        String regexp = "([0-9|a-z|A-Z|\\s]*)("
+                + sqOpen + "%[Keys\\.[0-9|a-z|A-Z]*\\" + (KEY_SEPARATOR) + "?]*" + sqClose
+                + ")([0-9|a-z|A-Z|\\s]*)";
         Pattern pattern = Pattern.compile(regexp);
         Matcher matcher = pattern.matcher(resp);
-        if(!matcher.find()){
+        if (!matcher.find()) {
             return resp;
         }
-        
+
         for (int i = 1; i <= matcher.groupCount(); i++) {
-            String original = matcher.group(i);
+            String firstGroup = matcher.group(i++);
+            String original = matcher.group(i++);
+            String lastGroup = matcher.group(i);
             String varDef = original.substring(0, original.length() - 1)
-                .substring(2);
-            String[] varDefs = varDef.contains(SEPARATOR)?
-                    varDef.split(SEPARATOR):
-                    new String[]{varDef};
+                    .substring(2);
+            String[] varDefs = varDef.contains(KEY_SEPARATOR)
+                    ? varDef.split(KEY_SEPARATOR)
+                    : new String[]{varDef};
             final List<CharSequence> varAsKeys = Arrays.asList(varDefs)
                     .stream()
-                    .map(token->Keys.valueOf(token.replace("Keys.", "")))
+                    .map(token -> Keys.valueOf(token.replace("Keys.", "")))
                     .collect(toList());
+            varAsKeys.add(0, firstGroup);
+            varAsKeys.add(varAsKeys.size(), lastGroup);
             String command = Keys.chord(varAsKeys);
-            resp = resp.replace(original, command);
+            resp = resp.replace(firstGroup + original + lastGroup, command);
         }
         return resp;
     }
-    
+
+    /**
+     * Determina si un texto dado contiene comidies que incluyen teclas
+     * especiales como CONTROL, ESCAPE, F1,etc
+     *
+     * @param text
+     * @return
+     */
+    public static Boolean hasKeys(String text) {
+        String regexp = "([0-9|a-z|A-Z|\\s]*)("
+                + sqOpen + "%[Keys\\.[0-9|a-z|A-Z]*\\" + (KEY_SEPARATOR) + "?]*" + sqClose
+                + ")([0-9|a-z|A-Z|\\s]*)";
+        Pattern pattern = Pattern.compile(regexp);
+        Matcher matcher = pattern.matcher(text);
+        return matcher.find();
+    }
+
     /**
      * Helper for {@link #parse(java.lang.String) }
+     *
      * @param actionCommand
-     * @param sqOpen
-     * @param sqClose
      * @return
-     * @throws InvalidVarNameException 
+     * @throws InvalidVarNameException
      */
-    private static String parseVariables(String actionCommand) 
-            throws InvalidVarNameException{
+    private static String parseVariables(String actionCommand)
+            throws InvalidVarNameException {
         String regexp = "(" + sqOpen + ":[0-9|a-z|A-Z]*" + sqClose + ")";
         Pattern pattern = Pattern.compile(regexp);
         Matcher matcher = pattern.matcher(actionCommand);
@@ -450,7 +469,7 @@ public final class ActionRunnerManager {
         }
 
         String resp = actionCommand;
-        
+
         for (int i = 1; i <= matcher.groupCount(); i++) {
             String varDef = matcher.group(i);
             resp = resp.replace(varDef, resolveSelector4VarDef(varDef));
