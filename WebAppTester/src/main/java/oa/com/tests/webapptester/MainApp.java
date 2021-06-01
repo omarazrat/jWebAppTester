@@ -33,6 +33,10 @@ import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.io.File;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.SocketException;
+import java.net.UnknownHostException;
+import java.security.GeneralSecurityException;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
@@ -57,6 +61,8 @@ import javax.swing.JTextArea;
 import javax.swing.JTree;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import lombok.Data;
+import oa.com.utils.Encryption;
+import oa.com.utils.I18n;
 
 //import static javafx.application.Application.launch;
 //import javafx.fxml.FXMLLoader;
@@ -75,6 +81,7 @@ public class MainApp extends JFrame {
     private Canvas imageContainer;
     private final String NEW_LINE = System.getProperty("line.separator");
     private final String LOG_NAME = "WebTester.log";
+    private static Logger log = Logger.getLogger("Probador Web");
 
     public enum PROPS {
         JTREE,
@@ -174,6 +181,9 @@ public class MainApp extends JFrame {
         instance.setVisible(true);
     }
 
+    /**
+     * Inicializacion de variables y componentes
+     */
     public final void init() {
         //Inicializacion de componentes
         final GridBagLayout layout = new GridBagLayout();
@@ -190,7 +200,8 @@ public class MainApp extends JFrame {
 
         JButton goButton = new JButton(globals.getString("button.runAction"))
                 , reloadButton = new JButton(globals.getString("button.reloadTree"))
-                , parseSIButton = new JButton(globals.getString("button.parseSIDE"));
+                , parseSIButton = new JButton(globals.getString("button.parseSIDE"))
+                , pwdButton = new JButton(globals.getString("button.buildPWD"));
         parseSIButton.addActionListener(evt -> {
             JFileChooser chooser = new JFileChooser();
             chooser.addChoosableFileFilter(new FileNameExtensionFilter(
@@ -231,6 +242,26 @@ public class MainApp extends JFrame {
             repaint();
         });
 
+        pwdButton.addActionListener(evt->{
+            try {
+                final String unencrypted = JOptionPane.showInputDialog(this
+                        ,globals.getString("button.buildPWD.message")
+                        ,globals.getString("button.buildPWD")
+                        ,JOptionPane.INFORMATION_MESSAGE);
+                final String encrypted = Encryption.encrypt(unencrypted);
+                JOptionPane.showInputDialog(this
+                        ,globals.getString("button.buildPWD.message.encrypted")
+                        ,encrypted);
+            } catch (GeneralSecurityException ex) {
+                log.log(Level.SEVERE, null, ex);
+            } catch (UnsupportedEncodingException ex) {
+                log.log(Level.SEVERE, null, ex);
+            } catch (UnknownHostException ex) {
+                log.log(Level.SEVERE, null, ex);
+            } catch (SocketException ex) {
+                log.log(Level.SEVERE, null, ex);
+            }
+        });
         label.setPreferredSize(new Dimension(330, 26));
         label.setSize(label.getPreferredSize());
         label.addMouseListener(new MouseListener() {
@@ -324,28 +355,30 @@ public class MainApp extends JFrame {
         rootTree.setModel(ActionRunnerManager.getTreeModel());
 //Distrubucion grafica
         setLayout(layout);
-        gbc.gridwidth = 3;
+        gbc.gridwidth = 6;
         gbc.gridx = gbc.gridy = 0;
         getContentPane().add(treeScrollPane, gbc);
-        gbc.gridwidth = 1;
+        gbc.gridwidth = 2;
         gbc.gridy++;
 
         getContentPane().add(goButton, gbc);
-        gbc.gridx++;
+        gbc.gridx+=gbc.gridwidth;
         gbc.anchor = GridBagConstraints.CENTER;
         getContentPane().add(reloadButton, gbc);
-        gbc.gridx++;
+        gbc.gridx+=gbc.gridwidth;
         getContentPane().add(browserTree, gbc);
         gbc.gridwidth = 3;
         gbc.gridx = 0;
-        gbc.gridy++;
         getContentPane().add(parseSIButton, gbc);
-        gbc.gridwidth = 2;
+        gbc.gridx+=gbc.gridwidth;
+        getContentPane().add(pwdButton, gbc);
+        gbc.gridwidth = 4;
         gbc.gridy++;
+        gbc.gridx = 0;
         gbc.fill = GridBagConstraints.BOTH;
         getContentPane().add(label, gbc);
-        gbc.gridwidth = 1;
-        gbc.gridx += 2;
+        gbc.gridwidth = 2;
+        gbc.gridx+=gbc.gridwidth;
         getContentPane().add(imageContainer, gbc);
     }
 
@@ -362,7 +395,6 @@ public class MainApp extends JFrame {
             JOptionPane.showMessageDialog(null, message, ERR_TITLE, JOptionPane.WARNING_MESSAGE);
             return;
         }
-        Logger log = Logger.getLogger("Probador Web");
         final FileHandler fileHandler;
         try {
             fileHandler = new FileHandler(LOG_NAME);
@@ -428,6 +460,14 @@ public class MainApp extends JFrame {
 
     public static MainApp getInstance() {
         return instance;
+    }
+    
+    /**
+     * Retorna el log utilizado por la aplicación
+     * @return 
+     */
+    public static Logger getLog() {
+        return log;
     }
     
 }

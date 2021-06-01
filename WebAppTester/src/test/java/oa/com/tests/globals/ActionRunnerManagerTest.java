@@ -298,7 +298,7 @@ public class ActionRunnerManagerTest {
                 + " \"text\":\""+keys+"\""
                 + "}";
         String calculated=ActionRunnerManager.parseKeys(actionCommand);
-        keys=Keys.chord(Keys.ALT,Keys.F11)+"1";
+        keys=Keys.chord(Keys.ALT,Keys.F11+"1");
         actionCommand  = "write={"
                 + " \"selector\":\"#myButton\""
                 + " \"text\":\""+keys+"\""
@@ -313,10 +313,10 @@ public class ActionRunnerManagerTest {
                 + " \"text\":\""+keys+"1\""
                 + "}";
         calculated=ActionRunnerManager.parseKeys(actionCommand);
-        keys=Keys.chord(Keys.ENTER)+"asdfghjk";
+        keys=Keys.chord(Keys.ENTER+"asdfghjk1");
         actionCommand  = "write={"
                 + " \"selector\":\"#myButton\""
-                + " \"text\":\""+keys+"1\""
+                + " \"text\":\""+keys+"\""
                 + "}";
         System.out.println("Expression 2");
         System.out.println("Calculated:"+calculated);

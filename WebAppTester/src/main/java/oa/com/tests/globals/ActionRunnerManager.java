@@ -395,9 +395,35 @@ public final class ActionRunnerManager {
         //Teclas especiales.[%keys]
         resp = parseKeys(resp);
         resp = resp.replace("[%%", "¨{%");
+        //Contraseñas [$PWD]
+        resp = parsePWDs(resp);
+        resp = resp.replace("[$$", "[$");
         return resp;
     }
+    //TODO: Aqui voy...
+    public static String parsePWDs(String resp){
+        String regexp = "([0-9|a-z|A-Z|\\s]*)"
+                + sqOpen + Pattern.quote("$")+"\\.*)" + sqClose
+                + "([0-9|a-z|A-Z|\\s]*)";
+        Pattern pattern = Pattern.compile(regexp);
+        Matcher matcher = pattern.matcher(resp);
+        if (!matcher.find()) {
+            return resp;
+        }
 
+        for (int i = 1; i <= matcher.groupCount(); i++) {
+            String firstGroup = matcher.group(i++);
+            String original = matcher.group(i++);
+            String lastGroup = matcher.group(i);
+            String varDef = original.substring(0, original.length() - 1)
+                    .substring(2);
+            final CharSequence varAsKeys = firstGroup
+                    +lastGroup;
+            String command = Keys.chord(varAsKeys);
+            resp = resp.replace(firstGroup + original + lastGroup, command);
+        }
+        return resp;
+    }
     /**
      * Helper for {@link #parse(java.lang.String)}
      *
@@ -423,12 +449,12 @@ public final class ActionRunnerManager {
             String[] varDefs = varDef.contains(KEY_SEPARATOR)
                     ? varDef.split(KEY_SEPARATOR)
                     : new String[]{varDef};
-            final List<CharSequence> varAsKeys = Arrays.asList(varDefs)
+            final CharSequence varAsKeys = firstGroup
+                    +Arrays.asList(varDefs)
                     .stream()
                     .map(token -> Keys.valueOf(token.replace("Keys.", "")))
-                    .collect(toList());
-            varAsKeys.add(0, firstGroup);
-            varAsKeys.add(varAsKeys.size(), lastGroup);
+                    .collect(joining())
+                    +lastGroup;
             String command = Keys.chord(varAsKeys);
             resp = resp.replace(firstGroup + original + lastGroup, command);
         }

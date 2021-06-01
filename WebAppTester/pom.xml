@@ -4,7 +4,7 @@
 
     <groupId>oa.com.tests</groupId>
     <artifactId>WebAppTester</artifactId>
-    <version>0.3.3</version>
+    <version>0.3.4</version>
     <packaging>jar</packaging>
 
     <name>WebAppTester</name>
@@ -117,5 +117,6 @@
             <version>1.0-SNAPSHOT</version>
         </dependency>
     </dependencies>
-
+    <description>Corrige manejo de teclas especiales. 
+Manejo de Contraseñas</description>
 </project>
