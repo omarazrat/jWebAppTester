@@ -14,6 +14,8 @@
 package oa.com.tests.globals;
 
 import java.io.File;
+import java.io.IOException;
+import java.security.GeneralSecurityException;
 import java.util.List;
 import java.util.logging.Logger;
 import javax.swing.tree.TreeModel;
@@ -281,7 +283,7 @@ public class ActionRunnerManagerTest {
         fail("The test case is a prototype.");
     }
 //    @Test
-    public void testParse() throws InvalidVarNameException{
+    public void testParse() throws InvalidVarNameException, GeneralSecurityException, IOException{
         String actionCommand = "clic={" +
                 " \"selector\":\"[:Lenguaje] > a" +
                 "}";

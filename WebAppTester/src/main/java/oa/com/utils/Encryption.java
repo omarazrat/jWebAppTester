@@ -13,27 +13,23 @@
  */
 package oa.com.utils;
 
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.net.SocketException;
 import java.net.UnknownHostException;
-import java.security.AlgorithmParameters;
-import java.security.GeneralSecurityException;
 import java.security.NoSuchAlgorithmException;
-import java.security.spec.InvalidKeySpecException;
+import java.security.SecureRandom;
 import java.util.Base64;
+import java.util.prefs.Preferences;
 import javax.crypto.Cipher;
+import javax.crypto.KeyGenerator;
 import javax.crypto.SecretKey;
-import javax.crypto.SecretKeyFactory;
-import javax.crypto.spec.IvParameterSpec;
-import javax.crypto.spec.PBEKeySpec;
 import javax.crypto.spec.SecretKeySpec;
 
 /**
  * Gracias a
- * https://stackoverflow.com/questions/1132567/encrypt-password-in-configuration-files
+ * https://www.baeldung.com/java-aes-encryption-decryption
+ * https://stackoverflow.com/questions/5355466/converting-secret-key-into-a-string-and-vice-versa
  * Clase para encriptar y desencriptar valores tomando como clave la MAC de la
  * máquina huesped
  *
@@ -41,55 +37,73 @@ import javax.crypto.spec.SecretKeySpec;
  */
 public class Encryption {
 
-    private static int iterationCount = 40000;
-    // Other values give me java.security.InvalidKeyException: Illegal key size or default parameters
-    private static int keyLength = 128;
+    private static final int keyBitSize = 256;
+    private static final String algorithm = "AES";
+
+    public static byte[] generateSeed() throws UnknownHostException, SocketException {
+        String mac = getMac();
+        final int KEY_SIZE = 300;
+        while (mac.length() < KEY_SIZE) {
+            mac += getMac();
+        }
+        return mac.substring(0, KEY_SIZE).getBytes();
+    }
 
     /**
      * Gracias a https://mkyong.com/java/how-to-get-mac-address-in-java/
      */
-    private static byte[] getSalt() throws UnknownHostException, SocketException {
+    private static String getMac() throws UnknownHostException, SocketException {
         InetAddress ip;
         ip = InetAddress.getLocalHost();
-        System.out.println("Current IP address : " + ip.getHostAddress());
-
+//        System.out.println("Current IP address : " + ip.getHostAddress());
         NetworkInterface network = NetworkInterface.getByInetAddress(ip);
-        byte[] mac = network.getHardwareAddress();
-        return mac;
+        return new String(network.getHardwareAddress());
     }
 
-    private static SecretKeySpec createSecretKey(char[] password, byte[] salt) throws NoSuchAlgorithmException, InvalidKeySpecException, UnknownHostException, SocketException {
-        SecretKeyFactory keyFactory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA512");
-        PBEKeySpec keySpec = new PBEKeySpec(password, getSalt(), iterationCount, keyLength);
-        SecretKey keyTmp = keyFactory.generateSecret(keySpec);
-        return new SecretKeySpec(keyTmp.getEncoded(), "AES");
+    private static SecretKey generateKey()
+            throws NoSuchAlgorithmException, UnknownHostException, SocketException {
+        final String PREF_KEY = "webapptester.securekey";
+        //La busca si ya fue guardada...
+        final String serializedkey = Preferences.userRoot().get(PREF_KEY, null);
+        if (serializedkey != null) {
+            byte[] decodedKey = Base64.getDecoder().decode(serializedkey);
+            SecretKey originalKey = new SecretKeySpec(decodedKey, 0, decodedKey.length, algorithm);
+            return originalKey;
+        }
+        KeyGenerator keyGenerator = KeyGenerator.getInstance(algorithm);
+        final SecureRandom secureRandom = new SecureRandom(generateSeed());
+        keyGenerator.init(keyBitSize, secureRandom);
+        SecretKey key = keyGenerator.generateKey();
+        //La guarda.
+        Preferences.userRoot().put(PREF_KEY, Base64.getEncoder().encodeToString(key.getEncoded()));
+        return key;
     }
 
-    public static String encrypt(String text) throws GeneralSecurityException, UnsupportedEncodingException, UnknownHostException, SocketException {
-        final SecretKeySpec key = createSecretKey(text.toCharArray(),getSalt());
-        Cipher pbeCipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
-        pbeCipher.init(Cipher.ENCRYPT_MODE, key);
-        AlgorithmParameters parameters = pbeCipher.getParameters();
-        IvParameterSpec ivParameterSpec = parameters.getParameterSpec(IvParameterSpec.class);
-        byte[] cryptoText = pbeCipher.doFinal(text.getBytes("UTF-8"));
-        byte[] iv = ivParameterSpec.getIV();
-        return base64Encode(iv) + ":" + base64Encode(cryptoText);
+    public static String encrypt(final String text) throws UnknownHostException, SocketException {
+        try {
+            Cipher cipher = Cipher.getInstance(algorithm);
+            // rebuild key using SecretKeySpec
+            SecretKey originalKey = generateKey();
+            cipher.init(Cipher.ENCRYPT_MODE, originalKey);
+            byte[] cipherText = cipher.doFinal(text.getBytes("UTF-8"));
+            return Base64.getEncoder().encodeToString(cipherText);
+        } catch (Exception e) {
+            throw new RuntimeException(
+                    "Error occured while encrypting data", e);
+        }
     }
 
-    private static String base64Encode(byte[] bytes) {
-        return Base64.getEncoder().encodeToString(bytes);
-    }
-
-    public static String decrypt(String password) throws GeneralSecurityException, IOException {
-        final SecretKeySpec key = createSecretKey(password.toCharArray(),getSalt());
-        String iv = password.split(":")[0];
-        String property = password.split(":")[1];
-        Cipher pbeCipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
-        pbeCipher.init(Cipher.DECRYPT_MODE, key, new IvParameterSpec(base64Decode(iv)));
-        return new String(pbeCipher.doFinal(base64Decode(property)), "UTF-8");
-    }
-
-    private static byte[] base64Decode(String property) throws IOException {
-        return Base64.getDecoder().decode(property);
+    public static String decrypt(final String encryptedString) throws UnknownHostException, SocketException {
+        try {
+            Cipher cipher = Cipher.getInstance(algorithm);
+            // rebuild key using SecretKeySpec
+            SecretKey originalKey = generateKey();
+            cipher.init(Cipher.DECRYPT_MODE, originalKey);
+            byte[] cipherText = cipher.doFinal(Base64.getDecoder().decode(encryptedString));
+            return new String(cipherText);
+        } catch (Exception e) {
+            throw new RuntimeException(
+                    "Error occured while decrypting data", e);
+        }
     }
 }

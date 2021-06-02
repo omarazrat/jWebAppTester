@@ -37,6 +37,9 @@ import java.io.UnsupportedEncodingException;
 import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.security.GeneralSecurityException;
+import java.security.InvalidAlgorithmParameterException;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
@@ -49,6 +52,9 @@ import java.util.logging.SimpleFormatter;
 import java.util.prefs.Preferences;
 import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toList;
+import javax.crypto.BadPaddingException;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
 import javax.imageio.ImageIO;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -252,13 +258,7 @@ public class MainApp extends JFrame {
                 JOptionPane.showInputDialog(this
                         ,globals.getString("button.buildPWD.message.encrypted")
                         ,encrypted);
-            } catch (GeneralSecurityException ex) {
-                log.log(Level.SEVERE, null, ex);
-            } catch (UnsupportedEncodingException ex) {
-                log.log(Level.SEVERE, null, ex);
-            } catch (UnknownHostException ex) {
-                log.log(Level.SEVERE, null, ex);
-            } catch (SocketException ex) {
+            } catch (UnknownHostException|SocketException ex) {
                 log.log(Level.SEVERE, null, ex);
             }
         });
@@ -358,17 +358,18 @@ public class MainApp extends JFrame {
         gbc.gridwidth = 6;
         gbc.gridx = gbc.gridy = 0;
         getContentPane().add(treeScrollPane, gbc);
+        
         gbc.gridwidth = 2;
         gbc.gridy++;
-
+        gbc.anchor = GridBagConstraints.CENTER;
         getContentPane().add(goButton, gbc);
         gbc.gridx+=gbc.gridwidth;
-        gbc.anchor = GridBagConstraints.CENTER;
         getContentPane().add(reloadButton, gbc);
         gbc.gridx+=gbc.gridwidth;
         getContentPane().add(browserTree, gbc);
         gbc.gridwidth = 3;
         gbc.gridx = 0;
+        gbc.gridy++;
         getContentPane().add(parseSIButton, gbc);
         gbc.gridx+=gbc.gridwidth;
         getContentPane().add(pwdButton, gbc);

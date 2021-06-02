@@ -49,6 +49,8 @@ import org.openqa.selenium.opera.OperaDriver;
 import org.openqa.selenium.safari.SafariDriver;
 import oa.com.tests.actionrunners.interfaces.ScriptActionRunner;
 import java.lang.reflect.InvocationTargetException;
+import java.net.SocketException;
+import java.net.UnknownHostException;
 import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -56,6 +58,7 @@ import oa.com.tests.actionrunners.exceptions.InvalidVarNameException;
 import oa.com.tests.actionrunners.interfaces.VariableProvider;
 import oa.com.tests.lang.Variable;
 import oa.com.tests.lang.WebElementVariable;
+import oa.com.utils.Encryption;
 import org.openqa.selenium.Keys;
 
 /**
@@ -215,7 +218,7 @@ public final class ActionRunnerManager {
      *
      * @param item
      */
-    public static void exec(TreePath item, Logger log) throws IOException, InvalidVarNameException {
+    public static void exec(TreePath item, Logger log) throws IOException, InvalidVarNameException, SocketException,UnknownHostException {
         File file = Utils.getFile(item);
         final String ERR_TITLE = globals.getString("globals.error.title");
         if (file.isDirectory()) {
@@ -296,7 +299,8 @@ public final class ActionRunnerManager {
      * @param file
      * @param log
      */
-    private List<Exception> exec(File file, Logger log) throws IOException, InvalidVarNameException {
+    private List<Exception> exec(File file, Logger log) 
+            throws SocketException,UnknownHostException {
 //        final List<String> filteredLines = Files.lines(FileSystems.getDefault().getPath(file.getAbsolutePath()))
 //                .map(String::trim)
 //                .filter(l -> !l.isEmpty() && !l.startsWith("#"))
@@ -319,7 +323,8 @@ public final class ActionRunnerManager {
             while (lineCounter < filteredLines.size()) {
                 boolean correct = true;
                 command.add(filteredLines.get(lineCounter++));
-                final String actionCommand = command.stream().collect(joining(" "));
+                String actionCommand = command.stream().collect(joining(" "));
+                actionCommand = parse(actionCommand);
                 correct = !command.isEmpty();
                 if (correct) {
                     AbstractDefaultScriptActionRunner runner;
@@ -387,7 +392,8 @@ public final class ActionRunnerManager {
      * @param actionCommand
      * @return
      */
-    public static String parse(String actionCommand) throws InvalidVarNameException {
+    public static String parse(String actionCommand) 
+            throws SocketException,UnknownHostException {
         String resp = actionCommand;
         //Variables [:variable]
         resp = parseVariables(resp);
@@ -400,10 +406,11 @@ public final class ActionRunnerManager {
         resp = resp.replace("[$$", "[$");
         return resp;
     }
-    //TODO: Aqui voy...
-    public static String parsePWDs(String resp){
+
+    public static String parsePWDs(String resp) 
+            throws SocketException,UnknownHostException {
         String regexp = "([0-9|a-z|A-Z|\\s]*)"
-                + sqOpen + Pattern.quote("$")+"\\.*)" + sqClose
+                + "\\[\\$(.*)\\]"
                 + "([0-9|a-z|A-Z|\\s]*)";
         Pattern pattern = Pattern.compile(regexp);
         Matcher matcher = pattern.matcher(resp);
@@ -415,15 +422,15 @@ public final class ActionRunnerManager {
             String firstGroup = matcher.group(i++);
             String original = matcher.group(i++);
             String lastGroup = matcher.group(i);
-            String varDef = original.substring(0, original.length() - 1)
-                    .substring(2);
-            final CharSequence varAsKeys = firstGroup
-                    +lastGroup;
-            String command = Keys.chord(varAsKeys);
-            resp = resp.replace(firstGroup + original + lastGroup, command);
+            if (original.startsWith("$")) {
+                continue;
+            }
+            String decrypted = firstGroup + Encryption.decrypt(original) + lastGroup;
+            resp = resp.replace(firstGroup +"[$"+ original +"]"+ lastGroup, decrypted);
         }
         return resp;
     }
+
     /**
      * Helper for {@link #parse(java.lang.String)}
      *
@@ -450,11 +457,11 @@ public final class ActionRunnerManager {
                     ? varDef.split(KEY_SEPARATOR)
                     : new String[]{varDef};
             final CharSequence varAsKeys = firstGroup
-                    +Arrays.asList(varDefs)
-                    .stream()
-                    .map(token -> Keys.valueOf(token.replace("Keys.", "")))
-                    .collect(joining())
-                    +lastGroup;
+                    + Arrays.asList(varDefs)
+                            .stream()
+                            .map(token -> Keys.valueOf(token.replace("Keys.", "")))
+                            .collect(joining())
+                    + lastGroup;
             String command = Keys.chord(varAsKeys);
             resp = resp.replace(firstGroup + original + lastGroup, command);
         }
