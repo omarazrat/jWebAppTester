@@ -22,6 +22,7 @@ import oa.com.tests.webapptester.MainApp;
 import java.awt.HeadlessException;
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.lang.reflect.Constructor;
@@ -218,7 +219,8 @@ public final class ActionRunnerManager {
      *
      * @param item
      */
-    public static void exec(TreePath item, Logger log) throws IOException, InvalidVarNameException, SocketException,UnknownHostException {
+    public static void exec(TreePath item, Logger log) 
+            throws IOException, InvalidVarNameException, SocketException,UnknownHostException {
         File file = Utils.getFile(item);
         final String ERR_TITLE = globals.getString("globals.error.title");
         if (file.isDirectory()) {
@@ -300,7 +302,7 @@ public final class ActionRunnerManager {
      * @param log
      */
     private List<Exception> exec(File file, Logger log) 
-            throws SocketException,UnknownHostException {
+            throws SocketException,UnknownHostException, IOException, FileNotFoundException, InvalidVarNameException {
 //        final List<String> filteredLines = Files.lines(FileSystems.getDefault().getPath(file.getAbsolutePath()))
 //                .map(String::trim)
 //                .filter(l -> !l.isEmpty() && !l.startsWith("#"))
@@ -393,7 +395,7 @@ public final class ActionRunnerManager {
      * @return
      */
     public static String parse(String actionCommand) 
-            throws SocketException,UnknownHostException {
+            throws SocketException,UnknownHostException, InvalidVarNameException {
         String resp = actionCommand;
         //Variables [:variable]
         resp = parseVariables(resp);
