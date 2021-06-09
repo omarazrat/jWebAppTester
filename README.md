@@ -191,7 +191,9 @@ Example:
 
 write={
  "selector":"input[type='search']",
+ 
  #This encripted password won't be decrypted in your machine
+ 
  "text":"[$QTUgOMDYfXZ4gEjZ7BTYpw==]"
 }
 
@@ -411,7 +413,9 @@ Ejemplo:
 
 escribir={
  "selector":"input[type='search']",
+ 
  #Esta contraseña no funcionará en otras máquinas.
+ 
  "texto":"[$QTUgOMDYfXZ4gEjZ7BTYpw==]"
 }
 
