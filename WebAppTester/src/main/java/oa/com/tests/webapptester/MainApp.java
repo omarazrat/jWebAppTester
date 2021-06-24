@@ -204,10 +204,7 @@ public class MainApp extends JFrame {
 //        treeScrollPane.setSize(treeScrollPane.getPreferredSize());
 //        treeScrollPane.setMinimumSize(treeScrollPane.getSize());
 
-        JButton goButton = new JButton(globals.getString("button.runAction"))
-                , reloadButton = new JButton(globals.getString("button.reloadTree"))
-                , parseSIButton = new JButton(globals.getString("button.parseSIDE"))
-                , pwdButton = new JButton(globals.getString("button.buildPWD"));
+        JButton goButton = new JButton(globals.getString("button.runAction")), reloadButton = new JButton(globals.getString("button.reloadTree")), parseSIButton = new JButton(globals.getString("button.parseSIDE")), pwdButton = new JButton(globals.getString("button.buildPWD"));
         parseSIButton.addActionListener(evt -> {
             JFileChooser chooser = new JFileChooser();
             chooser.addChoosableFileFilter(new FileNameExtensionFilter(
@@ -248,17 +245,17 @@ public class MainApp extends JFrame {
             repaint();
         });
 
-        pwdButton.addActionListener(evt->{
+        pwdButton.addActionListener(evt -> {
             try {
-                final String unencrypted = JOptionPane.showInputDialog(this
-                        ,globals.getString("button.buildPWD.message")
-                        ,globals.getString("button.buildPWD")
-                        ,JOptionPane.INFORMATION_MESSAGE);
+                final String unencrypted = JOptionPane.showInputDialog(this,
+                         globals.getString("button.buildPWD.message"),
+                         globals.getString("button.buildPWD"),
+                         JOptionPane.INFORMATION_MESSAGE);
                 final String encrypted = Encryption.encrypt(unencrypted);
-                JOptionPane.showInputDialog(this
-                        ,globals.getString("button.buildPWD.message.encrypted")
-                        ,encrypted);
-            } catch (UnknownHostException|SocketException ex) {
+                JOptionPane.showInputDialog(this,
+                         globals.getString("button.buildPWD.message.encrypted"),
+                         encrypted);
+            } catch (Exception ex) {
                 log.log(Level.SEVERE, null, ex);
             }
         });
@@ -358,20 +355,20 @@ public class MainApp extends JFrame {
         gbc.gridwidth = 6;
         gbc.gridx = gbc.gridy = 0;
         getContentPane().add(treeScrollPane, gbc);
-        
+
         gbc.gridwidth = 2;
         gbc.gridy++;
         gbc.anchor = GridBagConstraints.CENTER;
         getContentPane().add(goButton, gbc);
-        gbc.gridx+=gbc.gridwidth;
+        gbc.gridx += gbc.gridwidth;
         getContentPane().add(reloadButton, gbc);
-        gbc.gridx+=gbc.gridwidth;
+        gbc.gridx += gbc.gridwidth;
         getContentPane().add(browserTree, gbc);
         gbc.gridwidth = 3;
         gbc.gridx = 0;
         gbc.gridy++;
         getContentPane().add(parseSIButton, gbc);
-        gbc.gridx+=gbc.gridwidth;
+        gbc.gridx += gbc.gridwidth;
         getContentPane().add(pwdButton, gbc);
         gbc.gridwidth = 4;
         gbc.gridy++;
@@ -379,7 +376,7 @@ public class MainApp extends JFrame {
         gbc.fill = GridBagConstraints.BOTH;
         getContentPane().add(label, gbc);
         gbc.gridwidth = 2;
-        gbc.gridx+=gbc.gridwidth;
+        gbc.gridx += gbc.gridwidth;
         getContentPane().add(imageContainer, gbc);
     }
 
@@ -462,13 +459,14 @@ public class MainApp extends JFrame {
     public static MainApp getInstance() {
         return instance;
     }
-    
+
     /**
      * Retorna el log utilizado por la aplicación
-     * @return 
+     *
+     * @return
      */
     public static Logger getLog() {
         return log;
     }
-    
+
 }

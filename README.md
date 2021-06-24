@@ -185,7 +185,7 @@ If you want to store encripted passwords in your scripts, so that nobody else ca
 passwords to enter in secured sites), encrypt your word with the button "Crypt password" and write the password in your 
 script file using this sintax:
 [$YOUR_ENCRIPTED_PASSWORD]
-If you need to write the text "[%", write "[%%" instead.
+If you need to write the text "[$", write "[$$" instead.
 
 Example:
 
@@ -198,7 +198,7 @@ write={
 }
 
 ##### Notes About passwords: 
-- You can't nest encripted text and variables: [:[%MY_ENCRIPTED_TEXT]] and [%[:VARIABLE_WITH_ENCRIPTED_TEXT]], are invalid expressions.
+- You can't nest encripted text, variables and special characters in any order: [:[%MY_ENCRIPTED_TEXT]] and [%[:VARIABLE_WITH_ENCRIPTED_TEXT]], are invalid expressions.
 - The encripted blocks created on your machine can't be decrypted in other machines: every password algorithm is unique to each machine.
 
  About CSS Selectors: 
@@ -407,7 +407,7 @@ Si desea almacenar contraseñas u otra información en sus archivos, de tal form
 usuarios y contraseñas para ingresar en sitios seguros), encripte lo que desee con el botón "Encriptar contraseña" y 
 escriba el texto encrptado en su archivo de instrucciones de esta forma:
 [$SU_CONTRASEÑA_ENCRIPTADA]
-Se necesita escribir "[%", escriba "[%%".
+Se necesita escribir "[$", escriba "[$$".
 
 Ejemplo:
 
@@ -420,7 +420,7 @@ escribir={
 }
 
 ##### Notas sobre las contraseñas: 
-- No se pueden anidar contraseñas y variables: [:[%MI_TEXTO_ENCRIPTADO]] and [%[:VARIABLE_CON_TEXTO_ENCRIPTADO]], son expresiones inválidas.
+- No se pueden anidar contraseñas, variables y caracteres especiales en ningún orden: [:[$MI_TEXTO_ENCRIPTADO]] y [$[:VARIABLE_CON_TEXTO_ENCRIPTADO]], son expresiones inválidas.
 - Las contraseñas encriptadas que se creen en su máquina no pueden ser desencriptadas en otras máquinas: cada algoritmo de encripción es único para cada máquina.
 
 Referencias de Selectores CSS: 

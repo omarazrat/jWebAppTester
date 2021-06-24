@@ -220,7 +220,7 @@ public final class ActionRunnerManager {
      * @param item
      */
     public static void exec(TreePath item, Logger log) 
-            throws IOException, InvalidVarNameException, SocketException,UnknownHostException {
+            throws InvalidVarNameException, FileNotFoundException, IOException {
         File file = Utils.getFile(item);
         final String ERR_TITLE = globals.getString("globals.error.title");
         if (file.isDirectory()) {
@@ -302,7 +302,7 @@ public final class ActionRunnerManager {
      * @param log
      */
     private List<Exception> exec(File file, Logger log) 
-            throws SocketException,UnknownHostException, IOException, FileNotFoundException, InvalidVarNameException {
+            throws InvalidVarNameException, FileNotFoundException, IOException {
 //        final List<String> filteredLines = Files.lines(FileSystems.getDefault().getPath(file.getAbsolutePath()))
 //                .map(String::trim)
 //                .filter(l -> !l.isEmpty() && !l.startsWith("#"))
@@ -394,8 +394,7 @@ public final class ActionRunnerManager {
      * @param actionCommand
      * @return
      */
-    public static String parse(String actionCommand) 
-            throws SocketException,UnknownHostException, InvalidVarNameException {
+    public static String parse(String actionCommand) throws InvalidVarNameException{
         String resp = actionCommand;
         //Variables [:variable]
         resp = parseVariables(resp);
@@ -409,8 +408,7 @@ public final class ActionRunnerManager {
         return resp;
     }
 
-    public static String parsePWDs(String resp) 
-            throws SocketException,UnknownHostException {
+    public static String parsePWDs(String resp) {
         String regexp = "([0-9|a-z|A-Z|\\s]*)"
                 + "\\[\\$(.*)\\]"
                 + "([0-9|a-z|A-Z|\\s]*)";

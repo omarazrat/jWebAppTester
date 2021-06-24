@@ -4,7 +4,7 @@
 
     <groupId>oa.com.tests</groupId>
     <artifactId>WebAppTester</artifactId>
-    <version>0.3.5</version>
+    <version>0.3.6</version>
     <packaging>jar</packaging>
 
     <name>WebAppTester</name>
@@ -117,5 +117,5 @@
             <version>1.0-SNAPSHOT</version>
         </dependency>
     </dependencies>
-    <description>Manejo de Contraseñas</description>
+    <description>Correcciones a Manejo de Contraseñas</description>
 </project>

@@ -20,6 +20,7 @@ import java.net.UnknownHostException;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.util.Base64;
+import java.util.Random;
 import java.util.prefs.Preferences;
 import javax.crypto.Cipher;
 import javax.crypto.KeyGenerator;
@@ -27,8 +28,7 @@ import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 
 /**
- * Gracias a
- * https://www.baeldung.com/java-aes-encryption-decryption
+ * Gracias a https://www.baeldung.com/java-aes-encryption-decryption
  * https://stackoverflow.com/questions/5355466/converting-secret-key-into-a-string-and-vice-versa
  * Clase para encriptar y desencriptar valores tomando como clave la MAC de la
  * máquina huesped
@@ -40,28 +40,26 @@ public class Encryption {
     private static final int keyBitSize = 256;
     private static final String algorithm = "AES";
 
-    public static byte[] generateSeed() throws UnknownHostException, SocketException {
-        String mac = getMac();
-        final int KEY_SIZE = 300;
-        while (mac.length() < KEY_SIZE) {
-            mac += getMac();
-        }
-        return mac.substring(0, KEY_SIZE).getBytes();
-    }
-
     /**
-     * Gracias a https://mkyong.com/java/how-to-get-mac-address-in-java/
+     * https://www.baeldung.com/java-random-string
+     *
+     * @return
      */
-    private static String getMac() throws UnknownHostException, SocketException {
-        InetAddress ip;
-        ip = InetAddress.getLocalHost();
-//        System.out.println("Current IP address : " + ip.getHostAddress());
-        NetworkInterface network = NetworkInterface.getByInetAddress(ip);
-        return new String(network.getHardwareAddress());
+    public static byte[] generateSeed() {
+        final int KEY_SIZE = 300;
+        int leftLimit = 97; // letter 'a'
+        int rightLimit = 122; // letter 'z'
+        Random random = new Random();
+        String generatedString = random.ints(leftLimit, rightLimit + 1)
+                .filter(i -> (i <= 57 || i >= 65) && (i <= 90 || i >= 97))
+                .limit(KEY_SIZE)
+                .collect(StringBuilder::new, StringBuilder::appendCodePoint, StringBuilder::append)
+                .toString();
+
+        return generatedString.getBytes();
     }
 
-    private static SecretKey generateKey()
-            throws NoSuchAlgorithmException, UnknownHostException, SocketException {
+    private static SecretKey generateKey() throws NoSuchAlgorithmException {
         final String PREF_KEY = "webapptester.securekey";
         //La busca si ya fue guardada...
         final String serializedkey = Preferences.userRoot().get(PREF_KEY, null);
@@ -79,7 +77,7 @@ public class Encryption {
         return key;
     }
 
-    public static String encrypt(final String text) throws UnknownHostException, SocketException {
+    public static String encrypt(final String text) {
         try {
             Cipher cipher = Cipher.getInstance(algorithm);
             // rebuild key using SecretKeySpec
@@ -93,7 +91,7 @@ public class Encryption {
         }
     }
 
-    public static String decrypt(final String encryptedString) throws UnknownHostException, SocketException {
+    public static String decrypt(final String encryptedString) {
         try {
             Cipher cipher = Cipher.getInstance(algorithm);
             // rebuild key using SecretKeySpec
