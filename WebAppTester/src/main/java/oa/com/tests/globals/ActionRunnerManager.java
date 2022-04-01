@@ -106,6 +106,7 @@ public final class ActionRunnerManager {
     private TreeModel rootTree;
     private BROWSERTYPE browserType;
     private WebDriver driver;
+    @SuppressWarnings("unchecked")
     private List<Variable> variables = new LinkedList();
     private static ActionRunnerManager instance = new ActionRunnerManager();
     final private static String sqOpen = Pattern.quote("[");
@@ -136,11 +137,13 @@ public final class ActionRunnerManager {
         AbstractDefaultScriptActionRunner runner = null;
         for (Class runnerCls : ActionRunnerManager.runnersCls) {
             try {
+                @SuppressWarnings("unchecked")
                 final Constructor constructor = runnerCls.getConstructor(TestAction.class);
                 runner = (AbstractDefaultScriptActionRunner) constructor.newInstance(tester);
                 break;
             } catch (IllegalAccessException | IllegalArgumentException | InstantiationException | NoSuchMethodException | SecurityException | InvocationTargetException ex) {
-                //Runner incorrecto, va con otro.
+                //Runner incorrecto, va con otro
+//                ex.printStackTrace();
             }
         }
         return runner;
@@ -333,6 +336,7 @@ public final class ActionRunnerManager {
                     try {
                         runner = findRunner(actionCommand);
                     } catch (BadSyntaxException ex) {
+//                        ex.printStackTrace();
                         continue;
                     }
                     if (runner == null) {

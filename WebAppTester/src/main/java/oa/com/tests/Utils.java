@@ -74,6 +74,7 @@ public abstract class Utils {
      * @return
      * @throws ParseException 
      */
+    @SuppressWarnings("unchecked")
     public static String getJSONAttribute(JSONObject obj, String key) 
             throws ParseException {
         String resp;
@@ -97,6 +98,7 @@ public abstract class Utils {
      * @throws ClassNotFoundException
      * @throws IOException
      */
+    @SuppressWarnings("unchecked")
     public static <T>
             Class<T>[]
             getClasses(String packageName, Class<T> clazz)
@@ -106,6 +108,7 @@ public abstract class Utils {
         assert classLoader != null;
         String path = packageName.replace('.', '/');
         Enumeration<URL> resources = classLoader.getResources(path);
+        @SuppressWarnings("unchecked")
         List<File> dirs = new ArrayList();
         while (resources.hasMoreElements()) {
             URL resource = resources.nextElement();
@@ -145,9 +148,11 @@ public abstract class Utils {
      * @return The classes
      * @throws ClassNotFoundException
      */
+    @SuppressWarnings("unchecked")
     private static <T> List<Class<T>>
             findClasses(File directory, String packageName, Class<T> clazz) throws ClassNotFoundException {
 //        Logger log = getLogger();
+        @SuppressWarnings("unchecked")
         List<Class<T>> classes = new ArrayList();
         if (!directory.exists()) {
             return classes;
@@ -355,6 +360,7 @@ public abstract class Utils {
      * @param packageName
      * @return
      */
+    @SuppressWarnings("unchecked")
     private static <T> Collection<Class<T>> findClasesFromJar(JarFile file, String packageName, Class<T> clazz) {
 //        Logger log = getLogger();
         Collection<Class<T>> resp = new LinkedList<>();

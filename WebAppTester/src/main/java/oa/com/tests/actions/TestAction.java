@@ -16,6 +16,7 @@ package oa.com.tests.actions;
 import oa.com.tests.actionrunners.exceptions.BadSyntaxException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import lombok.AccessLevel;
 import lombok.Getter;
 import oa.com.tests.actionrunners.interfaces.ActionRunner;
 
@@ -27,7 +28,7 @@ import oa.com.tests.actionrunners.interfaces.ActionRunner;
  * go:{https://www.wolframalpha.com/}
  * @author nesto
  */
-@Getter
+@Getter()
 public class TestAction {
     private String name;
     private String command;

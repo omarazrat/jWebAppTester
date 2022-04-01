@@ -4,7 +4,7 @@
 
     <groupId>oa.com.tests</groupId>
     <artifactId>WebAppTester</artifactId>
-    <version>0.3.6</version>
+    <version>0.3.7-SNAPSHOT</version>
     <packaging>jar</packaging>
 
     <name>WebAppTester</name>
@@ -60,8 +60,12 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.1</version>
+                <version>3.9.0</version>
                 <configuration>
+<!--                    <compilerArgs>
+                        <arg>-Xlint:unchecked </arg>
+                        <arg>-Xlint:deprecation</arg>
+                    </compilerArgs>-->
                 </configuration>
             </plugin>
         </plugins>

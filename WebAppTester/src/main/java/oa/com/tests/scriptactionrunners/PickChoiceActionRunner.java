@@ -42,52 +42,45 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 
 /**
- * seleccionar opcion
- * Dado un selector que apunte a varios elementos, pide al usuario seleccionar 
- * un elemento y lo deja en una variable.</br>
- * Elementos 
+ * seleccionar opcion Dado un selector que apunte a varios elementos, pide al
+ * usuario seleccionar un elemento y lo deja en una variable.</br>
+ * Elementos
  * <ul>
- *  <ol><b>selector</b>: Obligatorio. El selector css que corresponde a los elementos HTML a mostrar</ol>
- *  <ol><b>subselector</b>: Opcional. Ruta complementaria, para determinar el valor de cada opciòn
- *  que se mostrará al usuario. Por omisiòn se tomará el texto de cada elemento
- *  web asociado con la ruta en <i>selector</i></ol>
- *  <ol><b>variable</b>: Obligatorio. Nombre de la variable que se va a asignar con el elemento que el usuario
- *  seleccione</ol>
- *  <ol><b>titulo</b>: Opcional. Título que tendrá la caja de texto que se va a mostrar al usuario.</ol>
- *  <ol><b>mensaje</b>: Opcional. Mensaje a mostrar en la caja de texto que se va a mostrar al usuario.</ol>
- *  <ol><b>orden alfabetico</b>: Opcional. ordenar alfabèticamente las opciones a mostrar (si/no)</ol>
+ * <ol><b>selector</b>: Obligatorio. El selector css que corresponde a los
+ * elementos HTML a mostrar</ol>
+ * <ol><b>subselector</b>: Opcional. Ruta complementaria, para determinar el
+ * valor de cada opciòn que se mostrará al usuario. Por omisiòn se tomará el
+ * texto de cada elemento web asociado con la ruta en <i>selector</i></ol>
+ * <ol><b>variable</b>: Obligatorio. Nombre de la variable que se va a asignar
+ * con el elemento que el usuario seleccione</ol>
+ * <ol><b>titulo</b>: Opcional. Título que tendrá la caja de texto que se va a
+ * mostrar al usuario.</ol>
+ * <ol><b>mensaje</b>: Opcional. Mensaje a mostrar en la caja de texto que se va
+ * a mostrar al usuario.</ol>
+ * <ol><b>orden alfabetico</b>: Opcional. ordenar alfabèticamente las opciones a
+ * mostrar (si/no)</ol>
  * </ul>
- * 
- * Ejemplos:
- * # En https://www.facebook.com/, historias:
- * seleccionar opcion={
- *      "selector": "div.g3eujd1d",
- *      "subselector": "> div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > a:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(2)",
- *      "variable":"Mi historia",
- *      "mensaje":"Selecciona una historia para ver...",
- *      "titulo":"Historias del FB"
+ *
+ * Ejemplos: # En https://www.facebook.com/, historias: seleccionar opcion={
+ * "selector": "div.g3eujd1d", "subselector": "> div:nth-child(1) >
+ * div:nth-child(1) > div:nth-child(1) > a:nth-child(1) > div:nth-child(1) >
+ * div:nth-child(1) > div:nth-child(2)", "variable":"Mi historia",
+ * "mensaje":"Selecciona una historia para ver...", "titulo":"Historias del FB"
  * }
- * 
- * # En https://www.wikipedia.org/, lenguajes:
- * seleccionar opcion={
- *      "selector": "div.central-featured-lang",
- *      "subselector": "a",
- *      "variable": "lenguaje",
- *      "titulo": "wikipedia"
- * }
- * 
- * #Temas en 
- * seleccionar opcion={
- *      "selector":"yt-chip-cloud-chip-renderer.style-scope",
- *      "subselector":"yt-formatted-string:nth-child(1)",
- *      "variable":"yt tema",
- *      "mensaje":"selecciona un tema",
- *      "orden alfabetico":"si"
- * }
- * 
+ *
+ * # En https://www.wikipedia.org/, lenguajes: seleccionar opcion={ "selector":
+ * "div.central-featured-lang", "subselector": "a", "variable": "lenguaje",
+ * "titulo": "wikipedia" }
+ *
+ * #Temas en seleccionar opcion={
+ * "selector":"yt-chip-cloud-chip-renderer.style-scope",
+ * "subselector":"yt-formatted-string:nth-child(1)", "variable":"yt tema",
+ * "mensaje":"selecciona un tema", "orden alfabetico":"si" }
+ *
  * @author nesto
  */
-public class PickChoiceActionRunner extends AbstractCssSelectorActionRunner implements VariableProvider{
+public class PickChoiceActionRunner extends AbstractCssSelectorActionRunner implements VariableProvider {
+
     private List<WebElement> elements;
     private String subSelector;
     private boolean sorted;
@@ -95,6 +88,7 @@ public class PickChoiceActionRunner extends AbstractCssSelectorActionRunner impl
      * Lo que el usuario seleccione.
      */
     private WebElementVariable variable;
+
     public PickChoiceActionRunner(TestAction action) throws NoActionSupportedException, InvalidActionException {
         super(action);
     }
@@ -106,51 +100,64 @@ public class PickChoiceActionRunner extends AbstractCssSelectorActionRunner impl
         //Busca las opciones
         JSONParser parser = new JSONParser();
         JSONObject JSObj = (JSONObject) parser.parse(getAction().getCommand());
-        subSelector = Utils.getJSONAttributeML(JSObj,clsName+".attr.subselector");
-        elements = driver.findElements(By.cssSelector(getSelector()+" "));
-        if(elements.isEmpty()){
-            String message = bundle.getString(clsName+".err.selectorWOChlds")
+        subSelector = Utils.getJSONAttributeML(JSObj, clsName + ".attr.subselector");
+        elements = driver.findElements(By.cssSelector(getSelector() + " "));
+        if (elements.isEmpty()) {
+            String message = bundle.getString(clsName + ".err.selectorWOChlds")
                     .replace("{0}", getSelector());
             throw new InvalidActionException(message);
         }
-        String ssorted = Utils.getJSONAttributeML(JSObj,clsName+".attr.sorted");
-        sorted = ssorted==null?false:ssorted.equals(bundle.getString("options.value.YES"));
+        String ssorted = Utils.getJSONAttributeML(JSObj, clsName + ".attr.sorted");
+        sorted = ssorted == null ? false : ssorted.equals(bundle.getString("options.value.YES"));
         //Combo con opciones
         Stream<String> elementsStr = elements.stream()
-                .map(webElementToString)
-                .distinct();
-        if(sorted){
+                .map(webElementToString);
+        if (sorted) {
             elementsStr = elementsStr.sorted();
         }
-        String title = Utils.getJSONAttributeML(JSObj,clsName+".attr.title");
-        if(title==null){
+        String title = Utils.getJSONAttributeML(JSObj, clsName + ".attr.title");
+        if (title == null) {
             title = bundle.getString("options.title.default");
         }
-        String msg = Utils.getJSONAttributeML(JSObj,clsName+".attr.msg");
-        if(msg==null){
-            msg = bundle.getString(clsName+".attr.msg.default");
+        String msg = Utils.getJSONAttributeML(JSObj, clsName + ".attr.msg");
+        if (msg == null) {
+            msg = bundle.getString(clsName + ".attr.msg.default");
         }
-        String varName = Utils.getJSONAttributeML(JSObj,clsName+".attr.varName");
+        String varName = Utils.getJSONAttributeML(JSObj, clsName + ".attr.varName");
         String selection = promptUser(elementsStr.collect(toList()), msg, title);
-        final int idx = elements.stream()
+        int idx = elements.stream()
                 .map(webElementToString)
                 .collect(toList())
-                .indexOf(selection)+1;
-        String fullSelector = getSelector()+":nth-child("+idx+")";
+                .indexOf(selection);
+        String fullSelector = getSelector() + ":nth-of-type(" + idx + ")";
+        //FIXME: Habilitar la ejecución de búsquedas xpath y obtener de elem, la ruta Xpath
+        while (true) {
+            try {
+                final WebElement foundElem = driver.findElement(By.cssSelector(fullSelector));
+                if (webElementToString.apply(foundElem).equals(selection)) {
+                    break;
+                }
+            } catch (Exception e) {;
+            }
+            idx++;
+            fullSelector = getSelector() + ":nth-of-type(" + idx + ")";
+        }
+        //Incrementar hasta asegurarnos de que es el elemento correcto
         //Va por el elemento seleccionado.
-        WebElement elem = driver.findElement(By.cssSelector(fullSelector));
-        this.variable = new WebElementVariable(elem,varName,fullSelector);
+        WebElement elem = elements.get(idx);
+        this.variable = new WebElementVariable(elem, varName, fullSelector);
     }
 
     /**
-     * Muestra un cuadro de diálogo al usuario con las opciones producto del selector
-     * y le pide seleccionar una.
+     * Muestra un cuadro de diálogo al usuario con las opciones producto del
+     * selector y le pide seleccionar una.
+     *
      * @param list
      * @param msg
      * @param title
      * @return El índice de la opción seleccionada por el usuario 1= primera.
      * @throws UserActionException
-     * @throws HeadlessException 
+     * @throws HeadlessException
      */
     private String promptUser(List<String> list, String msg, String title) throws UserActionException, HeadlessException {
         ResourceBundle bundle = ResourceBundle.getBundle("application");
@@ -158,28 +165,28 @@ public class PickChoiceActionRunner extends AbstractCssSelectorActionRunner impl
         JComboBox<String> opciones = new JComboBox<>(new Vector<>(list));
         JPanel content = new JPanel(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();
-        gbc.gridx = gbc.gridy=0;
+        gbc.gridx = gbc.gridy = 0;
         JTextArea taMsg = new JTextArea(msg, 3, 30);
         taMsg.setEditable(false);
 //        taMsg.setEnabled(false);
-        content.add(taMsg,gbc);
+        content.add(taMsg, gbc);
         final int HEIGHT = 10;
-        gbc.gridheight=HEIGHT;
+        gbc.gridheight = HEIGHT;
         gbc.gridy++;
-        content.add(opciones,gbc);
+        content.add(opciones, gbc);
         int resp = JOptionPane.showConfirmDialog(null, content, title, JOptionPane.OK_CANCEL_OPTION);
-        if(resp==JOptionPane.CANCEL_OPTION){
+        if (resp == JOptionPane.CANCEL_OPTION) {
             String message = bundle.getString("options.user.cancelled");
             throw new UserActionException(message);
         }
-        if(opciones.getSelectedIndex()==-1){
+        if (opciones.getSelectedIndex() == -1) {
             String message = bundle.getString("PickChoiceActionRunner.option.required");
             throw new UserActionException(message);
         }
         return (String) opciones.getSelectedItem();
     }
-    
-    private Function<WebElement,String> webElementToString = (elem)->{
+
+    private Function<WebElement, String> webElementToString = (elem) -> {
         WebElement optElement = elem.findElement(By.cssSelector(subSelector));
         return optElement.getText();
     };
@@ -188,6 +195,5 @@ public class PickChoiceActionRunner extends AbstractCssSelectorActionRunner impl
     public WebElementVariable getVariable() {
         return variable;
     }
-    
-    
+
 }

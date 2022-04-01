@@ -21,7 +21,6 @@ import oa.com.tests.actionrunners.exceptions.InvalidActionException;
 import oa.com.tests.actionrunners.exceptions.NoActionSupportedException;
 import lombok.Getter;
 import oa.com.tests.Utils;
-import org.json.simple.parser.ParseException;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -38,7 +37,7 @@ public abstract class AbstractCssSelectorActionRunner extends AbstractDefaultScr
      * El selector usado.
      */
     private String selector;
-
+    
     public AbstractCssSelectorActionRunner(TestAction action) throws NoActionSupportedException, InvalidActionException {
         super(action);
         String key = "CssSelectorActionRunner.attr.selector";
