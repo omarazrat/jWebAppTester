@@ -27,6 +27,7 @@ public abstract class Variable {
     public enum TYPE{
         STRING,
         NUMBER,
+        WEB_SELECTOR,
         WEB_ELEMENT
     }
     /**

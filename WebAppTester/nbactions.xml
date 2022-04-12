@@ -43,4 +43,13 @@
                 <exec.executable>java</exec.executable>
             </properties>
         </action>
+        <action>
+            <actionName>CUSTOM-jacoco:report</actionName>
+            <displayName>jacoco:report</displayName>
+            <goals>
+                <goal>jacoco:prepare-agent</goal>
+                <goal>install</goal>
+                <goal>jacoco:report</goal>
+            </goals>
+        </action>
     </actions>

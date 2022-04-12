@@ -13,7 +13,7 @@
  */
 package oa.com.tests.actionrunners.interfaces;
 
-import oa.com.tests.lang.WebElementVariable;
+import oa.com.tests.lang.Variable;
 
 /**
  * Definición para ejecutores que generen una variable.
@@ -21,6 +21,6 @@ import oa.com.tests.lang.WebElementVariable;
  */
 public interface VariableProvider {
 
-    WebElementVariable getVariable();
+    Variable getVariable();
     
 }

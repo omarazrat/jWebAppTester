@@ -17,7 +17,7 @@ import oa.com.tests.Utils;
 import oa.com.tests.actions.TestAction;
 import oa.com.tests.actionrunners.exceptions.InvalidActionException;
 import oa.com.tests.actionrunners.exceptions.NoActionSupportedException;
-import oa.com.tests.actionrunners.interfaces.AbstractCssSelectorActionRunner;
+import oa.com.tests.actionrunners.interfaces.AbstractSelectorActionRunner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import oa.com.tests.globals.ActionRunnerManager;
@@ -32,7 +32,7 @@ import org.openqa.selenium.WebElement;
  *
  * @author nesto
  */
-public class WriteActionRunner extends AbstractCssSelectorActionRunner {
+public class WriteActionRunner extends AbstractSelectorActionRunner {
 
     private String text;
     private String originalText;

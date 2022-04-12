@@ -13,7 +13,6 @@
  */
 package oa.com.tests.scriptactionrunners;
 
-import oa.com.tests.actionrunners.interfaces.VariableProvider;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.HeadlessException;
@@ -31,13 +30,14 @@ import oa.com.tests.Utils;
 import oa.com.tests.actionrunners.exceptions.InvalidActionException;
 import oa.com.tests.actionrunners.exceptions.NoActionSupportedException;
 import oa.com.tests.actionrunners.exceptions.UserActionException;
-import oa.com.tests.actionrunners.interfaces.AbstractCssSelectorActionRunner;
+import oa.com.tests.actionrunners.interfaces.AbstractSelectorActionRunner;
+import oa.com.tests.actionrunners.interfaces.PathFinder;
+import oa.com.tests.actionrunners.interfaces.VariableProvider;
 import oa.com.tests.actions.TestAction;
-import oa.com.tests.lang.WebElementVariable;
-import org.apache.commons.lang3.NotImplementedException;
+import oa.com.tests.lang.SelectorVariable;
+import oa.com.utils.WebUtils;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
-import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 
@@ -79,16 +79,14 @@ import org.openqa.selenium.WebElement;
  *
  * @author nesto
  */
-public class PickChoiceActionRunner extends AbstractCssSelectorActionRunner implements VariableProvider {
+public class PickChoiceActionRunner extends AbstractSelectorActionRunner 
+implements VariableProvider{
 
     private List<WebElement> elements;
-    private String subSelector;
+    private PathFinder subSelector;
     private boolean sorted;
-    /**
-     * Lo que el usuario seleccione.
-     */
-    private WebElementVariable variable;
-
+    private SelectorVariable variable;
+    
     public PickChoiceActionRunner(TestAction action) throws NoActionSupportedException, InvalidActionException {
         super(action);
     }
@@ -100,11 +98,13 @@ public class PickChoiceActionRunner extends AbstractCssSelectorActionRunner impl
         //Busca las opciones
         JSONParser parser = new JSONParser();
         JSONObject JSObj = (JSONObject) parser.parse(getAction().getCommand());
-        subSelector = Utils.getJSONAttributeML(JSObj, clsName + ".attr.subselector");
-        elements = driver.findElements(By.cssSelector(getSelector() + " "));
+        String strSubSelector = Utils.getJSONAttributeML(JSObj, clsName + ".attr.subselector");
+        subSelector = new PathFinder(getAction());
+        subSelector.setPath(strSubSelector);
+        elements = getMany(driver);
         if (elements.isEmpty()) {
             String message = bundle.getString(clsName + ".err.selectorWOChlds")
-                    .replace("{0}", getSelector());
+                    .replace("{0}", getSelector().getPath());
             throw new InvalidActionException(message);
         }
         String ssorted = Utils.getJSONAttributeML(JSObj, clsName + ".attr.sorted");
@@ -129,23 +129,12 @@ public class PickChoiceActionRunner extends AbstractCssSelectorActionRunner impl
                 .map(webElementToString)
                 .collect(toList())
                 .indexOf(selection);
-        String fullSelector = getSelector() + ":nth-of-type(" + idx + ")";
-        //FIXME: Habilitar la ejecución de búsquedas xpath y obtener de elem, la ruta Xpath
-        while (true) {
-            try {
-                final WebElement foundElem = driver.findElement(By.cssSelector(fullSelector));
-                if (webElementToString.apply(foundElem).equals(selection)) {
-                    break;
-                }
-            } catch (Exception e) {;
-            }
-            idx++;
-            fullSelector = getSelector() + ":nth-of-type(" + idx + ")";
-        }
-        //Incrementar hasta asegurarnos de que es el elemento correcto
-        //Va por el elemento seleccionado.
-        WebElement elem = elements.get(idx);
-        this.variable = new WebElementVariable(elem, varName, fullSelector);
+
+        final WebElement selectedElem = elements.get(idx);
+        String xpath = WebUtils.generateXPATH( selectedElem);
+
+        PathFinder finder = new PathFinder(new TestAction("command={\"selector\":\""+xpath+"\",\"type\":\"xpath\"}"));
+        this.variable = new SelectorVariable(selectedElem,varName,finder);
     }
 
     /**
@@ -187,12 +176,12 @@ public class PickChoiceActionRunner extends AbstractCssSelectorActionRunner impl
     }
 
     private Function<WebElement, String> webElementToString = (elem) -> {
-        WebElement optElement = elem.findElement(By.cssSelector(subSelector));
+        WebElement optElement = AbstractSelectorActionRunner.get(elem, subSelector.getType(), subSelector.getPath());
         return optElement.getText();
     };
 
     @Override
-    public WebElementVariable getVariable() {
+    public SelectorVariable getVariable() {
         return variable;
     }
 

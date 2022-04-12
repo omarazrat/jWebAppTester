@@ -15,14 +15,15 @@ package oa.com.tests.scriptactionrunners;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import oa.com.tests.actionrunners.exceptions.BadSyntaxException;
 import oa.com.tests.actionrunners.exceptions.InvalidActionException;
 import oa.com.tests.actionrunners.exceptions.NoActionSupportedException;
-import oa.com.tests.Utils;
-import oa.com.tests.actionrunners.interfaces.AbstractDefaultScriptActionRunner;
+import oa.com.tests.actionrunners.interfaces.AbstractSelectorActionRunner;
+import oa.com.tests.actionrunners.interfaces.PathFinder;
 import oa.com.tests.actions.TestAction;
-import org.json.simple.parser.ParseException;
-import org.openqa.selenium.By;
+import oa.com.utils.WebUtils;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
@@ -35,33 +36,33 @@ esperar:{}
 esperar:{selector:{#__next > div > div > main > div._3ZoET > div > div._2oVR5 > section > section:nth-child(2) > div}}
  * @author nesto
  */
-public class WaitActionRunner extends AbstractDefaultScriptActionRunner{
-    private String selector="body";
-    
-    public WaitActionRunner(TestAction action) throws NoActionSupportedException, InvalidActionException {
+public class WaitActionRunner extends AbstractSelectorActionRunner{
+
+    public WaitActionRunner(TestAction action) throws NoActionSupportedException, InvalidActionException, BadSyntaxException {
         super(action);
-        final String actionCommand = action.getCommand();
-        //Caso sencillo
-        if(actionCommand.replace(" ", "").length()==2)
-            return;
-        try {
-            selector = Utils.getJSONAttribute(actionCommand, "selector");
-        } catch (ParseException ex) {
-            throw new InvalidActionException(actionCommand);
+        if(getSelector()==null){
+            final TestAction testAction = new TestAction("command={\"selector\":\"body\"}");
+            final PathFinder pathFinder = new PathFinder(testAction);
+            setSelector(pathFinder);
         }
     }
 
     @Override
     public void run(WebDriver driver) throws Exception {
-        new WebDriverWait(driver, 10)
-                .until(ExpectedConditions.elementToBeClickable(By.cssSelector(selector)));
+        final WebElement element = get(driver);
+        WebUtils.waitToBeClickable(driver, element);
     }
     
     @Override
     public void run(WebDriver driver, Logger log) throws Exception {
         String templateMsg = getActionLog();
-        log.log(Level.INFO, templateMsg, selector);
+        log.log(Level.INFO, templateMsg, getSelector());
         run(driver);
     }
 
-}
+    @Override
+    public boolean isRequired() {
+        return false;
+    }
+    
+ }

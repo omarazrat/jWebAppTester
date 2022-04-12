@@ -23,7 +23,8 @@ import oa.com.tests.Utils;
 import oa.com.tests.actionrunners.exceptions.BadSyntaxException;
 import oa.com.tests.actionrunners.exceptions.InvalidActionException;
 import oa.com.tests.actionrunners.exceptions.NoActionSupportedException;
-import oa.com.tests.actionrunners.interfaces.AbstractCssSelectorActionRunner;
+import oa.com.tests.actionrunners.interfaces.AbstractSelectorActionRunner;
+import oa.com.tests.actionrunners.interfaces.PathFinder;
 import oa.com.tests.actions.TestAction;
 import org.json.simple.parser.ParseException;
 import org.openqa.selenium.JavascriptExecutor;
@@ -37,7 +38,7 @@ import org.openqa.selenium.WebElement;
  */
 @Getter
 @Setter(AccessLevel.PRIVATE)
-public class ScrollRunner extends AbstractCssSelectorActionRunner {
+public class ScrollActionRunner extends AbstractSelectorActionRunner {
 
     private enum SCROLL_DIRECTION {
         VERTICAL,
@@ -50,7 +51,7 @@ public class ScrollRunner extends AbstractCssSelectorActionRunner {
     private int x = 0, y = 0;
     private final ResourceBundle globals = ResourceBundle.getBundle("application");
 
-    public ScrollRunner(TestAction action) throws NoActionSupportedException, InvalidActionException {
+    public ScrollActionRunner(TestAction action) throws NoActionSupportedException, InvalidActionException {
         super(action);
         final String command = getAction().getCommand();
         boolean hasXY = false;
@@ -70,7 +71,7 @@ public class ScrollRunner extends AbstractCssSelectorActionRunner {
     }
 
     private int getParamInt(String attr, final String command) throws NumberFormatException, ParseException {
-        String key = ScrollRunner.class.getSimpleName() + ".attr." + attr;
+        String key = ScrollActionRunner.class.getSimpleName() + ".attr." + attr;
         return Integer.parseInt(Utils.getJSONAttributeML(command, key));
     }
 
@@ -78,12 +79,11 @@ public class ScrollRunner extends AbstractCssSelectorActionRunner {
     public void run(WebDriver driver) throws Exception {
         JavascriptExecutor js = (JavascriptExecutor) driver;
 
-        try { //Desplazamiento con el selector...
+        if(getSelector()!=null){ //Desplazamiento con el selector...
             final WebElement element = get(driver);
-            scroll_Page(driver, element, x, SCROLL_DIRECTION.HORIZONTAL);
-            scroll_Page(driver, element, y, SCROLL_DIRECTION.VERTICAL);
-        }//Va sin selector...
-        catch (BadSyntaxException bse) {
+            js.executeScript("arguments[0].scrollLeft+="+x+";",element);
+            js.executeScript("arguments[0].scrollTop+="+y+ ";",element);
+        }else{//Va sin selector...
             driver.manage().window().maximize();
             js.executeScript("window.scrollBy(" + getX() + "," + getY() + ")");
         }
@@ -126,18 +126,19 @@ public class ScrollRunner extends AbstractCssSelectorActionRunner {
     @Override
     public void run(WebDriver driver, Logger log) throws Exception {
         String templateMsg = getActionLog();
-        if (getSelector() != null) {
-            log.log(Level.INFO, templateMsg, new String[]{"" + getX(), "" + getY(), getSelector()});
+        final PathFinder pathFinder = getSelector();
+        if (pathFinder != null) {
+            log.log(Level.INFO, templateMsg, new String[]{"" + getX(), "" + getY(), pathFinder.getPath()});
         } else {
             log.log(Level.INFO, templateMsg, new String[]{"" + getX(), "" + getY()});
         }
-        JavascriptExecutor js = (JavascriptExecutor) driver;
+//        JavascriptExecutor js = (JavascriptExecutor) driver;
         String alertMsg = templateMsg.replace("{0}", "" + getX())
                 .replace("{1}", "" + getY());
-        if (getSelector() != null) {
-            alertMsg = alertMsg.replace("{2}", getSelector());
+        if (pathFinder != null) {
+            alertMsg = alertMsg.replace("{2}", pathFinder.getPath());
         }
-        js.executeAsyncScript("window.status=arguments[0];", alertMsg);
+//        js.executeAsyncScript("window.status=arguments[0];", alertMsg);
         run(driver);
     }
 }

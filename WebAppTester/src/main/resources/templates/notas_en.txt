@@ -37,18 +37,32 @@
 #go={https://duckduckgo.com/}
 #wait - Waits for a page to be completely loaded after a change in the location bar URL, or after clicking any element.
 #The browser will wait until a given object (given its selector), appear or simply the page to be fully loaded
+#Params:
+# - selector : The selector of the object to wait for. Could be a css or xpath selector
+# - type  (Optional): The type of the selector to be used: "css/xpath". If missing, css will be used
 #Examples:
 #wait={}
 #wait={
 #  "selector":"#duckbar"
 #}
+#wait={
+#  "selector":"//*[@id="search_form_input_homepage"]",
+#  "type":"xpath"
+#}
 #write - Writes text in a page component given its css selector.
+#Params:
 #-selector: the css selector of the component to write on
 #-text: the text to write
-#Example:
+#-type (Optional): The type of the selector to be used: "css/xpath". If missing, css will be used
+#Examples:
 #write={
 # "selector":"#search_form_input_homepage",
 # "text":"inicio"
+#}
+#write={
+# "selector":"#search_form_input_homepage",
+# "text":"inicio"
+#  "type":"css"
 #}
 #You can specify special commands (ALT, F1,ENTER, ESCAPE, etc)
 #using this format:
@@ -65,25 +79,61 @@
 #}
 #If you need to write the text "[%", instead write "[%%"
 #
-#click - Clicks a componente of the page given a css selector
+#click - Clicks a component of the page given a css selector
+#Params:
+# - selector : The selector of the object to click. Could be a css or xpath selector
+# - type (optional): The type of the selector to be used: "css/xpath". If missing, css will be used
 #Example:
 #click={ 
 #  "selector":"#search_button_homepage"
 #}
 #double click - Double-clicks any element in the page, given its selector.
+#Params:
+# - selector : The selector of the object to double click. Could be a css or xpath selector
+# - type (optional): The type of the selector to be used: "css/xpath". If missing, css will be used
 #Example:
 #double click={
-#    "selector": "body"
+#    "selector": "/html/body",
+#    "type" : "xpath"
 #}
 #right click - Right clicks any element in the page, given its selector.
+#Params:
+# - selector : The selector of the object to right click. Could be a css or xpath selector
+# - type (optional): The type of the selector to be used: "css/xpath". If missing, css will be used
 #Example:
 #right click={
 #    "selector": "#Identificacion"
 #}
 #
+#scroll - Scrolls the screen horizantally (x) or vertically (y)
+# a given amount of pixels.
+#Params:
+# - selector (optional): The selector of the object to scroll on. Could be a css or xpath selector. If missing, the whole page will be selected (body)
+# - type (optional): The type of the selector to be used: "css/xpath". If missing, css will be used
+# - x : pixels to scroll in horizontal axis (>0 right, <0 left)
+# - y : pixels to scroll in vertical axis (>0 down, <0 up)
+#Examples:
+#
+#scroll={
+#   "x":"0",
+#   "y":"100"
+#}
+#
+#scroll={
+#   "x":"10",
+#   "y":"-100"
+#}
+#
+#scroll={
+#   "x":"10",
+#   "y":"-100",
+#   "selector":"//*[@id='main-content-inner']",
+#   "type": "xpath"
+#}
+#
 #pause - Waits a given time, before proceeding with the next instruction.
-#Format: NUMBER UNITS
-#Where UNITS can be one of these values: S=milliseconds,s=seconds, m=minutes, h=hours, d=days
+#Params:
+# - time: NUMBER UNITS, Where UNITS can be one of these values: S=milliseconds,s=seconds, m=minutes, h=hours, d=days
 #Example:
 #To wait three seconds
 #pause={"time":"3 s"}
@@ -92,9 +142,10 @@
 #
 #pick choice - Prompts user to pick a single choice among a list, stores selected
 #option in a variable.
-#Properties:
+#Params:
 #- selector: Required. This selector must match to a collection of HTML elements</ol>
-#- subselector: Secondary css path, to specify the element of every option to be shown
+#- subselector: Secondary css path, to specify the element of every option to be shown. 
+# - type (optional): The type of the selector and subselector to be used: "css/xpath". If missing, css will be used
 # to the user. By default, the text of every element gathered with the "selector" 
 # will be used as option.
 #- variable: Required. Name of the variable used to store user's selection.
@@ -123,6 +174,25 @@
 # "selector":"[:Language] > a"
 #}
 #
-# About CSS Selectors: 
+#Passwords
+#If you want to store encripted passwords in your scripts, so that nobody else can read them (typically usernames &
+#passwords to enter in secured sites), encrypt your word with the button "Crypt password" and write the password in your 
+#script file using this sintax:
+#[$YOUR_ENCRIPTED_PASSWORD]
+#If you need to write the text "[$", write "[$$" instead.
+#Keep in mind: the hash used for each password is unique per computer
+#Example:
+#
+#Example:
+#```
+#write={
+ #"selector":"input[type='search']",
+   #This encripted password won't be decrypted in your machine
+#  "text":"[$QTUgOMDYfXZ4gEjZ7BTYpw==]"
+#}
+#
+# About CSS/XPATH Selectors: 
 # https://www.w3.org/wiki/CSS/Selectors
 # https://www.w3schools.com/cssref/css_selectors.asp
+# https://www.w3schools.com/xml/xpath_syntax.asp
+# https://docs.scrapy.org/en/latest/topics/selectors.html

@@ -16,12 +16,12 @@ package oa.com.tests.scriptactionrunners;
 import oa.com.tests.actions.TestAction;
 import oa.com.tests.actionrunners.exceptions.InvalidActionException;
 import oa.com.tests.actionrunners.exceptions.NoActionSupportedException;
-import oa.com.tests.actionrunners.interfaces.AbstractCssSelectorActionRunner;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import oa.com.tests.actionrunners.interfaces.AbstractSelectorActionRunner;
+import oa.com.utils.WebUtils;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.interactions.Actions;
 
 /**
  * Usa la funcion {@link WebElement#click()}, buscando el elemento en el
@@ -29,7 +29,7 @@ import org.openqa.selenium.WebElement;
  *
  * @author nesto
  */
-public class ClickActionRunner extends AbstractCssSelectorActionRunner {
+public class ClickActionRunner extends AbstractSelectorActionRunner {
 
     public ClickActionRunner(TestAction action) throws NoActionSupportedException, InvalidActionException {
         super(action);
@@ -37,7 +37,9 @@ public class ClickActionRunner extends AbstractCssSelectorActionRunner {
 
     @Override
     public void run(WebDriver driver) throws Exception {
-        get(driver).click();
+        final WebElement elem = get(driver);
+//        WebUtils.waitToBeClickable(driver, elem);
+        Actions actions = new Actions(driver);
+        actions.moveToElement(elem).click().build().perform();
     }
-
 }

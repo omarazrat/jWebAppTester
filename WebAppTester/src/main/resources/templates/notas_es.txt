@@ -36,15 +36,31 @@
 #ir={https://duckduckgo.com/}
 #esperar - Espera a que la página cargue completamente despues de un cambio de URL o despues de hacer clic en algun lado.
 #esperará a que cierto objeto (dado su selector), aparezca o simplemente a que la página cargue completa
+#Argumentos:
+# - selector : El selector para el objeto a esperar. Puede ser un selector css o xpath
+# - tipo (opcional): El tipo de selector que se está usando: "css/xpath". Si no se especifica, se usará css
 #Ejemplos:
 #esperar={}
 #esperar={
-#  "selector":"#duckbar"
+#  "selector":"#duckbar",
+#}
+#esperar={
+#  "selector":"//*[@id="search_form_input_homepage"]",
+#  "tipo":"xpath"
 #}
 #escribir - Escribe texto en un componente de la pagina dado un selector css.
+#Argumentos:
+# - selector : El selector para el objeto en el cual escribir. Puede ser un selector css o xpath
+# - texto : Lo que se va a escribir en el componente
+# - tipo (opcional): El tipo de selector que se está usando: "css/xpath". Si no se especifica, se usará css
 #Ejemplo:
 #escribir={
 # "selector":"#search_form_input_homepage",
+# "texto":"inicio"
+#}
+#escribir={
+# "selector":"#search_form_input_homepage",
+# "tipo" : "css";
 # "texto":"inicio"
 #}
 #Puede enviar comandos especiales (ALT, F1,ENTER, ESCAPE, etc)
@@ -64,24 +80,60 @@
 #"[%%"
 #
 #clic - Hace clic en un componente de la pagina dado un selector css.
+#Argumentos:
+# - selector : El selector para el objeto sobre el cual hacer clic. Puede ser un selector css o xpath
+# - tipo (opcional): El tipo de selector que se está usando: "css/xpath". Si no se especifica, se usará css
 #Ejemplo:
 #clic={ 
 #  "selector":"#search_button_homepage"
 #}
 #doble clic - Hace doble clic en algun elemento de la pagina, dado su selector.
+#Argumentos:
+# - selector : El selector para el objeto sobre el cual hacer doble clic. Puede ser un selector css o xpath
+# - tipo (opcional): El tipo de selector que se está usando: "css/xpath". Si no se especifica, se usará css
 #Ejemplo:
 #doble clic={
-#    "selector": "body"
+#    "selector": "/html/body",
+#     "tipo": "xpath"
 #}
 #clic derecho - Hace clic derecho en cualquier elemento de la pagina, dado su selector.
+#Argumentos:
+# - selector : El selector para el objeto sobre el cual hacer clic derecho. Puede ser un selector css o xpath
+# - tipo (opcional): El tipo de selector que se está usando: "css/xpath". Si no se especifica, se usará css
 #Ejemplo:
 #clic derecho={
 #    "selector": "#Identificacion"
 #}
 #
+#desplazar - Realiza un desplazamiento por la pantalla horizontalmente (x) o verticalmente (Y)
+# una cierta cantidad de pixeles.
+#Argumentos:
+# - x: el número de pixeles a desplazar horizontalmente(>0 a la derecha, <0 a la izquierda)
+# - y: el número de pixeles a desplazar verticalmente(>0 abajo, <0 arriba)
+# - selector (opcional): El selector para el objeto sobre el cual hacer el desplazamiento. Si no se especifica se toma la página activa (body)
+# - tipo (opcional): El tipo de selector que se está usando: "css/xpath". Si no se especifica, se usará css
+#Ejemplos:
+#
+#desplazar={
+#   "x":"0",
+#   "y":"100"
+#}
+#
+#desplazar={
+#   "x":"10",
+#   "y":"-100"
+#}
+#
+#desplazar={
+#   "x":"10",
+#   "y":"-100",
+#   "selector":"//*[@id='main-content-inner']",
+#   "tipo": "xpath"
+#}
+#
 #pausa - Espera cierto tiempo, antes de continuar con la siguiente instrucción.
-#Formato: NUMERO UNIDADES
-#Donde UNIDADES puede tener uno de los siguientes valores: S=milisegundos,s=segundos, m=minutos, h=horas, d=dias
+#Argumentos:
+#tiempo: NUMERO UNIDADES, donde UNIDADES puede tener uno de los siguientes valores: S=milisegundos,s=segundos, m=minutos, h=horas, d=dias
 #Ejemplos:
 #Para esperar 3 segundos
 #pausa={"tiempo":"3 s"}
@@ -90,9 +142,10 @@
 #
 #seleccionar opcion - Pide al usuario seleccionar una opción de una lista y guarda el valor seleccionado
 #en una variable.
-#Propiedades:
+#Argumentos:
 #- selector: Obligatorio. El selector css que corresponde a los elementos HTML a mostrar</ol>
-#- subselector: Opcional. Ruta complementaria, para determinar el valor de cada opciòn
+#- subselector: Opcional. Ruta complementaria, para determinar el valor de cada opciòn.
+# - tipo (opcional): El tipo de selector que se está usando en selector y subselector:  "css/xpath". Si no se especifica, se usará css
 #  que se mostrará al usuario. Por omisiòn se tomará el texto de cada elemento
 #  web asociado con la ruta en el parámetro "selector"
 #- variable: Obligatorio. Nombre de la variable que se va a asignar con el elemento que el usuario
@@ -119,6 +172,20 @@
 # "selector":"[:Lenguaje] > a"
 #}
 #
-#Referencias de Selectores CSS: 
+#Contraseñas
+#Cuando necesite incluir alguna palabra en un comando, sin que otra persona pueda verla, utilice el botón 
+#"Encriptar contraseña" de la aplicaciòn y escriba el resultado así en su archivo de comandos:
+#[$SU_CONTRASEÑA_ENCRIPTADA]
+#Recuerde: la palabra (hash) usada para desencriptar una contraseña, varía de un equipo a otro.
+#Ejemplo:
+#
+#escribir={
+# "selector":"#pwd",
+# "texto":"[$1nBI+Edj/WttkFqNjWZ5UQ==]"
+#}
+#
+#Referencias de Selectores: 
 # https://w3.org/wiki/CSS_/_Selectores_CSS
 # https://www.w3schools.com/cssref/css_selectors.asp
+# https://www.w3schools.com/xml/xpath_syntax.asp
+# https://docs.scrapy.org/en/latest/topics/selectors.html

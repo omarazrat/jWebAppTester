@@ -50,17 +50,18 @@ import org.openqa.selenium.opera.OperaDriver;
 import org.openqa.selenium.safari.SafariDriver;
 import oa.com.tests.actionrunners.interfaces.ScriptActionRunner;
 import java.lang.reflect.InvocationTargetException;
-import java.net.SocketException;
-import java.net.UnknownHostException;
 import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import oa.com.tests.actionrunners.exceptions.InvalidVarNameException;
+import oa.com.tests.actionrunners.interfaces.PathFinder;
 import oa.com.tests.actionrunners.interfaces.VariableProvider;
 import oa.com.tests.lang.Variable;
+import oa.com.tests.lang.SelectorVariable;
 import oa.com.tests.lang.WebElementVariable;
 import oa.com.utils.Encryption;
 import org.openqa.selenium.Keys;
+import org.openqa.selenium.WebElement;
 
 /**
  * Gestor de acciones.
@@ -222,7 +223,7 @@ public final class ActionRunnerManager {
      *
      * @param item
      */
-    public static void exec(TreePath item, Logger log) 
+    public static void exec(TreePath item, Logger log)
             throws InvalidVarNameException, FileNotFoundException, IOException {
         File file = Utils.getFile(item);
         final String ERR_TITLE = globals.getString("globals.error.title");
@@ -304,7 +305,7 @@ public final class ActionRunnerManager {
      * @param file
      * @param log
      */
-    private List<Exception> exec(File file, Logger log) 
+    public List<Exception> exec(File file, Logger log)
             throws InvalidVarNameException, FileNotFoundException, IOException {
 //        final List<String> filteredLines = Files.lines(FileSystems.getDefault().getPath(file.getAbsolutePath()))
 //                .map(String::trim)
@@ -355,7 +356,7 @@ public final class ActionRunnerManager {
                         runner.run(instance.getDriver(), log);
                         if (runner instanceof VariableProvider) {
                             VariableProvider varprovider = (VariableProvider) runner;
-                            WebElementVariable variable = varprovider.getVariable();
+                            Variable variable = varprovider.getVariable();
                             if (variables.contains(variable)) {
                                 variables.remove(variable);
                             }
@@ -393,12 +394,11 @@ public final class ActionRunnerManager {
     }
 
     /**
-     * @fixme Corrige el comando de consulta, buscando y reemplazando las
-     * variables correspondientes
      * @param actionCommand
+     * @throws InvalidVarNameException
      * @return
      */
-    public static String parse(String actionCommand) throws InvalidVarNameException{
+    public static String parse(String actionCommand) throws InvalidVarNameException {
         String resp = actionCommand;
         //Variables [:variable]
         resp = parseVariables(resp);
@@ -430,7 +430,7 @@ public final class ActionRunnerManager {
                 continue;
             }
             String decrypted = firstGroup + Encryption.decrypt(original) + lastGroup;
-            resp = resp.replace(firstGroup +"[$"+ original +"]"+ lastGroup, decrypted);
+            resp = resp.replace(firstGroup + "[$" + original + "]" + lastGroup, decrypted);
         }
         return resp;
     }
@@ -533,7 +533,47 @@ public final class ActionRunnerManager {
         if (varMatch.isEmpty()) {
             throw new InvalidVarNameException(varName);
         }
-        WebElementVariable var = (WebElementVariable) varMatch.get();
-        return var.getCssSelector();
+        Variable var = varMatch.get();
+        if (var instanceof SelectorVariable) {
+            return resolveSelectorHelper(((SelectorVariable) var).getFinder());
+        }
+        return var.getName();
+    }
+    /**
+     * Retorna una representación de los 
+     * siguientes valores de un objeto PathFinder:
+     * {@link oa.com.tests.actionrunners.interfaces.PathFinder#getPath()  path} +","type:"+ 
+     * {@link oa.com.tests.actionrunners.interfaces.PathFinder#getType() type.lowercase}
+     * @param finder
+     * @return 
+     */
+    private static String resolveSelectorHelper(PathFinder finder) {
+        ResourceBundle bundle = ResourceBundle.getBundle("application");
+        String key = "CssSelectorActionRunner.attr.type";
+        String typeKey = bundle.getString(key);
+        return finder.getPath()+"\",\""+typeKey+"\":\""+finder.getType().name().toLowerCase();
+    }
+
+
+    /**
+     * Para pruebas
+     *
+     * @param file
+     * @param log
+     */
+    public static List<Exception> execInstance(File file, Logger log) throws InvalidVarNameException, IOException {
+        return instance.exec(file, log);
+    }
+
+    public static WebElement getWebElement(String varName) {
+        final Optional<Variable> result = instance.variables.stream().filter(var -> var instanceof WebElementVariable && var.getName().equals(varName)).findFirst();
+        if(result.isEmpty())
+            return null;
+        final WebElementVariable var = (WebElementVariable) result.get();
+        return var.getValue();
+    }
+
+    public static void storeWebElementVar(WebElementVariable variable) {
+        instance.variables.add(variable);
     }
 }

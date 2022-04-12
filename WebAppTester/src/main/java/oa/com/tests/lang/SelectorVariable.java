@@ -13,21 +13,32 @@
  */
 package oa.com.tests.lang;
 
-import lombok.Getter;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import oa.com.tests.actionrunners.interfaces.PathFinder;
 import org.openqa.selenium.WebElement;
 
 /**
  *
  * @author nesto
  */
-@Getter
-public class WebElementVariable 
-        extends Variable{
-    private final WebElement value;
+@Data
+@EqualsAndHashCode(callSuper = false)
+public class SelectorVariable extends Variable{
+    /**
+     * Ruta Css para llegar a este objeto
+     */
+    private PathFinder finder;
+    private WebElement value;
 
-    public WebElementVariable(WebElement value,String name) {
-        super(TYPE.WEB_ELEMENT);
-        this.name = name;
+    public SelectorVariable(WebElement value,String name,PathFinder selector) {
+        super(TYPE.WEB_SELECTOR);
+        setValue(value);
+        finder = selector;
+        this.name=name;
+    }
+
+    private void setValue(WebElement value) {
         this.value = value;
-    }    
+    }
 }
