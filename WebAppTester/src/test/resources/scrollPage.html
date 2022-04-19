@@ -1,0 +1,49 @@
+<html><head><style>
+#myDIV {
+  height: 250px;
+  width: 250px;
+  overflow: auto;
+}
+
+#content {
+  height: 800px;
+  width: 2000px;
+  background-color: coral;
+}
+</style>
+
+<script src="moz-extension://eab20b62-5a00-4374-bec1-42a2c8ce3ab2/assets/prompt.js"></script></head><body data-new-gr-c-s-check-loaded="8.871.0" data-gr-ext-installed="" contenteditable="false">
+<h1>The Element Object</h1>
+<h2>The scrollTop and scrollLeft Properties</h2>
+Page taken from https://www.w3schools.com/jsref/tryit.asp?filename=tryjsref_element_scrollleft2
+
+<p>Click "Scroll" to scroll the contents of "myDIV" to 50px horizontally and 10px vertically.</p>
+
+<button onclick="scrollFn()">Scroll</button><br><br>
+<button onclick="unscrollFn()">Un Scroll</button><br><br>
+
+<div id="myDIV">
+  <div id="content">
+  <p>Some text inside a div element.</p>
+  <p>Some text inside a div element.</p>
+  <p>Some text inside a div element.</p>
+  <p>Some text inside a div element.</p>
+  </div>
+</div>
+
+<script>
+function scrollFn() {
+  const element = document.getElementById("myDIV");
+  element.scrollLeft += 50;
+  element.scrollTop += 10;
+}
+function unscrollFn(){
+  const element = document.getElementById("myDIV");
+  element.scrollLeft -= 50;
+  element.scrollTop -= 10;
+}
+</script>
+
+
+
+</body></html>

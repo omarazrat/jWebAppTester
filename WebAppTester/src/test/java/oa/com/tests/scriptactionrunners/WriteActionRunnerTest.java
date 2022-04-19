@@ -11,10 +11,11 @@
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  */
-package oa.com.tests.globals;
+package oa.com.tests.scriptactionrunners;
 
 import java.io.IOException;
 import oa.com.tests.actionrunners.exceptions.InvalidVarNameException;
+import oa.com.tests.globals.ActionRunnerBaseTest;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
@@ -22,19 +23,17 @@ import static org.junit.Assert.*;
  *
  * @author nesto
  */
-public class PickChoiceActionRunnerTest extends ActionRunnerBaseTest {
-
-    public PickChoiceActionRunnerTest() {
-        super(ActionRunnerManager.BROWSERTYPE.OPERA);
-    }
-
-    @Test
-    public void testIt() throws IOException, InvalidVarNameException {
-        run("go={https://stackoverflow.com/}");
-        run("pick choice={\"selector\":\"/html/body/footer/div/nav/div[3]/ul\",\"type\":\"xpath\",\"subselector\":\"li/a\","
-                + "\"variable\":\"link\",\"title\":\"" + getClass().getSimpleName() + ":\",\"message\":\"Select a link to navigate\""
-                + "\"sorted\":\"no\"}\n"
-                + "click={\"selector\":\"[:link]\"}\n"
-                + "wait={\"time\":\"10 s\"}");
-    }
+public class WriteActionRunnerTest extends ActionRunnerBaseTest{
+    
+    // TODO add test methods here.
+    // The methods must be annotated with annotation @Test. For example:
+    //
+     @Test
+     public void testit() throws IOException, InvalidVarNameException {
+         run("go={https://yari-demos.prod.mdn.mozit.cloud/es/docs/Web/HTML/Element/textarea/_sample_.example.html}");
+         run("wait={\"selector\":\"body > textarea\"}");
+         run("write={\"selector\":\"textarea\","
+                 + "\"text\":\"Testing jWebAppTester\"}");
+         run("pause={\"time\":\"5 s\"}");
+     }
 }

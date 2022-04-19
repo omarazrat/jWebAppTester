@@ -22,7 +22,7 @@ import oa.com.tests.actionrunners.exceptions.BadSyntaxException;
 import oa.com.tests.actions.TestAction;
 import oa.com.tests.actionrunners.exceptions.InvalidActionException;
 import oa.com.tests.actionrunners.exceptions.NoActionSupportedException;
-import oa.com.tests.actionrunners.interfaces.PathFinder.SearchTypes;
+import oa.com.tests.actionrunners.interfaces.PathKeeper.SearchTypes;
 import oa.com.tests.globals.ActionRunnerManager;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
@@ -37,11 +37,11 @@ import org.openqa.selenium.WebElement;
 public abstract class AbstractSelectorActionRunner
         extends AbstractDefaultScriptActionRunner {
 
-    private PathFinder selector;
+    private PathKeeper selector;
 
     public AbstractSelectorActionRunner(TestAction action) throws NoActionSupportedException, InvalidActionException {
         super(action);
-        selector = new PathFinder(action);
+        selector = new PathKeeper(action);
         if (!selector.hasPath()) {
             selector = null;
         } else {
@@ -66,7 +66,7 @@ public abstract class AbstractSelectorActionRunner
         return get(driver, selector);
     }
 
-    private WebElement get(WebDriver driver, PathFinder selector) {
+    private WebElement get(WebDriver driver, PathKeeper selector) {
         if (selector.hasPath()) {
             return get(driver, selector.getType(), selector.getPath());
         } else { //mal diligenciado?

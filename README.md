@@ -271,7 +271,10 @@ write={
 - You can't nest encripted text, variables and special characters in any order: [:[%MY_ENCRIPTED_TEXT]] and [%[:VARIABLE_WITH_ENCRIPTED_TEXT]], are invalid expressions.
 - The encripted blocks created on your machine can't be decrypted in other machines: every password algorithm is unique to each machine.
 
- About CSS Selectors: 
+##### known Issues:
+- Selectors won't work inside an IFRAME element.
+
+##### About CSS Selectors: 
  https://www.w3.org/wiki/CSS/Selectors
  https://www.w3schools.com/cssref/css_selectors.asp
  https://www.w3schools.com/xml/xpath_syntax.asp
@@ -544,7 +547,10 @@ escribir={
 - No se pueden anidar contraseñas, variables y caracteres especiales en ningún orden: [:[$MI_TEXTO_ENCRIPTADO]] y [$[:VARIABLE_CON_TEXTO_ENCRIPTADO]], son expresiones inválidas.
 - Las contraseñas encriptadas que se creen en su máquina no pueden ser desencriptadas en otras máquinas: cada algoritmo de encripción es único para cada máquina.
 
-Referencias de Selectores: 
+#####Problemas conocidos:
+- Los selectores no funcionarán dentro de elementos IFRAME.
+
+##### Referencias de Selectores: 
 
  https://w3.org/wiki/CSS_/_Selectores_CSS 
  https://www.w3schools.com/cssref/css_selectors.asp

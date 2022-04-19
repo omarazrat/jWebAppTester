@@ -11,10 +11,13 @@
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  */
-package oa.com.tests.globals;
+package oa.com.tests.scriptactionrunners;
 
+import java.io.File;
 import java.io.IOException;
+import java.net.URL;
 import oa.com.tests.actionrunners.exceptions.InvalidVarNameException;
+import oa.com.tests.globals.ActionRunnerBaseTest;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -44,6 +47,7 @@ public class ScrollActionRunnerTest extends ActionRunnerBaseTest {
 
     @Test
     public void testIt() throws IOException, InvalidVarNameException {
+        //test on page
         run("go={https://lipsum.com/}");
         run("scroll={\"x\":\"10\", \"y\":\"100\"}");
         run("pause={\"time\":\"100 S\"}");
@@ -53,12 +57,15 @@ public class ScrollActionRunnerTest extends ActionRunnerBaseTest {
         run("pause={\"time\":\"100 S\"}");
         run("scroll={\"x\":\"10\", \"y\":\"100\"}");
         run("pause={\"time\":\"5s\"}");
-        run("go={https://www.w3schools.com/tags/default.asp}");
-        run("scroll={\"x\":\"0\", \"y\":\"200\", \"selector\":\"#sidenav\",\"type\":\"css\"}");
-        run("pause={\"time\":\"100 S\"}");
-        run("scroll={\"x\":\"0\", \"y\":\"200\", \"selector\":\"#leftmenuinner\",\"type\":\"css\"}");
-        run("pause={\"time\":\"100 S\"}");
-        run("scroll={\"x\":\"0\", \"y\":\"200\", \"selector\":\"#leftmenuinnerinner\",\"type\":\"xpath\"}");
-        run("pause={\"time\":\"10 s\"}");
+        //test on div
+        File file = new File("src/test/resources/scrollPage.html");
+        URL url = file.toURL();
+        run("go={"+url.toString()+"}");
+        run("scroll={\"x\":\"0\", \"y\":\"200\", \"selector\":\"#myDIV\",\"type\":\"css\"}");
+        run("pause={\"time\":\"500 S\"}");
+        run("scroll={\"x\":\"0\", \"y\":\"200\", \"selector\":\"#myDIV\",\"type\":\"css\"}");
+        run("pause={\"time\":\"500 S\"}");
+        run("scroll={\"x\":\"0\", \"y\":\"200\", \"selector\":\"#myDIV\",\"type\":\"css\"}");
+        run("pause={\"time\":\"5 s\"}");
     }
 }

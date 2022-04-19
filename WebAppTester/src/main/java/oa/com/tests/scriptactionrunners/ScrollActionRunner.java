@@ -24,7 +24,7 @@ import oa.com.tests.actionrunners.exceptions.BadSyntaxException;
 import oa.com.tests.actionrunners.exceptions.InvalidActionException;
 import oa.com.tests.actionrunners.exceptions.NoActionSupportedException;
 import oa.com.tests.actionrunners.interfaces.AbstractSelectorActionRunner;
-import oa.com.tests.actionrunners.interfaces.PathFinder;
+import oa.com.tests.actionrunners.interfaces.PathKeeper;
 import oa.com.tests.actions.TestAction;
 import org.json.simple.parser.ParseException;
 import org.openqa.selenium.JavascriptExecutor;
@@ -126,17 +126,17 @@ public class ScrollActionRunner extends AbstractSelectorActionRunner {
     @Override
     public void run(WebDriver driver, Logger log) throws Exception {
         String templateMsg = getActionLog();
-        final PathFinder pathFinder = getSelector();
-        if (pathFinder != null) {
-            log.log(Level.INFO, templateMsg, new String[]{"" + getX(), "" + getY(), pathFinder.getPath()});
+        final PathKeeper PathKeeper = getSelector();
+        if (PathKeeper != null) {
+            log.log(Level.INFO, templateMsg, new String[]{"" + getX(), "" + getY(), PathKeeper.getPath()});
         } else {
             log.log(Level.INFO, templateMsg, new String[]{"" + getX(), "" + getY()});
         }
 //        JavascriptExecutor js = (JavascriptExecutor) driver;
         String alertMsg = templateMsg.replace("{0}", "" + getX())
                 .replace("{1}", "" + getY());
-        if (pathFinder != null) {
-            alertMsg = alertMsg.replace("{2}", pathFinder.getPath());
+        if (PathKeeper != null) {
+            alertMsg = alertMsg.replace("{2}", PathKeeper.getPath());
         }
 //        js.executeAsyncScript("window.status=arguments[0];", alertMsg);
         run(driver);

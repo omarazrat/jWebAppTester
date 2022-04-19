@@ -184,6 +184,9 @@
 # "texto":"[$1nBI+Edj/WttkFqNjWZ5UQ==]"
 #}
 #
+#Problemas conocidos:
+#- Los selectores no funcionarán dentro de elementos IFRAME.
+#
 #Referencias de Selectores: 
 # https://w3.org/wiki/CSS_/_Selectores_CSS
 # https://www.w3schools.com/cssref/css_selectors.asp

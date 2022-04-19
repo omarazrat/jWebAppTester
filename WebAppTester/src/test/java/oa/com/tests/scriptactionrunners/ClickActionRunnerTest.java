@@ -11,10 +11,11 @@
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  */
-package oa.com.tests.globals;
+package oa.com.tests.scriptactionrunners;
 
 import java.io.IOException;
 import oa.com.tests.actionrunners.exceptions.InvalidVarNameException;
+import oa.com.tests.globals.ActionRunnerBaseTest;
 import org.junit.Test;
 
 /**

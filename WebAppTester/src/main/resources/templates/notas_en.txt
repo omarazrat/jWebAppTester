@@ -191,6 +191,9 @@
 #  "text":"[$QTUgOMDYfXZ4gEjZ7BTYpw==]"
 #}
 #
+#known Issues:
+#- Selectors won't work inside an IFRAME element.
+#
 # About CSS/XPATH Selectors: 
 # https://www.w3.org/wiki/CSS/Selectors
 # https://www.w3schools.com/cssref/css_selectors.asp

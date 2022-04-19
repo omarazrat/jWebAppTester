@@ -15,7 +15,7 @@ package oa.com.tests.lang;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import oa.com.tests.actionrunners.interfaces.PathFinder;
+import oa.com.tests.actionrunners.interfaces.PathKeeper;
 import org.openqa.selenium.WebElement;
 
 /**
@@ -28,10 +28,10 @@ public class SelectorVariable extends Variable{
     /**
      * Ruta Css para llegar a este objeto
      */
-    private PathFinder finder;
+    private PathKeeper finder;
     private WebElement value;
 
-    public SelectorVariable(WebElement value,String name,PathFinder selector) {
+    public SelectorVariable(WebElement value,String name,PathKeeper selector) {
         super(TYPE.WEB_SELECTOR);
         setValue(value);
         finder = selector;

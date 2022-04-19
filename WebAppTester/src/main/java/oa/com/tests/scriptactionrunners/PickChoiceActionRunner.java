@@ -31,7 +31,7 @@ import oa.com.tests.actionrunners.exceptions.InvalidActionException;
 import oa.com.tests.actionrunners.exceptions.NoActionSupportedException;
 import oa.com.tests.actionrunners.exceptions.UserActionException;
 import oa.com.tests.actionrunners.interfaces.AbstractSelectorActionRunner;
-import oa.com.tests.actionrunners.interfaces.PathFinder;
+import oa.com.tests.actionrunners.interfaces.PathKeeper;
 import oa.com.tests.actionrunners.interfaces.VariableProvider;
 import oa.com.tests.actions.TestAction;
 import oa.com.tests.lang.SelectorVariable;
@@ -43,7 +43,7 @@ import org.openqa.selenium.WebElement;
 
 /**
  * seleccionar opcion Dado un selector que apunte a varios elementos, pide al
- * usuario seleccionar un elemento y lo deja en una variable.</br>
+ * usuario seleccionar un elemento y lo deja en una variable.<br/>
  * Elementos
  * <ul>
  * <ol><b>selector</b>: Obligatorio. El selector css que corresponde a los
@@ -83,7 +83,7 @@ public class PickChoiceActionRunner extends AbstractSelectorActionRunner
 implements VariableProvider{
 
     private List<WebElement> elements;
-    private PathFinder subSelector;
+    private PathKeeper subSelector;
     private boolean sorted;
     private SelectorVariable variable;
     
@@ -99,7 +99,7 @@ implements VariableProvider{
         JSONParser parser = new JSONParser();
         JSONObject JSObj = (JSONObject) parser.parse(getAction().getCommand());
         String strSubSelector = Utils.getJSONAttributeML(JSObj, clsName + ".attr.subselector");
-        subSelector = new PathFinder(getAction());
+        subSelector = new PathKeeper(getAction());
         subSelector.setPath(strSubSelector);
         elements = getMany(driver);
         if (elements.isEmpty()) {
@@ -133,7 +133,7 @@ implements VariableProvider{
         final WebElement selectedElem = elements.get(idx);
         String xpath = WebUtils.generateXPATH( selectedElem);
 
-        PathFinder finder = new PathFinder(new TestAction("command={\"selector\":\""+xpath+"\",\"type\":\"xpath\"}"));
+        PathKeeper finder = new PathKeeper(new TestAction("command={\"selector\":\""+xpath+"\",\"type\":\"xpath\"}"));
         this.variable = new SelectorVariable(selectedElem,varName,finder);
     }
 
@@ -151,6 +151,7 @@ implements VariableProvider{
     private String promptUser(List<String> list, String msg, String title) throws UserActionException, HeadlessException {
         ResourceBundle bundle = ResourceBundle.getBundle("application");
         //Componente grafico
+        @SuppressWarnings("UseOfObsoleteCollectionType")
         JComboBox<String> opciones = new JComboBox<>(new Vector<>(list));
         JPanel content = new JPanel(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();

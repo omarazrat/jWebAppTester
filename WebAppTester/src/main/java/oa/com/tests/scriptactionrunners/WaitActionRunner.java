@@ -19,7 +19,7 @@ import oa.com.tests.actionrunners.exceptions.BadSyntaxException;
 import oa.com.tests.actionrunners.exceptions.InvalidActionException;
 import oa.com.tests.actionrunners.exceptions.NoActionSupportedException;
 import oa.com.tests.actionrunners.interfaces.AbstractSelectorActionRunner;
-import oa.com.tests.actionrunners.interfaces.PathFinder;
+import oa.com.tests.actionrunners.interfaces.PathKeeper;
 import oa.com.tests.actions.TestAction;
 import oa.com.utils.WebUtils;
 import org.openqa.selenium.WebDriver;
@@ -42,8 +42,8 @@ public class WaitActionRunner extends AbstractSelectorActionRunner{
         super(action);
         if(getSelector()==null){
             final TestAction testAction = new TestAction("command={\"selector\":\"body\"}");
-            final PathFinder pathFinder = new PathFinder(testAction);
-            setSelector(pathFinder);
+            final PathKeeper PathKeeper = new PathKeeper(testAction);
+            setSelector(PathKeeper);
         }
     }
 

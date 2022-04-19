@@ -54,7 +54,7 @@ import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import oa.com.tests.actionrunners.exceptions.InvalidVarNameException;
-import oa.com.tests.actionrunners.interfaces.PathFinder;
+import oa.com.tests.actionrunners.interfaces.PathKeeper;
 import oa.com.tests.actionrunners.interfaces.VariableProvider;
 import oa.com.tests.lang.Variable;
 import oa.com.tests.lang.SelectorVariable;
@@ -541,13 +541,13 @@ public final class ActionRunnerManager {
     }
     /**
      * Retorna una representación de los 
-     * siguientes valores de un objeto PathFinder:
-     * {@link oa.com.tests.actionrunners.interfaces.PathFinder#getPath()  path} +","type:"+ 
-     * {@link oa.com.tests.actionrunners.interfaces.PathFinder#getType() type.lowercase}
+     * siguientes valores de un objeto PathKeeper:
+     * {@link oa.com.tests.actionrunners.interfaces.PathKeeper#getPath()  path} +","type:"+ 
+     * {@link oa.com.tests.actionrunners.interfaces.PathKeeper#getType() type.lowercase}
      * @param finder
      * @return 
      */
-    private static String resolveSelectorHelper(PathFinder finder) {
+    private static String resolveSelectorHelper(PathKeeper finder) {
         ResourceBundle bundle = ResourceBundle.getBundle("application");
         String key = "CssSelectorActionRunner.attr.type";
         String typeKey = bundle.getString(key);
@@ -575,5 +575,13 @@ public final class ActionRunnerManager {
 
     public static void storeWebElementVar(WebElementVariable variable) {
         instance.variables.add(variable);
+    }
+    
+    /**
+     * Needed to test full funcionality.
+     * @return 
+     */
+    public static WebDriver getStDriver(){
+        return instance.getDriver();
     }
 }

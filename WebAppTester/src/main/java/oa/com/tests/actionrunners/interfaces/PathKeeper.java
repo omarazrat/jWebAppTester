@@ -13,7 +13,6 @@
  */
 package oa.com.tests.actionrunners.interfaces;
 
-import java.util.ResourceBundle;
 import lombok.Data;
 import oa.com.tests.Utils;
 import oa.com.tests.actions.TestAction;
@@ -23,7 +22,7 @@ import oa.com.tests.actions.TestAction;
  * @author nesto
  */
 @Data
-public class PathFinder {
+public class PathKeeper {
     
     /**
      * Tipos de búsquedas soportadas
@@ -44,7 +43,7 @@ public class PathFinder {
 
     private boolean required;
 
-    public PathFinder(TestAction action) {
+    public PathKeeper(TestAction action) {
         String key = "CssSelectorActionRunner.attr.selector";
         final String actionCommand = action.getCommand();
         this.path = Utils.getJSONAttributeML(actionCommand, key);
