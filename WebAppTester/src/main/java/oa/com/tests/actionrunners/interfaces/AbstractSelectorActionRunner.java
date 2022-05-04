@@ -23,7 +23,6 @@ import oa.com.tests.actions.TestAction;
 import oa.com.tests.actionrunners.exceptions.InvalidActionException;
 import oa.com.tests.actionrunners.exceptions.NoActionSupportedException;
 import oa.com.tests.actionrunners.interfaces.PathKeeper.SearchTypes;
-import oa.com.tests.globals.ActionRunnerManager;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;

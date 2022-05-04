@@ -238,10 +238,37 @@ pick choice={
  "variable":"Language"
 }
 ```
+#### Set variable - A handy way to assign text to a name.
+Params:
+- name : Name of the variable
+- value : The text inside it
+
+Example:
+```
+set={"name":"comment","value":"I like this"}
+```
+
+#### Set browser
+
+Use to change between these browsers:
+
+ - CHROME,
+ - EDGE,
+ - FIREFOX,
+ - INTERNET_EXPLORER,
+ - OPERA,
+ - SAFARI
+
+Example:
+```
+browser={SAFARI}
+```
+ Note: When a new browser is set, the default page will be loaded and all authentication data will be lost
+
 #### Variables
 
 Use existing variables inside your instructions writing the variable's name between square brackets
-like this: [:VARIABLE_NOMBRE]
+like this: [:VARIABLE_NAME]
 
 Example:
 ```
@@ -270,6 +297,10 @@ write={
 ##### Notes About passwords: 
 - You can't nest encripted text, variables and special characters in any order: [:[%MY_ENCRIPTED_TEXT]] and [%[:VARIABLE_WITH_ENCRIPTED_TEXT]], are invalid expressions.
 - The encripted blocks created on your machine can't be decrypted in other machines: every password algorithm is unique to each machine.
+
+##### features with this version
+- Variables are not forgotten between different files
+- commands "set"
 
 ##### known Issues:
 - Selectors won't work inside an IFRAME element.
@@ -515,6 +546,33 @@ seleccionar opcion={
  "variable":"Lenguaje"
 }
 ```
+####Asignar variable - Es una forma de guardar texto asociado a un nombre.
+Argumentos:
+-nombre : Nombre que tendrá la variable 
+-valor : El texto a ingresar en esa variable
+
+Ejemplo:
+```
+asignar={"nombre":"comentario","valor":"Me gusta esto"}
+```
+
+#### Cambiar de navegador: 
+
+Puede cambiar entre los siguientes navegadores:
+ - CHROME,
+ - EDGE,
+ - FIREFOX,
+ - INTERNET_EXPLORER,
+ - OPERA,
+ - SAFARI
+
+Ejemplo:
+```
+navegador={SAFARI}
+```
+
+ Nota: al abrirse el nuevo navegador, iniciará en la página predeterminada, perdiendo cualquier navegación o autenticación realizada
+ previamente.
 
 #### Variables
 Utilice variables ya definidas como parte de sus instrucciones colocando el nombre 

@@ -164,6 +164,27 @@
 # "variable":"Lenguaje"
 #}
 #
+#Asignar variable - Es una forma de guardar texto asociado a un nombre.
+#Argumentos:
+#-nombre : Nombre que tendrá la variable 
+#-valor : El texto a ingresar en esa variable
+#
+#Ejemplo:
+#asignar={"nombre":"comentario","valor":"Me gusta esto"}
+#
+#Cambiar de navegador: Puede cambiar entre los siguientes navegadores:
+# - CHROME,
+# - EDGE,
+# - FIREFOX,
+# - INTERNET_EXPLORER,
+# - OPERA,
+# - SAFARI
+#Ejemplo:
+#navegador={SAFARI}
+#
+# Nota: al abrirse el nuevo navegador, iniciará en la página predeterminada, perdiendo cualquier navegación o autenticación realizada
+# previamente.
+#
 #Variables
 #Utilice variables ya definidas como parte de sus instrucciones colocando el nombre 
 #de la variable entre los signos [] así: [:NOMBRE_VARIABLE]

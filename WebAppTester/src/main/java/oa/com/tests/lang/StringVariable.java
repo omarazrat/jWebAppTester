@@ -13,21 +13,18 @@
  */
 package oa.com.tests.lang;
 
-import lombok.Getter;
-import org.openqa.selenium.WebElement;
+import lombok.Data;
 
 /**
  *
  * @author nesto
  */
-@Getter
-public class WebElementVariable 
-        extends Variable{
-    private final WebElement value;
-
-    public WebElementVariable(WebElement value,String name) {
-        super(TYPE.WEB_ELEMENT);
-        this.name = name;
+@Data
+public class StringVariable extends Variable{
+    public StringVariable(String name,String value) {
+        super(TYPE.STRING);
+        this.name=name;
         this.value = value;
-    }    
+    }
+    
 }

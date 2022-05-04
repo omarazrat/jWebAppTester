@@ -58,10 +58,10 @@ import oa.com.tests.actionrunners.interfaces.PathKeeper;
 import oa.com.tests.actionrunners.interfaces.VariableProvider;
 import oa.com.tests.lang.Variable;
 import oa.com.tests.lang.SelectorVariable;
-import oa.com.tests.lang.WebElementVariable;
 import oa.com.utils.Encryption;
 import org.openqa.selenium.Keys;
-import org.openqa.selenium.WebElement;
+import org.openqa.selenium.edge.EdgeDriverService;
+import org.openqa.selenium.ie.InternetExplorerDriverService;
 
 /**
  * Gestor de acciones.
@@ -210,9 +210,10 @@ public final class ActionRunnerManager {
         } catch (Exception e) {
             String message = globals.getString("settings.driver.createException")
                     .replace("{0}", btype.name());
-            JOptionPane.showMessageDialog(null, message,
-                    globals.getString("globals.error.title"),
-                    JOptionPane.ERROR_MESSAGE);
+            e.printStackTrace();
+//            JOptionPane.showMessageDialog(null, message,
+//                    globals.getString("globals.error.title"),
+//                    JOptionPane.ERROR_MESSAGE);
             return;
         }
         instance.setDriver(driver);
@@ -325,58 +326,58 @@ public final class ActionRunnerManager {
 
         List<String> command = new LinkedList<>();
         int lineCounter = 0;
-        try {
-            while (lineCounter < filteredLines.size()) {
-                boolean correct = true;
-                command.add(filteredLines.get(lineCounter++));
-                String actionCommand = command.stream().collect(joining(" "));
-                actionCommand = parse(actionCommand);
-                correct = !command.isEmpty();
-                if (correct) {
-                    AbstractDefaultScriptActionRunner runner;
-                    try {
-                        runner = findRunner(actionCommand);
-                    } catch (BadSyntaxException ex) {
+//        try {
+        while (lineCounter < filteredLines.size()) {
+            boolean correct = true;
+            command.add(filteredLines.get(lineCounter++));
+            String actionCommand = command.stream().collect(joining(" "));
+            actionCommand = parse(actionCommand);
+            correct = !command.isEmpty();
+            if (correct) {
+                AbstractDefaultScriptActionRunner runner;
+                try {
+                    runner = findRunner(actionCommand);
+                } catch (BadSyntaxException ex) {
 //                        ex.printStackTrace();
-                        continue;
-                    }
-                    if (runner == null) {
-                        String message = globals.getString("exec.err.noSuchRunnerException")
-                                .replace("{0}", actionCommand)
-                                .replace("{1}", file.getAbsolutePath());
-                        resp.add(new NoActionSupportedException(message));
+                    continue;
+                }
+                if (runner == null) {
+                    String message = globals.getString("exec.err.noSuchRunnerException")
+                            .replace("{0}", actionCommand)
+                            .replace("{1}", file.getAbsolutePath());
+                    resp.add(new NoActionSupportedException(message));
 //                    JOptionPane.showMessageDialog(null, message,
 //                            globals.getString("globals.error.title"), JOptionPane.ERROR_MESSAGE);
-                        log.severe(message);
-                        command.clear();
-                        continue;
-                    }
+                    log.severe(message);
+                    command.clear();
+                    continue;
+                }
 
-                    try {
-                        runner.run(instance.getDriver(), log);
-                        if (runner instanceof VariableProvider) {
-                            VariableProvider varprovider = (VariableProvider) runner;
-                            Variable variable = varprovider.getVariable();
-                            if (variables.contains(variable)) {
-                                variables.remove(variable);
-                            }
-                            variables.add(variable);
+                try {
+                    runner.run(instance.getDriver(), log);
+                    if (runner instanceof VariableProvider) {
+                        VariableProvider varprovider = (VariableProvider) runner;
+                        Variable variable = varprovider.getVariable();
+                        if (variables.contains(variable)) {
+                            variables.remove(variable);
                         }
-                    } catch (Exception ex) {
-                        BadSyntaxException badSyntaxException = new BadSyntaxException(prepareBadSystaxExMsg(actionCommand, file));
-                        log.log(Level.SEVERE, actionCommand, ex);
-                        resp.add(badSyntaxException);
-                    } finally {
-                        command.clear();
+                        variables.add(variable);
                     }
+                } catch (Exception ex) {
+                    BadSyntaxException badSyntaxException = new BadSyntaxException(prepareBadSystaxExMsg(actionCommand, file));
+                    log.log(Level.SEVERE, actionCommand, ex);
+                    resp.add(badSyntaxException);
+                } finally {
+                    command.clear();
                 }
             }
-            if (!command.isEmpty()) {
-                throwBadSynstaxEx(command.stream().collect(joining(" ")), file, log);
-            }
-        } finally {
-            variables.clear();
         }
+        if (!command.isEmpty()) {
+            throwBadSynstaxEx(command.stream().collect(joining(" ")), file, log);
+        }
+//        } finally {
+//            variables.clear();
+//        }
         return resp;
     }
 
@@ -537,23 +538,25 @@ public final class ActionRunnerManager {
         if (var instanceof SelectorVariable) {
             return resolveSelectorHelper(((SelectorVariable) var).getFinder());
         }
-        return var.getName();
+        return var.getValue().toString();
     }
+
     /**
-     * Retorna una representación de los 
-     * siguientes valores de un objeto PathKeeper:
-     * {@link oa.com.tests.actionrunners.interfaces.PathKeeper#getPath()  path} +","type:"+ 
+     * Retorna una representación de los siguientes valores de un objeto
+     * PathKeeper:
+     * {@link oa.com.tests.actionrunners.interfaces.PathKeeper#getPath()  path}
+     * +","type:"+
      * {@link oa.com.tests.actionrunners.interfaces.PathKeeper#getType() type.lowercase}
+     *
      * @param finder
-     * @return 
+     * @return
      */
     private static String resolveSelectorHelper(PathKeeper finder) {
         ResourceBundle bundle = ResourceBundle.getBundle("application");
         String key = "CssSelectorActionRunner.attr.type";
         String typeKey = bundle.getString(key);
-        return finder.getPath()+"\",\""+typeKey+"\":\""+finder.getType().name().toLowerCase();
+        return finder.getPath() + "\",\"" + typeKey + "\":\"" + finder.getType().name().toLowerCase();
     }
-
 
     /**
      * Para pruebas
@@ -565,23 +568,12 @@ public final class ActionRunnerManager {
         return instance.exec(file, log);
     }
 
-    public static WebElement getWebElement(String varName) {
-        final Optional<Variable> result = instance.variables.stream().filter(var -> var instanceof WebElementVariable && var.getName().equals(varName)).findFirst();
-        if(result.isEmpty())
-            return null;
-        final WebElementVariable var = (WebElementVariable) result.get();
-        return var.getValue();
-    }
-
-    public static void storeWebElementVar(WebElementVariable variable) {
-        instance.variables.add(variable);
-    }
-    
     /**
      * Needed to test full funcionality.
-     * @return 
+     *
+     * @return
      */
-    public static WebDriver getStDriver(){
+    public static WebDriver getStDriver() {
         return instance.getDriver();
     }
 }

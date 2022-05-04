@@ -13,6 +13,7 @@
  */
 package oa.com.utils;
 
+import java.time.Duration;
 import java.util.List;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
@@ -90,7 +91,7 @@ public class WebUtils {
     }*/
 
     public static void waitToBeClickable(WebDriver driver, final WebElement elem) {
-        WebDriverWait wait = new WebDriverWait(driver, 10);
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
         wait.until(ExpectedConditions.elementToBeClickable(elem));
     }
 }

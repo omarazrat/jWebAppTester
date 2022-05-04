@@ -163,10 +163,30 @@
 # "variable":"Language"
 #}
 #
+#Set variable - A handy way to assign text to a name.
+#Params:
+#- name : Name of the variable
+#- value : The text inside it
+#
+#Example:
+#set={"name":"comment","value":"I like this"}
+#
+#Set browser: Use to change between these browsers:
+# - CHROME,
+# - EDGE,
+# - FIREFOX,
+# - INTERNET_EXPLORER,
+# - OPERA,
+# - SAFARI
+#Example:
+#browser={SAFARI}
+#
+# Note: When a new browser is set, the default page will be loaded and all authentication data will be lost
+#
 #Variables
 #
 #Use existing variables inside your instructions writing the variable's name between square brackets
-#like this: [:VARIABLE_NOMBRE]
+#like this: [:VARIABLE_NAME]
 #
 #Example:
 #

@@ -33,13 +33,6 @@ import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.io.File;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.net.SocketException;
-import java.net.UnknownHostException;
-import java.security.GeneralSecurityException;
-import java.security.InvalidAlgorithmParameterException;
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
@@ -52,9 +45,6 @@ import java.util.logging.SimpleFormatter;
 import java.util.prefs.Preferences;
 import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toList;
-import javax.crypto.BadPaddingException;
-import javax.crypto.IllegalBlockSizeException;
-import javax.crypto.NoSuchPaddingException;
 import javax.imageio.ImageIO;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -68,7 +58,6 @@ import javax.swing.JTree;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import lombok.Data;
 import oa.com.utils.Encryption;
-import oa.com.utils.I18n;
 
 //import static javafx.application.Application.launch;
 //import javafx.fxml.FXMLLoader;
@@ -80,7 +69,7 @@ public class MainApp extends JFrame {
 
     private static MainApp instance;
     JTree rootTree = new JTree();
-    JComboBox<String> browserTree = new JComboBox<String>();
+    JComboBox<String> browserTree = new JComboBox<>();
     private JLabel label = new JLabel();
     private ResourceBundle globals = ResourceBundle.getBundle("application");
     private Image errImage, warnImage;
@@ -248,13 +237,13 @@ public class MainApp extends JFrame {
         pwdButton.addActionListener(evt -> {
             try {
                 final String unencrypted = JOptionPane.showInputDialog(this,
-                         globals.getString("button.buildPWD.message"),
-                         globals.getString("button.buildPWD"),
-                         JOptionPane.INFORMATION_MESSAGE);
+                        globals.getString("button.buildPWD.message"),
+                        globals.getString("button.buildPWD"),
+                        JOptionPane.INFORMATION_MESSAGE);
                 final String encrypted = Encryption.encrypt(unencrypted);
                 JOptionPane.showInputDialog(this,
-                         globals.getString("button.buildPWD.message.encrypted"),
-                         encrypted);
+                        globals.getString("button.buildPWD.message.encrypted"),
+                        encrypted);
             } catch (Exception ex) {
                 log.log(Level.SEVERE, null, ex);
             }
@@ -378,6 +367,27 @@ public class MainApp extends JFrame {
         gbc.gridwidth = 2;
         gbc.gridx += gbc.gridwidth;
         getContentPane().add(imageContainer, gbc);
+    }
+
+    /**
+     * Cambia el tipo de navegador sin invocar auditores de eventos
+     *
+     * @param type
+     */
+    public static void setBrowser(ActionRunnerManager.BROWSERTYPE type) {
+        if (instance == null) {
+            return;
+        }
+        final ItemListener[] itemListeners = instance.browserTree.getItemListeners();
+        for (ItemListener listener : itemListeners) {
+            instance.browserTree.removeItemListener(listener);
+        }
+        String key = "settings.driver." + type.name() + ".name";
+        final String option = instance.globals.getString(key);
+        instance.browserTree.setSelectedItem(option);
+        for (ItemListener listener : itemListeners) {
+            instance.browserTree.addItemListener(listener);
+        }
     }
 
     /**
