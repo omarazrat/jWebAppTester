@@ -15,33 +15,24 @@ package oa.com.tests.scriptactionrunners;
 
 import oa.com.tests.actionrunners.exceptions.InvalidActionException;
 import oa.com.tests.actionrunners.exceptions.NoActionSupportedException;
-import oa.com.tests.actionrunners.interfaces.AbstractSelectorActionRunner;
+import oa.com.tests.actionrunners.interfaces.AbstractDefaultScriptActionRunner;
 import oa.com.tests.actions.TestAction;
-import oa.com.utils.WebUtils;
-import org.openqa.selenium.JavascriptExecutor;
-import org.openqa.selenium.Point;
 import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
-import org.openqa.selenium.interactions.Actions;
 
 /**
- * Hacer click derecho en algun elemento.
- *
+ * Intended to be used in iterators.
+ * @see ForActionRunner
  * @author nesto
  */
-public class RightClickActionRunner extends AbstractSelectorActionRunner {
+public class EndActionRunner extends AbstractDefaultScriptActionRunner{
 
-    public RightClickActionRunner(TestAction action) throws NoActionSupportedException, InvalidActionException {
+    public EndActionRunner(TestAction action) throws NoActionSupportedException, InvalidActionException {
         super(action);
     }
 
     @Override
     public void run(WebDriver driver) throws Exception {
-        final WebElement elem = get(driver);
-
-        WebUtils.preClick(elem, driver);
-        Actions actions = new Actions(driver);
-        actions.moveToElement(elem).contextClick().build().perform();
+        //Nothing special here. ;-)
     }
-
+    
 }

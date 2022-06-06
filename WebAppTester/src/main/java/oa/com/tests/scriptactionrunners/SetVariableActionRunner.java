@@ -60,7 +60,7 @@ public class SetVariableActionRunner extends AbstractDefaultScriptActionRunner
         keyName = "CssSelectorActionRunner.attr.type";
         String type = Utils.getJSONAttributeML(actionCommand, keyName);
         if (type != null) {
-            PathKeeper path = new PathKeeper(new TestAction("s={\"selector\":\"" + value + "\",\"type\":\"" + type + "\"}"));
+            PathKeeper path = new PathKeeper(value, type);
             final WebElement element = AbstractSelectorActionRunner.get(driver, path.getType(), path.getPath());
             SelectorVariable var = new SelectorVariable(element, name, path);
             setVariable(var);

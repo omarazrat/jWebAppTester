@@ -23,6 +23,7 @@ import oa.com.tests.actions.TestAction;
 import oa.com.tests.actionrunners.exceptions.InvalidActionException;
 import oa.com.tests.actionrunners.exceptions.NoActionSupportedException;
 import oa.com.tests.actionrunners.interfaces.PathKeeper.SearchTypes;
+import oa.com.utils.WebUtils;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -106,19 +107,7 @@ public abstract class AbstractSelectorActionRunner
         if (this.selector == null) {
             throw new BadSyntaxException(actionCommand);
         }
-        List<WebElement> resp = new LinkedList<>();
-        if (selector.hasPath()) {
-            final String path = selector.getPath();
-            switch (selector.getType()) {
-                case CSS:
-                    resp = driver.findElements(By.cssSelector(path));
-                    break;
-                case XPATH:
-                default:
-                    resp = driver.findElements(By.xpath(path));
-            }
-        }
-        return resp;
+        return WebUtils.getMany(selector, driver);
     }
 
     @Override

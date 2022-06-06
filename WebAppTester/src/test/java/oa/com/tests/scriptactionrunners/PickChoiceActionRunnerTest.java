@@ -14,6 +14,7 @@
 package oa.com.tests.scriptactionrunners;
 
 import java.io.IOException;
+import oa.com.tests.actionrunners.exceptions.InvalidParamException;
 import oa.com.tests.actionrunners.exceptions.InvalidVarNameException;
 import oa.com.tests.globals.ActionRunnerBaseTest;
 import oa.com.tests.globals.ActionRunnerManager;
@@ -31,7 +32,7 @@ public class PickChoiceActionRunnerTest extends ActionRunnerBaseTest {
     }
 
     @Test
-    public void testIt() throws IOException, InvalidVarNameException {
+    public void testIt() throws IOException, InvalidVarNameException, InvalidParamException {
         run("go={https://stackoverflow.com/}");
         run("pick choice={\"selector\":\"/html/body/footer/div/nav/div[3]/ul\",\"type\":\"xpath\",\"subselector\":\"li/a\","
                 + "\"variable\":\"link\",\"title\":\"" + getClass().getSimpleName() + ":\",\"message\":\"Select a link to navigate\""

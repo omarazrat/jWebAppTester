@@ -24,23 +24,23 @@ import oa.com.tests.actions.TestAction;
 import oa.com.utils.WebUtils;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.support.ui.ExpectedConditions;
-import org.openqa.selenium.support.ui.WebDriverWait;
 
 /**
-#esperar - Espera a que la página cargue completamente despues de un cambio de URL o despues de hacer clic en algun lado.
-#esperará a que cierto objeto (dado su selector), aparezca o simplemente a que la página cargue completa
-#Ejemplos:
-esperar:{}
-
-esperar:{selector:{#__next > div > div > main > div._3ZoET > div > div._2oVR5 > section > section:nth-child(2) > div}}
+ * #esperar - Espera a que la página cargue completamente despues de un cambio
+ * de URL o despues de hacer clic en algun lado. #esperará a que cierto objeto
+ * (dado su selector), aparezca o simplemente a que la página cargue completa
+ * #Ejemplos: esperar:{}
+ *
+ * esperar:{selector:{#__next > div > div > main > div._3ZoET > div > div._2oVR5
+ * > section > section:nth-child(2) > div}}
+ *
  * @author nesto
  */
-public class WaitActionRunner extends AbstractSelectorActionRunner{
+public class WaitActionRunner extends AbstractSelectorActionRunner {
 
     public WaitActionRunner(TestAction action) throws NoActionSupportedException, InvalidActionException, BadSyntaxException {
         super(action);
-        if(getSelector()==null){
+        if (getSelector() == null) {
             final TestAction testAction = new TestAction("command={\"selector\":\"body\"}");
             final PathKeeper PathKeeper = new PathKeeper(testAction);
             setSelector(PathKeeper);
@@ -52,7 +52,7 @@ public class WaitActionRunner extends AbstractSelectorActionRunner{
         final WebElement element = get(driver);
         WebUtils.waitToBeClickable(driver, element);
     }
-    
+
     @Override
     public void run(WebDriver driver, Logger log) throws Exception {
         String templateMsg = getActionLog();
@@ -64,5 +64,5 @@ public class WaitActionRunner extends AbstractSelectorActionRunner{
     public boolean isRequired() {
         return false;
     }
-    
- }
+
+}

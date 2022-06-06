@@ -14,6 +14,7 @@
 package oa.com.tests.scriptactionrunners;
 
 import java.io.IOException;
+import oa.com.tests.actionrunners.exceptions.InvalidParamException;
 import oa.com.tests.actionrunners.exceptions.InvalidVarNameException;
 import oa.com.tests.globals.ActionRunnerBaseTest;
 import org.junit.Test;
@@ -29,7 +30,7 @@ public class WriteActionRunnerTest extends ActionRunnerBaseTest{
     // The methods must be annotated with annotation @Test. For example:
     //
      @Test
-     public void testit() throws IOException, InvalidVarNameException {
+     public void testit() throws IOException, InvalidVarNameException, InvalidParamException {
          run("go={https://yari-demos.prod.mdn.mozit.cloud/es/docs/Web/HTML/Element/textarea/_sample_.example.html}");
          run("wait={\"selector\":\"body > textarea\"}");
          run("write={\"selector\":\"textarea\","

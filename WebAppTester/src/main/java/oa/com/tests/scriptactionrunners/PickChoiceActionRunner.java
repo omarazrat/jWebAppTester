@@ -133,7 +133,7 @@ implements VariableProvider{
         final WebElement selectedElem = elements.get(idx);
         String xpath = WebUtils.generateXPATH( selectedElem);
 
-        PathKeeper finder = new PathKeeper(new TestAction("command={\"selector\":\""+xpath+"\",\"type\":\"xpath\"}"));
+        PathKeeper finder = new PathKeeper(xpath,PathKeeper.SearchTypes.XPATH);
         this.variable = new SelectorVariable(selectedElem,varName,finder);
     }
 

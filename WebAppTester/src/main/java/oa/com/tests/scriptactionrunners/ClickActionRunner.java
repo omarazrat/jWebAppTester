@@ -38,7 +38,8 @@ public class ClickActionRunner extends AbstractSelectorActionRunner {
     @Override
     public void run(WebDriver driver) throws Exception {
         final WebElement elem = get(driver);
-//        WebUtils.waitToBeClickable(driver, elem);
+
+        WebUtils.preClick(elem, driver);
         Actions actions = new Actions(driver);
         actions.moveToElement(elem).click().build().perform();
     }

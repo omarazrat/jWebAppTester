@@ -4,7 +4,7 @@
 
     <groupId>oa.com.tests</groupId>
     <artifactId>WebAppTester</artifactId>
-    <version>0.3.8-SNAPSHOT</version>
+    <version>0.3.9-SNAPSHOT</version>
     <packaging>jar</packaging>
 
     <name>WebAppTester</name>

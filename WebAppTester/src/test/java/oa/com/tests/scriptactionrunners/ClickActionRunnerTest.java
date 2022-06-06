@@ -14,6 +14,7 @@
 package oa.com.tests.scriptactionrunners;
 
 import java.io.IOException;
+import oa.com.tests.actionrunners.exceptions.InvalidParamException;
 import oa.com.tests.actionrunners.exceptions.InvalidVarNameException;
 import oa.com.tests.globals.ActionRunnerBaseTest;
 import org.junit.Test;
@@ -30,7 +31,7 @@ public class ClickActionRunnerTest extends ActionRunnerBaseTest{
     
 
      @Test
-     public void testIt() throws IOException, InvalidVarNameException {
+     public void testIt() throws IOException, InvalidVarNameException, InvalidParamException {
         run("go={http://www.csszengarden.com}");
         run("wait={\"selector\":\".next > a:nth-child(1)\",\"type\":\"css\"}");
         run("click={\"selector\":\".next > a:nth-child(1)\",\"type\":\"css\"}");

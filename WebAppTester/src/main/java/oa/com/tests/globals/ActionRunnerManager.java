@@ -51,17 +51,21 @@ import org.openqa.selenium.safari.SafariDriver;
 import oa.com.tests.actionrunners.interfaces.ScriptActionRunner;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Optional;
+import java.util.Stack;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import javax.naming.InvalidNameException;
+import oa.com.tests.actionrunners.exceptions.InvalidParamException;
 import oa.com.tests.actionrunners.exceptions.InvalidVarNameException;
+import oa.com.tests.actionrunners.interfaces.IteratorActionRunner;
 import oa.com.tests.actionrunners.interfaces.PathKeeper;
 import oa.com.tests.actionrunners.interfaces.VariableProvider;
+import oa.com.tests.environment.IterationEnvironment;
 import oa.com.tests.lang.Variable;
 import oa.com.tests.lang.SelectorVariable;
+import oa.com.tests.scriptactionrunners.EndActionRunner;
 import oa.com.utils.Encryption;
 import org.openqa.selenium.Keys;
-import org.openqa.selenium.edge.EdgeDriverService;
-import org.openqa.selenium.ie.InternetExplorerDriverService;
 
 /**
  * Gestor de acciones.
@@ -91,6 +95,9 @@ public final class ActionRunnerManager {
      * Listado con todas las clases de funciones registradas.
      */
     private static List<Class<? extends ScriptActionRunner>> runnersCls = null;
+
+    private Stack<IterationEnvironment> iterativeCache = new Stack<>();
+    private int iterationsOpened = 0;
 
     static {
         try {
@@ -132,7 +139,7 @@ public final class ActionRunnerManager {
         }
     }
 
-    private AbstractDefaultScriptActionRunner findRunner(String actionCommand) throws BadSyntaxException {
+    private ScriptActionRunner findRunner(String actionCommand) throws BadSyntaxException {
         TestAction tester;
         tester = new TestAction(actionCommand);
         AbstractDefaultScriptActionRunner runner = null;
@@ -225,7 +232,7 @@ public final class ActionRunnerManager {
      * @param item
      */
     public static void exec(TreePath item, Logger log)
-            throws InvalidVarNameException, FileNotFoundException, IOException {
+            throws InvalidVarNameException, FileNotFoundException, IOException, InvalidParamException {
         File file = Utils.getFile(item);
         final String ERR_TITLE = globals.getString("globals.error.title");
         if (file.isDirectory()) {
@@ -307,7 +314,7 @@ public final class ActionRunnerManager {
      * @param log
      */
     public List<Exception> exec(File file, Logger log)
-            throws InvalidVarNameException, FileNotFoundException, IOException {
+            throws InvalidVarNameException, FileNotFoundException, IOException, InvalidParamException {
 //        final List<String> filteredLines = Files.lines(FileSystems.getDefault().getPath(file.getAbsolutePath()))
 //                .map(String::trim)
 //                .filter(l -> !l.isEmpty() && !l.startsWith("#"))
@@ -328,43 +335,47 @@ public final class ActionRunnerManager {
         int lineCounter = 0;
 //        try {
         while (lineCounter < filteredLines.size()) {
+            //Command preparation and parsing
+            final boolean inIterativeEnviron = !iterativeCache.isEmpty();
             boolean correct = true;
             command.add(filteredLines.get(lineCounter++));
             String actionCommand = command.stream().collect(joining(" "));
-            actionCommand = parse(actionCommand);
+            if (!inIterativeEnviron) {
+                actionCommand = parse(actionCommand);
+            }
             correct = !command.isEmpty();
             if (correct) {
-                AbstractDefaultScriptActionRunner runner;
+                ScriptActionRunner runner = null;
+                //Runner detection 
                 try {
-                    runner = findRunner(actionCommand);
-                } catch (BadSyntaxException ex) {
-//                        ex.printStackTrace();
-                    continue;
+                    runner = detectRunner(actionCommand, file.getAbsolutePath(), log);
+                } catch (NoActionSupportedException nase) {
+                    command.clear();
+                    resp.add(nase);
                 }
                 if (runner == null) {
-                    String message = globals.getString("exec.err.noSuchRunnerException")
-                            .replace("{0}", actionCommand)
-                            .replace("{1}", file.getAbsolutePath());
-                    resp.add(new NoActionSupportedException(message));
-//                    JOptionPane.showMessageDialog(null, message,
-//                            globals.getString("globals.error.title"), JOptionPane.ERROR_MESSAGE);
-                    log.severe(message);
-                    command.clear();
                     continue;
                 }
-
+                //fixme: nested for - run all only when all iterations have been closed.
+                final boolean isEnd = runner instanceof EndActionRunner;
                 try {
-                    runner.run(instance.getDriver(), log);
-                    if (runner instanceof VariableProvider) {
-                        VariableProvider varprovider = (VariableProvider) runner;
-                        Variable variable = varprovider.getVariable();
-                        if (variables.contains(variable)) {
-                            variables.remove(variable);
-                        }
-                        variables.add(variable);
+                    final boolean isIterator = runner instanceof IteratorActionRunner;
+                    if (!inIterativeEnviron || isIterator) {
+                        //runner execution
+                        execRunner(runner, log);
+                    } else if (inIterativeEnviron && !isEnd) {
+                        iterativeCache.peek().addInstruction(actionCommand);
+                    }
+                    //start iterative environment
+                    if (isIterator) {
+                        final IteratorActionRunner iterator = (IteratorActionRunner) runner;
+                        iterativeCache.push(new IterationEnvironment(iterator));
+                    } else if (isEnd) {//run all, ends iteration.
+                        
+                        resp.addAll(iterativeCache.pop().runitAll(driver, file.getAbsolutePath(), log));
                     }
                 } catch (Exception ex) {
-                    BadSyntaxException badSyntaxException = new BadSyntaxException(prepareBadSystaxExMsg(actionCommand, file));
+                    BadSyntaxException badSyntaxException = new BadSyntaxException(prepareBadSystaxExMsg(actionCommand, file.getAbsolutePath()));
                     log.log(Level.SEVERE, actionCommand, ex);
                     resp.add(badSyntaxException);
                 } finally {
@@ -381,16 +392,36 @@ public final class ActionRunnerManager {
         return resp;
     }
 
+    public static void execRunner(ScriptActionRunner runner, Logger log) throws Exception {
+        runner.run(instance.getDriver(), log);
+        if (runner instanceof VariableProvider) {
+            VariableProvider varprovider = (VariableProvider) runner;
+            Variable variable = varprovider.getVariable();
+            instance.addVariable(variable);
+        }
+    }
+
+    public static void addStVariable(Variable variable) {
+        instance.addVariable(variable);
+    }
+
+    private void addVariable(Variable variable) {
+        if (variables.contains(variable)) {
+            variables.remove(variable);
+        }
+        variables.add(variable);
+    }
+
     private static void throwBadSynstaxEx(final String actionCommand, File file, Logger log) throws HeadlessException {
-        String badSyntazMsg = prepareBadSystaxExMsg(actionCommand, file);
+        String badSyntazMsg = prepareBadSystaxExMsg(actionCommand, file.getAbsolutePath());
 //        JOptionPane.showMessageDialog(null, badSyntazMsg,globals.getString("globals.error.title"), JOptionPane.ERROR_MESSAGE);
         log.severe(badSyntazMsg);
     }
 
-    public static String prepareBadSystaxExMsg(final String actionCommand, File file) {
+    public static String prepareBadSystaxExMsg(final String actionCommand, String filePath) {
         String badSyntazMsg = globals.getString("exec.err.syntaxException")
                 .replace("{0}", actionCommand)
-                .replace("{1}", file.getAbsolutePath());
+                .replace("{1}", filePath);
         return badSyntazMsg;
     }
 
@@ -399,7 +430,7 @@ public final class ActionRunnerManager {
      * @throws InvalidVarNameException
      * @return
      */
-    public static String parse(String actionCommand) throws InvalidVarNameException {
+    public static String parse(String actionCommand) throws InvalidVarNameException,InvalidParamException {
         String resp = actionCommand;
         //Variables [:variable]
         resp = parseVariables(resp);
@@ -497,7 +528,7 @@ public final class ActionRunnerManager {
      * @throws InvalidVarNameException
      */
     private static String parseVariables(String actionCommand)
-            throws InvalidVarNameException {
+            throws InvalidVarNameException,InvalidParamException {
         String regexp = "(" + sqOpen + ":[0-9|a-z|A-Z]*" + sqClose + ")";
         Pattern pattern = Pattern.compile(regexp);
         Matcher matcher = pattern.matcher(actionCommand);
@@ -507,10 +538,20 @@ public final class ActionRunnerManager {
         }
 
         String resp = actionCommand;
-
+        boolean isSelector = false;
         for (int i = 1; i <= matcher.groupCount(); i++) {
             String varDef = matcher.group(i);
-            resp = resp.replace(varDef, resolveSelector4VarDef(varDef));
+
+            final PathKeeper.SearchTypes type = getType(varDef);
+            isSelector = type!=null;
+            final String selector = resolveSelector4VarDef(varDef);
+            resp = resp.replace(varDef, selector);
+            if(isSelector){
+                final boolean isXPath = type.compareTo(PathKeeper.SearchTypes.XPATH) == 0;
+                if(isXPath){
+                    throw new InvalidParamException("xpath selector in variable resolution. "+varDef+"="+selector);
+                }
+            }
         }
         return resp;
     }
@@ -522,7 +563,23 @@ public final class ActionRunnerManager {
      * [:NOMBRE_VARIABLE]
      * @return
      */
-    public static String resolveSelector4VarDef(String varDef) throws InvalidVarNameException {
+    private static String resolveSelector4VarDef(String varDef) throws InvalidVarNameException {
+        Variable var = getVariable(varDef);
+        if (var instanceof SelectorVariable) {
+            return ((SelectorVariable) var).getFinder().getPath();
+        }
+        return var.getValue().toString();
+    }
+
+    private static PathKeeper.SearchTypes getType(String varDef) throws InvalidVarNameException {
+        Variable var = getVariable(varDef);
+        if (var instanceof SelectorVariable) {
+            return ((SelectorVariable) var).getFinder().getType();
+        }
+        return null;
+    }
+
+    private static Variable getVariable(String varDef) throws InvalidVarNameException {
         final String varName = varDef.substring(0, varDef.length() - 1)
                 .substring(2);
         if (varName.isEmpty()) {
@@ -535,27 +592,7 @@ public final class ActionRunnerManager {
             throw new InvalidVarNameException(varName);
         }
         Variable var = varMatch.get();
-        if (var instanceof SelectorVariable) {
-            return resolveSelectorHelper(((SelectorVariable) var).getFinder());
-        }
-        return var.getValue().toString();
-    }
-
-    /**
-     * Retorna una representación de los siguientes valores de un objeto
-     * PathKeeper:
-     * {@link oa.com.tests.actionrunners.interfaces.PathKeeper#getPath()  path}
-     * +","type:"+
-     * {@link oa.com.tests.actionrunners.interfaces.PathKeeper#getType() type.lowercase}
-     *
-     * @param finder
-     * @return
-     */
-    private static String resolveSelectorHelper(PathKeeper finder) {
-        ResourceBundle bundle = ResourceBundle.getBundle("application");
-        String key = "CssSelectorActionRunner.attr.type";
-        String typeKey = bundle.getString(key);
-        return finder.getPath() + "\",\"" + typeKey + "\":\"" + finder.getType().name().toLowerCase();
+        return var;
     }
 
     /**
@@ -564,7 +601,7 @@ public final class ActionRunnerManager {
      * @param file
      * @param log
      */
-    public static List<Exception> execInstance(File file, Logger log) throws InvalidVarNameException, IOException {
+    public static List<Exception> execInstance(File file, Logger log) throws InvalidVarNameException, IOException, InvalidParamException {
         return instance.exec(file, log);
     }
 
@@ -576,4 +613,35 @@ public final class ActionRunnerManager {
     public static WebDriver getStDriver() {
         return instance.getDriver();
     }
+
+    /**
+     * Busca el {@link ScriptActionRunner ejecutor} correspondiente a cierto
+     * comando suministrado
+     *
+     * @param actionCommand El comando para el cual se busca el ejecutor
+     * @param filePath Ruta al archivo que se está procesando
+     * @param log
+     * @param command
+     * @return
+     */
+    public static ScriptActionRunner detectRunner(String actionCommand, String filePath, Logger log) throws NoActionSupportedException {
+        ScriptActionRunner resp;
+        try {
+            resp = instance.findRunner(actionCommand);
+        } catch (BadSyntaxException ex) {
+//                        ex.printStackTrace();
+            return null;
+        }
+        if (resp == null) {
+            String message = globals.getString("exec.err.noSuchRunnerException")
+                    .replace("{0}", actionCommand)
+                    .replace("{1}", filePath);
+            log.severe(message);
+            throw new NoActionSupportedException(message);
+//                    JOptionPane.showMessageDialog(null, message,
+//                            globals.getString("globals.error.title"), JOptionPane.ERROR_MESSAGE);
+        }
+        return resp;
+    }
+
 }

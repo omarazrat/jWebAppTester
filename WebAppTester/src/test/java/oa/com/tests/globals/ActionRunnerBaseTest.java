@@ -18,6 +18,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.logging.Logger;
 import lombok.Getter;
+import oa.com.tests.actionrunners.exceptions.InvalidParamException;
 import oa.com.tests.actionrunners.exceptions.InvalidVarNameException;
 import org.junit.AfterClass;
 
@@ -42,7 +43,7 @@ public abstract class ActionRunnerBaseTest {
         ActionRunnerManager.set(browser);
     }
     
-    public void run(String command) throws IOException, InvalidVarNameException{
+    public void run(String command) throws IOException, InvalidVarNameException, InvalidParamException{
         File f = File.createTempFile("WebAppTest", null);
         f.deleteOnExit();
         FileWriter writer = new FileWriter(f);

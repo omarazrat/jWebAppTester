@@ -16,6 +16,7 @@ package oa.com.tests.scriptactionrunners;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
+import oa.com.tests.actionrunners.exceptions.InvalidParamException;
 import oa.com.tests.actionrunners.exceptions.InvalidVarNameException;
 import oa.com.tests.globals.ActionRunnerBaseTest;
 import org.junit.After;
@@ -46,7 +47,7 @@ public class ScrollActionRunnerTest extends ActionRunnerBaseTest {
     }
 
     @Test
-    public void testIt() throws IOException, InvalidVarNameException {
+    public void testIt() throws IOException, InvalidVarNameException, InvalidParamException {
         //test on page
         run("go={https://lipsum.com/}");
         run("scroll={\"x\":\"10\", \"y\":\"100\"}");
@@ -57,6 +58,14 @@ public class ScrollActionRunnerTest extends ActionRunnerBaseTest {
         run("pause={\"time\":\"100 S\"}");
         run("scroll={\"x\":\"10\", \"y\":\"100\"}");
         run("pause={\"time\":\"5s\"}");
+        //another test
+        run("go={https://fallingguy.com/}");
+        run("for={\"var\":\"i\",\"exp\":\"{1..2000}\"}");
+        run("   scroll={\"x\":\"0\", \"y\":\"100\",\"selector\":\"#conteneur\"}");
+        run("   pause={\"time\":\"50 S\"}");
+        run("end={}");
+        run("pause={\"time\":\"5s\"}");
+
         //test on div
         File file = new File("src/test/resources/scrollPage.html");
         URL url = file.toURL();
