@@ -33,3 +33,23 @@ WebAppTester/WebTester.log.8.lck
 WebAppTester/WebTester.log.9
 WebAppTester/WebTester.log.9.lck
 WebAppTester/WebTester.log.lck
+
+# Compiled class file
+*.class
+
+# Log file
+*.log
+
+# IntelliJ
+/.idea/**
+*.iws
+out/
+*.iml
+modules.xml
+*.ipr
+
+#vscode
+.vscode/
+.classpath
+.project
+.settings/

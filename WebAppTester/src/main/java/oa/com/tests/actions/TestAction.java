@@ -16,7 +16,6 @@ package oa.com.tests.actions;
 import oa.com.tests.actionrunners.exceptions.BadSyntaxException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import lombok.AccessLevel;
 import lombok.Getter;
 import oa.com.tests.actionrunners.interfaces.ActionRunner;
 
@@ -28,23 +27,24 @@ import oa.com.tests.actionrunners.interfaces.ActionRunner;
  * go:{https://www.wolframalpha.com/}
  * @author nesto
  */
-@Getter()
+@Getter
 public class TestAction {
     private String name;
     private String command;
+    
     /**
-     * Constructora a partir de un comando completo.
+     * Constructor a partir de un comando completo.
      * @param fullCommand 
      * @throws oa.com.tests.actionrunners.exceptions.BadSyntaxException 
      */
-    public TestAction(String fullCommand) throws BadSyntaxException{
-        final Pattern pattern = Pattern.compile("^(.*)=\\{(.*)\\}$",Pattern.MULTILINE);
+    public TestAction(String fullCommand) throws BadSyntaxException {
+        final Pattern pattern = Pattern.compile("^(.*)=\\{(.*)\\}$", Pattern.MULTILINE);
         final Matcher matcher = pattern.matcher(fullCommand);
-        if(! matcher.matches() || matcher.groupCount()<2){
+        if(! matcher.matches() || matcher.groupCount() < 2) {
             throw new BadSyntaxException(fullCommand);
         }
         int counter = 1;
-        name=matcher.group(counter++).toLowerCase();
-        command="{"+matcher.group(counter++)+"}";
+        name = matcher.group(counter++).toLowerCase();
+        command = "{"+matcher.group(counter++)+"}";
     }
 }
