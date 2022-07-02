@@ -30,7 +30,6 @@ import oa.com.tests.actionrunners.exceptions.InvalidActionException;
 import oa.com.tests.actionrunners.exceptions.InvalidParamException;
 import oa.com.tests.actionrunners.exceptions.NoActionSupportedException;
 import oa.com.tests.actionrunners.interfaces.AbstractDefaultScriptActionRunner;
-import oa.com.tests.actionrunners.interfaces.IteratorActionRunner;
 import oa.com.tests.actionrunners.interfaces.PathKeeper;
 import oa.com.tests.actions.TestAction;
 import oa.com.tests.globals.ActionRunnerManager;
@@ -41,6 +40,7 @@ import oa.com.utils.WebUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
+import oa.com.tests.actionrunners.AbstractIteratorActionRunner;
 
 /**
  * for estilo linux argumentos: var=nombre de la variable a usar expr
@@ -56,8 +56,7 @@ import org.openqa.selenium.WebElement;
  *
  * @author nesto
  */
-public class ForActionRunner extends AbstractDefaultScriptActionRunner
-        implements IteratorActionRunner {
+public class ForActionRunner extends AbstractIteratorActionRunner {
 
     private List<String> interval;
     private PathKeeper path;
@@ -70,7 +69,7 @@ public class ForActionRunner extends AbstractDefaultScriptActionRunner
     }
 
     @Override
-    public void run(WebDriver driver) throws Exception {
+    public void prepare(WebDriver driver) throws Exception {
         String key = getClass().getSimpleName() + ".attr.var";
         final String actionCommand = getAction().getCommand();
         varName = Utils.getJSONAttributeML(actionCommand, key);
@@ -159,13 +158,13 @@ public class ForActionRunner extends AbstractDefaultScriptActionRunner
     }
 
     @Override
-    public Variable iterate(WebDriver driver) {
+    public boolean iterate(WebDriver driver) {
         final boolean usingInterval = interval != null;
         final int listSize = usingInterval ? interval.size() : Integer.MAX_VALUE;
         if (intervalPtr >= listSize) {
-            return null;
+            return false;
         }
-        Variable resp = null;
+        Variable var = null;
         if (usingInterval) {
             String point = interval.get(intervalPtr++);
             String varValue
@@ -175,17 +174,17 @@ public class ForActionRunner extends AbstractDefaultScriptActionRunner
             if (varValue.contains("-")) {
                 varValue = "-" + varValue.replace("-", "");
             }
-            resp = new StringVariable(varName, varValue);
+            var = new StringVariable(varName, varValue);
         } else {
             final WebElement element = WebUtils.getNthChild(path, driver, intervalPtr + 1);
             if (element == null) {
-                return null;
+                return false;
             }
-            resp = new SelectorVariable(element, varName, WebUtils.getNthPathKeeper(path, intervalPtr + 1));
+            var = new SelectorVariable(element, varName, WebUtils.getNthPathKeeper(path, intervalPtr + 1));
             intervalPtr++;
         }
-        ActionRunnerManager.addStVariable(resp);
-        return resp;
+        ActionRunnerManager.addStVariable(var);
+        return var!=null;
     }
 
 }

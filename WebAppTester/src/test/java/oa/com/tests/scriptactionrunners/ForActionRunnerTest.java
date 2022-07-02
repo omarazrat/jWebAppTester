@@ -28,39 +28,38 @@ public class ForActionRunnerTest extends ActionRunnerBaseTest{
      @Test
      public void testIt() throws IOException, InvalidVarNameException, InvalidParamException {
          //forma 1 incremental
-         run("go={https://blankslate.io/}");
-         run("for={\"var\":\"i\", \"exp\":\"{-1..50}\"}");
-         run("write={\"text\":\" [:i]\",\"selector\":\"#note-area\"}");
-         run("end={}");
-         run("pause={\"time\":\"3 s\"}");
+         run("go={https://blankslate.io/}\n"+
+         "for={\"var\":\"i\", \"exp\":\"{-1..50}\"}\n"+
+         "write={\"text\":\" [:i]\",\"selector\":\"#note-area\"}\n"+
+         "end={}\n"+
+         "pause={\"time\":\"3 s\"}");
          //forma 1 decremento
-         run("go={https://blankslate.io/}");
-         run("for={\"var\":\"i\", \"exp\":\"{1..-50}\"}");
-         run("write={\"text\":\" [:i]\",\"selector\":\"#note-area\"}");
-         run("end={}");
-         run("pause={\"time\":\"3 s\"}");
+         run("go={https://blankslate.io/}\n"+
+         "for={\"var\":\"i\", \"exp\":\"{1..-50}\"}\n"+
+         "write={\"text\":\" [:i]\",\"selector\":\"#note-area\"}\n"+
+         "end={}\n"+
+         "pause={\"time\":\"3 s\"}");
          //Forma 2
-         run("go={https://blankslate.io/}");
-         run("for={\"var\":\"word\", \"exp\":\"A B C D E F \"}");
-         run("write={\"text\":\" [:word]\",\"selector\":\"#note-area\"}");
-         run("end={}");
-         run("pause={\"time\":\"3 s\"}");
+         run("go={https://blankslate.io/}\n"+
+         "for={\"var\":\"word\", \"exp\":\"A B C D E F \"}\n"+
+         "write={\"text\":\" [:word]\",\"selector\":\"#note-area\"}\n"+
+         "end={}\n"+
+         "pause={\"time\":\"3 s\"}");
          //another one
-         run("go={https://mutable.gallery/board/}");
-         run("for={\"var\":\"word\", \"exp\":\"A1 B2 C3 D4 E5 F6 \"}");
-         run("click={\"selector\":\"button:first-of-type\",\"type\":\"css\" }");
-         run("pause={\"time\":\"1 s\"}");
-         run("end={}");
-         run("pause={\"time\":\"3 s\"}");
+         run("go={https://mutable.gallery/board/}\n"+
+         "for={\"var\":\"word\", \"exp\":\"A1 B2 C3 D4 E5 F6 \"}\n"+
+         "click={\"selector\":\"button:first-of-type\",\"type\":\"css\" }\n"+
+         "pause={\"time\":\"1 s\"}\n"+
+         "end={}\n"+
+         "pause={\"time\":\"3 s\"}");
          //forma 3
-         run("go={https://www.domo.com/covid19/data-explorer/all/}");
-         run("for={\"var\":\"tab\", \"selector\":\"a.NavigationGlobalMenu__link\", \"type\":\"css\"}");
-         run("wait={\"selector\":\"[:tab]\"}");
-         run("click={\"selector\":\"[:tab]\"}");
-         run("pause={\"time\":\"2 s\"}");
-         run("go={https://www.domo.com/covid19/data-explorer/all/}");
-         run("end={}");         
-         run("pause={\"time\":\"3 s\"}");
+        run("go={https://mdbootstrap.com/docs/b4/jquery/tables/pagination#basic-example}");
+        
+        run("for={\"var\":\"div\", \"selector\":\"ul.pagination > li.paginate_button\"}\n"+
+        "  click={\"selector\":\"[:div] > a\"}\n"+
+        "  pause={\"time\":\"10 s\"}\n"+
+        "end={}\n"+
+         "pause={\"time\":\"3 s\"}");
      }
 
 }

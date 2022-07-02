@@ -265,6 +265,49 @@ browser={SAFARI}
 ```
  Note: When a new browser is set, the default page will be loaded and all authentication data will be lost
 
+#### for
+
+iterative cycle, intended to repeat a set of actions several times.
+It always must be finished with an "end={}" instruction.
+formats: 
+```
+for={"var":"VAR_NAME","expr":"ELEMENTS_TO_ITERATE"}
+...instructions
+end={}
+```
+or
+```
+for={"var":"VAR_NAME","selector":"CSS_SELECTOR"}
+...instructions
+end={}
+```
+where
+- VAR_NAME - Name of the variable you want to be set with the proper value for each iteration
+- ELEMENTS_TO_ITERATE - This parameter has these forms:
+    - "A B C D 1 2 three" This sets respectively the values "A", "B", "C", "D", "1", "2", "three" on the variable for each iteration
+    - "{-50..50}" This format asks the iteration cycle to set the variable with the numbers -50, -49, -48,... 50 for each iteration.
+    - "{-0001..50}" As before, but the padding zeroes makes the number to have always 4 digits: "-0001", "0000", "0001", ... "0050" for each iteration.
+-CSS_SELECTOR - Iterates on the elements collected with the css path "CSS_SELECTOR:nth-child(N)", for N being a number from 1 to the number of elements found. Only CSS selectors are allowed for this command.
+Three different ways to use:
+
+Examples:
+```
+for={"var":"i","expr":"A1 B2 C3 D4 E5 F6"}
+    write={"text":" [:i] ","selector":"#note-area"}
+end={}
+
+#writes 52 times
+"for={"var":"i", "exp":"{-1..50}"}
+         write={"text":" [:i] ","selector":"#note-area"}
+end={}
+
+#clicks every element under "selector":"ul.pagination > li.paginate_button" and waits 10 seconds
+for={"var":"div", "selector":"ul.pagination > li.paginate_button"}
+        run("    click={"selector":"[:div] > a"}
+        run("    pause={"time":"10 s"}
+end={}
+```
+
 #### Variables
 
 Use existing variables inside your instructions writing the variable's name between square brackets

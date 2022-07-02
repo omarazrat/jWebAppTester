@@ -32,14 +32,13 @@ public class DummyActionRunner extends ActionRunnerBaseTest {
 //    public DummyActionRunner() {
 //        super(ActionRunnerManager.BROWSERTYPE.CHROME);
 //    }
-
-    
     // TODO add test methods here.
     // The methods must be annotated with annotation @Test. For example:
     //
-    @Test
+//    @Test
     public void testit() throws IOException, InvalidVarNameException, InvalidParamException {
-        forInjqueryPagination();
+//        runFile();
+//        forInjqueryPagination();
 //        forInFreePeople();
     }
 
@@ -68,33 +67,27 @@ public class DummyActionRunner extends ActionRunnerBaseTest {
         run("for={\"var\":\"browser\", \"exp\":\"CHROME EDGE FIREFOX OPERA SAFARI INTERNET_EXPLORER\"}");
         run("  browser={[:browser]}");
         run("  go={https://mdbootstrap.com/docs/b4/jquery/tables/pagination#basic-example}");
-        
+
         run("  for={\"var\":\"div\", \"selector\":\"ul.pagination > li.paginate_button\"}");
         run("    click={\"selector\":\"[:div] > a\"}");
         run("    pause={\"time\":\"10 s\"}");
         run("  end={}");
         run("end={}");
-        
-        
+
 //        run("for={\"var\":\"container\",\"selector\":\"tr > td:nth-child(15) > div.bg-grey.div-paso-inscripcion\",\"type\":\"css\"}");
 //        // tr.even:nth-child(250) > td:nth-child(15) > div:nth-child(1)
 //        run("wait={\"selector\":\"[:container] > a:first()\",\"type\":\"css\"}");
 //        run("click={\"selector\":\"[:container] > a:first()\",\"type\":\"css\"}");
 //        run("pause={\"time\":\"7 s\"}");
 //        run("end={}");
-/*
-final String BASE_PATH="C:\\Users\\nesto\\OneDrive\\Documentos\\Laboral\\Empresas\\Blackboard\\bin\\scripts\\1.Ultra\\";
-for (String path : new String[]{BASE_PATH+"login\\01.adminUltra-next.bbpd.io.txt"
-, BASE_PATH+"courses\\_start.txt"
-}) {
-File f = new File(path);
-final Logger log = Logger.getLogger(getClass().getSimpleName());
-ActionRunnerManager.execInstance(f, log);
-}
-run("click={\"selector\":\"/html/body/div[1]/div[2]/bb-base-layout/div/aside/div[1]/nav/ul/bb-base-navigation-button[4]/div/li/a\""
-+ ",\"type\":\"xpath\"}");
-run("scroll={\"selector\":\"#main-content-inner\",\"x\":\"0\",,\"y\":\"100\"}");
-System.out.println("");
-*/
+    }
+
+    private void runFile() throws InvalidVarNameException, IOException, InvalidParamException {
+        final String BASE_PATH = "C:\\Users\\nesto\\OneDrive\\Documentos\\Laboral\\Empresas\\Blackboard\\bin\\scripts\\Escape Room\\";
+        for (String path : new String[]{BASE_PATH + "escapePsiquiatrico.txt"}) {
+            File f = new File(path);
+            final Logger log = Logger.getLogger(getClass().getSimpleName());
+            ActionRunnerManager.execInstance(f, log);
+        }
     }
 }

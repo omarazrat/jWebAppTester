@@ -51,21 +51,19 @@ import org.openqa.selenium.safari.SafariDriver;
 import oa.com.tests.actionrunners.interfaces.ScriptActionRunner;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Optional;
-import java.util.Stack;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import javax.naming.InvalidNameException;
 import oa.com.tests.actionrunners.exceptions.InvalidParamException;
 import oa.com.tests.actionrunners.exceptions.InvalidVarNameException;
-import oa.com.tests.actionrunners.interfaces.IteratorActionRunner;
 import oa.com.tests.actionrunners.interfaces.PathKeeper;
 import oa.com.tests.actionrunners.interfaces.VariableProvider;
-import oa.com.tests.environment.IterationEnvironment;
 import oa.com.tests.lang.Variable;
 import oa.com.tests.lang.SelectorVariable;
 import oa.com.tests.scriptactionrunners.EndActionRunner;
 import oa.com.utils.Encryption;
 import org.openqa.selenium.Keys;
+import oa.com.tests.actionrunners.AbstractIteratorActionRunner;
+import oa.com.tests.scriptactionrunners.ForActionRunner;
 
 /**
  * Gestor de acciones.
@@ -95,9 +93,6 @@ public final class ActionRunnerManager {
      * Listado con todas las clases de funciones registradas.
      */
     private static List<Class<? extends ScriptActionRunner>> runnersCls = null;
-
-    private Stack<IterationEnvironment> iterativeCache = new Stack<>();
-    private int iterationsOpened = 0;
 
     static {
         try {
@@ -315,80 +310,59 @@ public final class ActionRunnerManager {
      */
     public List<Exception> exec(File file, Logger log)
             throws InvalidVarNameException, FileNotFoundException, IOException, InvalidParamException {
-//        final List<String> filteredLines = Files.lines(FileSystems.getDefault().getPath(file.getAbsolutePath()))
-//                .map(String::trim)
-//                .filter(l -> !l.isEmpty() && !l.startsWith("#"))
-//                .collect(toList());
         List<Exception> resp = new LinkedList<>();
         final List<String> filteredLines = new LinkedList<>();
         BufferedReader reader = new BufferedReader(new FileReader(file));
+        //Filtrado de líneas de archivo
+        String commandLine = "";
         for (String line = reader.readLine(); line != null; line = reader.readLine()) {
             line = line.trim();
             if (line.isEmpty() || line.startsWith("#")) {
                 continue;
             }
-            filteredLines.add(line);
+            commandLine +=" "+ line;
+            commandLine = commandLine.trim();
+            if (isValidCommand(commandLine)) {
+                filteredLines.add(commandLine);
+                commandLine = "";
+            }
         };
         reader.close();
 
-        List<String> command = new LinkedList<>();
         int lineCounter = 0;
 //        try {
         while (lineCounter < filteredLines.size()) {
             //Command preparation and parsing
-            final boolean inIterativeEnviron = !iterativeCache.isEmpty();
-            boolean correct = true;
-            command.add(filteredLines.get(lineCounter++));
-            String actionCommand = command.stream().collect(joining(" "));
-            if (!inIterativeEnviron) {
-                actionCommand = parse(actionCommand);
+            String actionCommand = filteredLines.get(lineCounter++);
+            actionCommand = parse(actionCommand);
+            ScriptActionRunner runner = null;
+            //Runner detection 
+            try {
+                runner = detectRunner(actionCommand, file.getAbsolutePath(), log);
+            } catch (NoActionSupportedException nase) {
+                resp.add(nase);
             }
-            correct = !command.isEmpty();
-            if (correct) {
-                ScriptActionRunner runner = null;
-                //Runner detection 
-                try {
-                    runner = detectRunner(actionCommand, file.getAbsolutePath(), log);
-                } catch (NoActionSupportedException nase) {
-                    command.clear();
-                    resp.add(nase);
+            if (runner == null) {
+                continue;
+            }
+
+            final boolean isEnd = runner instanceof EndActionRunner;
+            try {
+                final boolean isIterator = runner instanceof AbstractIteratorActionRunner;
+                if (isIterator) {
+                    AbstractIteratorActionRunner iterator = (AbstractIteratorActionRunner) runner;
+                    iterator.prepare(driver);
+                    lineCounter += iterator.seed(filteredLines.subList(lineCounter, filteredLines.size()-1), file.getAbsolutePath(), log);
                 }
-                if (runner == null) {
-                    continue;
-                }
-                //fixme: nested for - run all only when all iterations have been closed.
-                final boolean isEnd = runner instanceof EndActionRunner;
-                try {
-                    final boolean isIterator = runner instanceof IteratorActionRunner;
-                    if (!inIterativeEnviron || isIterator) {
-                        //runner execution
-                        execRunner(runner, log);
-                    } else if (inIterativeEnviron && !isEnd) {
-                        iterativeCache.peek().addInstruction(actionCommand);
-                    }
-                    //start iterative environment
-                    if (isIterator) {
-                        final IteratorActionRunner iterator = (IteratorActionRunner) runner;
-                        iterativeCache.push(new IterationEnvironment(iterator));
-                    } else if (isEnd) {//run all, ends iteration.
-                        
-                        resp.addAll(iterativeCache.pop().runitAll(driver, file.getAbsolutePath(), log));
-                    }
-                } catch (Exception ex) {
-                    BadSyntaxException badSyntaxException = new BadSyntaxException(prepareBadSystaxExMsg(actionCommand, file.getAbsolutePath()));
-                    log.log(Level.SEVERE, actionCommand, ex);
-                    resp.add(badSyntaxException);
-                } finally {
-                    command.clear();
-                }
+                //runner execution
+                execRunner(runner, log);
+            } catch (Exception ex) {
+                BadSyntaxException badSyntaxException = new BadSyntaxException(prepareBadSystaxExMsg(actionCommand, file.getAbsolutePath()));
+                log.log(Level.SEVERE, actionCommand, ex);
+                resp.add(badSyntaxException);
             }
         }
-        if (!command.isEmpty()) {
-            throwBadSynstaxEx(command.stream().collect(joining(" ")), file, log);
-        }
-//        } finally {
-//            variables.clear();
-//        }
+
         return resp;
     }
 
@@ -430,7 +404,7 @@ public final class ActionRunnerManager {
      * @throws InvalidVarNameException
      * @return
      */
-    public static String parse(String actionCommand) throws InvalidVarNameException,InvalidParamException {
+    public static String parse(String actionCommand) throws InvalidVarNameException, InvalidParamException {
         String resp = actionCommand;
         //Variables [:variable]
         resp = parseVariables(resp);
@@ -528,7 +502,7 @@ public final class ActionRunnerManager {
      * @throws InvalidVarNameException
      */
     private static String parseVariables(String actionCommand)
-            throws InvalidVarNameException,InvalidParamException {
+            throws InvalidVarNameException, InvalidParamException {
         String regexp = "(" + sqOpen + ":[0-9|a-z|A-Z]*" + sqClose + ")";
         Pattern pattern = Pattern.compile(regexp);
         Matcher matcher = pattern.matcher(actionCommand);
@@ -543,13 +517,13 @@ public final class ActionRunnerManager {
             String varDef = matcher.group(i);
 
             final PathKeeper.SearchTypes type = getType(varDef);
-            isSelector = type!=null;
+            isSelector = type != null;
             final String selector = resolveSelector4VarDef(varDef);
             resp = resp.replace(varDef, selector);
-            if(isSelector){
+            if (isSelector) {
                 final boolean isXPath = type.compareTo(PathKeeper.SearchTypes.XPATH) == 0;
-                if(isXPath){
-                    throw new InvalidParamException("xpath selector in variable resolution. "+varDef+"="+selector);
+                if (isXPath) {
+                    throw new InvalidParamException("xpath selector in variable resolution. " + varDef + "=" + selector);
                 }
             }
         }
@@ -615,6 +589,36 @@ public final class ActionRunnerManager {
     }
 
     /**
+     * Detecta si este es un comando de cierre end.
+     *
+     * @param command
+     * @return
+     */
+    public static boolean testEndCommand(String command) {
+        try {
+            EndActionRunner runner = new EndActionRunner(new TestAction(command));
+        } catch (Exception ex) {
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * Detecta si este es un comando iterativo (for)
+     *
+     * @param command
+     * @return
+     */
+    public static boolean testIterativeCommand(String command) {
+        try {
+            ForActionRunner runner = new ForActionRunner(new TestAction(command));
+        } catch (Exception ex) {
+            return false;
+        }
+        return true;
+    }
+
+    /**
      * Busca el {@link ScriptActionRunner ejecutor} correspondiente a cierto
      * comando suministrado
      *
@@ -642,6 +646,12 @@ public final class ActionRunnerManager {
 //                            globals.getString("globals.error.title"), JOptionPane.ERROR_MESSAGE);
         }
         return resp;
+    }
+
+    private boolean isValidCommand(String commandLine) {
+        final Pattern pattern = Pattern.compile("^\\w.*=\\{.*\\}$");
+        final Matcher matcher = pattern.matcher(commandLine);
+        return matcher.matches();
     }
 
 }
