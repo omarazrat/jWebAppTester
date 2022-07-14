@@ -16,7 +16,6 @@ package oa.com.tests.actionrunners.interfaces;
 import java.util.Optional;
 import java.util.ResourceBundle;
 import oa.com.tests.actions.TestAction;
-import java.util.logging.Logger;
 import oa.com.utils.I18n;
 import org.openqa.selenium.WebDriver;
 
@@ -26,7 +25,7 @@ import org.openqa.selenium.WebDriver;
  *
  * @author nesto
  */
-public interface ScriptActionRunner {
+public interface ScriptActionRunner extends ActionRunner{
 
     /**
      * La accion debe ser distintiva, unica entre todos los parsers Nota: Se
@@ -46,23 +45,6 @@ public interface ScriptActionRunner {
         final String key = getClass().getSimpleName()+".action.log";
         return bundle.getString(key);
     }    
-
-    /**
-     * Ejecucion del script correspondiente.
-     *
-     * @param driver
-     * @throws Exception
-     */
-    public void run(WebDriver driver) throws Exception;
-
-    /**
-     * Ejecucion del script correspondiente.
-     *
-     * @param driver
-     * @param log Archivo de registro
-     * @throws Exception
-     */
-    public void run(WebDriver driver, Logger log) throws Exception;
 
     /**
      * Si este runner soporta este comando o no.

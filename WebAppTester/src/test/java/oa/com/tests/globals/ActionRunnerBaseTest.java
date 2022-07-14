@@ -44,15 +44,7 @@ public abstract class ActionRunnerBaseTest {
     }
     
     public void run(String command) throws IOException, InvalidVarNameException, InvalidParamException{
-        File f = File.createTempFile("WebAppTest", null);
-        f.deleteOnExit();
-        FileWriter writer = new FileWriter(f);
-        writer.append(command);
-        writer.close();
-        Logger log = Logger.getLogger("WebAppTester");
-//        log.addHandler(new ConsoleHandler());
-        
-        ActionRunnerManager.execInstance(f, log);
+        ActionRunnerManager.runSt(command);
     }
     
     @AfterClass

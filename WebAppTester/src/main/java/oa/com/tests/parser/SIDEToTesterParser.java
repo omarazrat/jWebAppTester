@@ -24,7 +24,7 @@ import oa.com.tests.scriptactionrunners.ClickActionRunner;
 import oa.com.tests.scriptactionrunners.GoActionRunner;
 import oa.com.tests.scriptactionrunners.WaitActionRunner;
 import oa.com.tests.scriptactionrunners.WriteActionRunner;
-import oa.com.tests.webapptester.MainApp;
+import oa.com.tests.swing.MainApp;
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
@@ -321,10 +321,10 @@ public class SIDEToTesterParser {
             } catch (NoActionSupportedException ex) {
                 return ex.getRunnerAction();
             } catch (InvalidActionException ex) {
-                Logger.getLogger("Probador Web").log(Level.SEVERE, null, ex);
+                Logger.getLogger("WebAppTester").log(Level.SEVERE, null, ex);
             }
         } catch (BadSyntaxException ex) {
-            Logger.getLogger("Probador Web").log(Level.SEVERE, null, ex);
+            Logger.getLogger("WebAppTester").log(Level.SEVERE, null, ex);
         }
         return null;
     }

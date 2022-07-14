@@ -81,29 +81,63 @@
 #
 #clic - Hace clic en un componente de la pagina dado un selector css.
 #Argumentos:
-# - selector : El selector para el objeto sobre el cual hacer clic. Puede ser un selector css o xpath
+#- selector : (Opcional) El selector para el objeto sobre el cual hacer clic. Puede ser un selector css o xpath
 # - tipo (opcional): El tipo de selector que se está usando: "css/xpath". Si no se especifica, se usará css
+#Si no se especifica un selector, se lanza el evento clic donde quiera que esté ubicado el cursor.
 #Ejemplo:
 #clic={ 
 #  "selector":"#search_button_homepage"
 #}
+#
 #doble clic - Hace doble clic en algun elemento de la pagina, dado su selector.
 #Argumentos:
-# - selector : El selector para el objeto sobre el cual hacer doble clic. Puede ser un selector css o xpath
+#- selector : (Opcional) El selector para el objeto sobre el cual hacer doble clic. Puede ser un selector css o xpath
 # - tipo (opcional): El tipo de selector que se está usando: "css/xpath". Si no se especifica, se usará css
+#Si no se especifica un selector, se lanza el evento doble clic donde quiera que esté ubicado el cursor.
 #Ejemplo:
 #doble clic={
 #    "selector": "/html/body",
 #     "tipo": "xpath"
 #}
+#
 #clic derecho - Hace clic derecho en cualquier elemento de la pagina, dado su selector.
 #Argumentos:
-# - selector : El selector para el objeto sobre el cual hacer clic derecho. Puede ser un selector css o xpath
+#- selector : (Opcional) El selector para el objeto sobre el cual hacer clic derecho. Puede ser un selector css o xpath
 # - tipo (opcional): El tipo de selector que se está usando: "css/xpath". Si no se especifica, se usará css
+#Si no se especifica un selector, se lanza el evento clic derecho donde quiera que esté ubicado el cursor.
 #Ejemplo:
 #clic derecho={
 #    "selector": "#Identificacion"
 #}
+#
+# ubicar puntero raton - Ubica el puntero del ratón en una posición específica
+#Parametros:
+ #- tipoMovimiento (opcional): Una de las siguientes opciones:
+#    FROM_UL_CORNER (por omisión)- Para ubicar el puntero en una posición relativa a la esquina superior izquierda.
+#    FROM_CUR_LOCATION - Para ubicar el puntero moviéndolo desde su  ubicación actual.
+#    FROM_CNTR_OBJECT - Para ubicarlo desde el centro de un objeto específico.
+ #- x: el número de pixeles a desplazar horizontalmente(>0 a la derecha, <0 a la izquierda)
+ #- y: el número de pixeles a desplazar verticalmente(>0 abajo, <0 arriba)
+ #- selector (opcional): El selector para el objeto sobre el cual hacer el desplazamiento. Si no se especifica se toma la página activa (body).
+#Sólo utilizar con FROM_CNTR_OBJECT
+ #- tipo (opcional): El tipo de selector que se está usando: "css/xpath". Si no se especifica, se usará css
+#
+#Ejemplos:
+#```
+#ubicar puntero raton={
+#    "tipoMovimiento":"FROM_UL_CORNER",
+#    "x":"150",
+#    "y":"350"
+#}
+#```
+#```
+#ubicar puntero raton={
+#    "tipoMovimiento":"FROM_CNTR_OBJECT",
+#    "x":"150",
+#    "y":"350",
+#    "selector":"img:nth-of-type(2)"
+#}
+#```
 #
 #desplazar - Realiza un desplazamiento por la pantalla horizontalmente (x) o verticalmente (Y)
 # una cierta cantidad de pixeles.

@@ -11,7 +11,7 @@
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  */
-package oa.com.tests.webapptester;
+package oa.com.tests.swing;
 
 import oa.com.tests.actionrunners.exceptions.AbstractException;
 import oa.com.tests.Utils;
@@ -22,6 +22,7 @@ import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.GridLayout;
 import java.awt.HeadlessException;
 import java.awt.Image;
 import java.awt.event.ActionEvent;
@@ -52,11 +53,14 @@ import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JTabbedPane;
 import javax.swing.JTextArea;
 import javax.swing.JTree;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import lombok.Data;
+import oa.com.tests.plugins.AbstractDefaultPluginRunner;
 import oa.com.utils.Encryption;
 
 //import static javafx.application.Application.launch;
@@ -76,7 +80,7 @@ public class MainApp extends JFrame {
     private Canvas imageContainer;
     private final String NEW_LINE = System.getProperty("line.separator");
     private final String LOG_NAME = "WebTester.log";
-    private static Logger log = Logger.getLogger("Probador Web");
+    private static Logger log = Logger.getLogger("WebAppTester");
 
     public enum PROPS {
         JTREE,
@@ -188,12 +192,12 @@ public class MainApp extends JFrame {
         rootTree.setPreferredSize(treeDimension);
         rootTree.setMinimumSize(rootTree.getSize());
         final JScrollPane treeScrollPane = new JScrollPane(rootTree, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-//        final Dimension treeSize = new Dimension(330, 400);
-//        treeScrollPane.setPreferredSize(treeSize);
-//        treeScrollPane.setSize(treeScrollPane.getPreferredSize());
-//        treeScrollPane.setMinimumSize(treeScrollPane.getSize());
 
-        JButton goButton = new JButton(globals.getString("button.runAction")), reloadButton = new JButton(globals.getString("button.reloadTree")), parseSIButton = new JButton(globals.getString("button.parseSIDE")), pwdButton = new JButton(globals.getString("button.buildPWD"));
+        // <editor-fold defaultstate="collapsed" desc="buttons">
+        JButton goButton = new JButton(globals.getString("button.runAction")), 
+                reloadButton = new JButton(globals.getString("button.reloadTree")), 
+                parseSIButton = new JButton(globals.getString("button.parseSIDE")), 
+                pwdButton = new JButton(globals.getString("button.buildPWD"));
         parseSIButton.addActionListener(evt -> {
             JFileChooser chooser = new JFileChooser();
             chooser.addChoosableFileFilter(new FileNameExtensionFilter(
@@ -240,6 +244,8 @@ public class MainApp extends JFrame {
                         globals.getString("button.buildPWD.message"),
                         globals.getString("button.buildPWD"),
                         JOptionPane.INFORMATION_MESSAGE);
+                if(unencrypted==null)
+                    return;
                 final String encrypted = Encryption.encrypt(unencrypted);
                 JOptionPane.showInputDialog(this,
                         globals.getString("button.buildPWD.message.encrypted"),
@@ -248,6 +254,31 @@ public class MainApp extends JFrame {
                 log.log(Level.SEVERE, null, ex);
             }
         });
+        
+        JTabbedPane tabs = new JTabbedPane();
+        final JPanel buttonsPanel = new JPanel(new GridBagLayout());
+        tabs.add(buttonsPanel);
+        gbc.gridwidth = 2;
+        gbc.fill=GridBagConstraints.BOTH;
+        gbc.gridx=0;
+        gbc.gridy++;
+        gbc.anchor = GridBagConstraints.CENTER;
+        buttonsPanel.add(goButton, gbc);
+        gbc.gridx += gbc.gridwidth;
+        buttonsPanel.add(reloadButton, gbc);
+        gbc.gridx += gbc.gridwidth;
+        buttonsPanel.add(browserTree, gbc);
+        gbc.gridwidth = 3;
+        gbc.gridx = 0;
+        gbc.gridy++;
+        buttonsPanel.add(parseSIButton, gbc);
+        gbc.gridx += gbc.gridwidth;
+        buttonsPanel.add(pwdButton, gbc);
+        tabs.add(globals.getString("window.tools.panel"), buttonsPanel);
+
+        //</editor-fold>
+
+        // <editor-fold defaultstate="collapsed" desc="Label and icon">
         label.setPreferredSize(new Dimension(330, 26));
         label.setSize(label.getPreferredSize());
         label.addMouseListener(new MouseListener() {
@@ -318,6 +349,9 @@ public class MainApp extends JFrame {
         imageContainer.setMinimumSize(imageContainer.getPreferredSize());
         errImage = findImage("/icons/error.png");
         warnImage = findImage("/icons/warning.png");
+                //</editor-fold>
+
+        // <editor-fold defaultstate="collapsed" desc="Browser drop-down list">
         for (String item : Arrays.asList(ActionRunnerManager.BROWSERTYPE.values())
                 .stream()
                 .map(bn -> globals.getString("settings.driver." + bn.name() + ".name"))
@@ -338,29 +372,54 @@ public class MainApp extends JFrame {
             browserTree.setSelectedItem(globals.getString("settings.driver." + storedBrowserName + ".name"));
         }
         updateBrowser(false);
+                //</editor-fold>
+
         rootTree.setModel(ActionRunnerManager.getTreeModel());
+        // <editor-fold defaultstate="collapsed" desc="Space for plugins">
+        final List<AbstractDefaultPluginRunner> plugins = ActionRunnerManager.getPluginsSt();
+        boolean hasPlugins = !plugins.isEmpty();
+        int addedPlugins = 0;
+        JPanel pluginGrid = new JPanel(new GridBagLayout());
+        if (hasPlugins) {
+            gbc.gridx = gbc.gridy = 0;
+            gbc.fill = GridBagConstraints.BOTH;
+            for (AbstractDefaultPluginRunner plugin : plugins) {
+                JButton pluginBtn;
+                try {
+                    pluginBtn = new JButton(plugin.getButtonActionCommand(), plugin.getIcon());
+                    pluginBtn.addActionListener(plugin.getActionListener());
+                    pluginGrid.add(pluginBtn, gbc);
+                    pluginBtn.setPreferredSize(new Dimension(190, 32));
+                    gbc.gridx++;
+                    if (gbc.gridx == 2) {
+                        gbc.gridx = 0;
+                        gbc.gridy++;
+                    }
+                    addedPlugins++;
+                } catch (IOException ex) {
+                    log.log(Level.SEVERE, null, ex);
+                }
+            }
+            
+            tabs.add(globals.getString("window.plugins.panel"), pluginGrid);
+        }
+        //</editor-fold>
+
 //Distrubucion grafica
         setLayout(layout);
         gbc.gridwidth = 6;
         gbc.gridx = gbc.gridy = 0;
         getContentPane().add(treeScrollPane, gbc);
 
-        gbc.gridwidth = 2;
+        gbc.gridwidth=6;
+        gbc.gridheight=3;
         gbc.gridy++;
-        gbc.anchor = GridBagConstraints.CENTER;
-        getContentPane().add(goButton, gbc);
-        gbc.gridx += gbc.gridwidth;
-        getContentPane().add(reloadButton, gbc);
-        gbc.gridx += gbc.gridwidth;
-        getContentPane().add(browserTree, gbc);
-        gbc.gridwidth = 3;
-        gbc.gridx = 0;
-        gbc.gridy++;
-        getContentPane().add(parseSIButton, gbc);
-        gbc.gridx += gbc.gridwidth;
-        getContentPane().add(pwdButton, gbc);
+        gbc.fill = GridBagConstraints.BOTH;
+        getContentPane().add(tabs,gbc);
+        
+        gbc.gridy+=gbc.gridheight;
+        gbc.gridheight=1;
         gbc.gridwidth = 4;
-        gbc.gridy++;
         gbc.gridx = 0;
         gbc.fill = GridBagConstraints.BOTH;
         getContentPane().add(label, gbc);
@@ -409,9 +468,9 @@ public class MainApp extends JFrame {
             fileHandler.setFormatter(new SimpleFormatter());
             log.addHandler(fileHandler);
         } catch (IOException ex) {
-            Logger.getLogger("Probador Web").log(Level.SEVERE, null, ex);
+            Logger.getLogger("WebAppTester").log(Level.SEVERE, null, ex);
         } catch (SecurityException ex) {
-            Logger.getLogger("Probador Web").log(Level.SEVERE, null, ex);
+            Logger.getLogger("WebAppTester").log(Level.SEVERE, null, ex);
         }
         Thread t = new Thread(new Runnable() {
             @Override

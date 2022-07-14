@@ -13,6 +13,8 @@
  */
 package oa.com.tests.scriptactionrunners;
 
+import java.time.Duration;
+import oa.com.tests.actionrunners.exceptions.BadSyntaxException;
 import oa.com.tests.actions.TestAction;
 import oa.com.tests.actionrunners.exceptions.InvalidActionException;
 import oa.com.tests.actionrunners.exceptions.NoActionSupportedException;
@@ -22,6 +24,8 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.interactions.Actions;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
 
 /**
  * Usa la funcion {@link WebElement#click()}, buscando el elemento en el
@@ -37,10 +41,15 @@ public class ClickActionRunner extends AbstractSelectorActionRunner {
 
     @Override
     public void run(WebDriver driver) throws Exception {
-        final WebElement elem = get(driver);
-
-        WebUtils.preClick(elem, driver);
         Actions actions = new Actions(driver);
-        actions.moveToElement(elem).click().build().perform();
+        try {
+            final WebElement elem = get(driver);
+
+            WebUtils.preClick(elem, driver);
+            actions.moveToElement(elem).click().build().perform();
+        } catch (BadSyntaxException noSelectorEx) {
+            //click donde esté
+            actions.click().build().perform();
+        }
     }
 }

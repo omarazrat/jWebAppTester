@@ -383,7 +383,7 @@ public abstract class Utils {
                         resp.add((Class<T>) objclazz);
                     }
                 } catch (ClassNotFoundException ex) {
-                    Logger.getLogger("Probador Web").log(Level.SEVERE, null, ex);
+                    Logger.getLogger("WebAppTester").log(Level.SEVERE, null, ex);
                 }
             }
         }
@@ -391,7 +391,7 @@ public abstract class Utils {
     }
 
     public static Logger getLogger() {
-        Logger log = Logger.getLogger("Probador Web");
+        Logger log = Logger.getLogger("WebAppTester");
         return log;
     }
 

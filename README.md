@@ -141,8 +141,9 @@ If you need to write the text "[%", instead write "[%%"
 
 Params:
 
- - selector : The selector of the object to click. Could be a css or xpath selector
+ - selector (optional): The selector of the object to click. Could be a css or xpath selector
  - type (optional): The type of the selector to be used: "css/xpath". If missing, css will be used
+If no selector provided, the click event is triggered wherever the mouse pointer is located.
 
 Example:
 ```
@@ -152,8 +153,9 @@ click={
 ```
 #### double click - Double-clicks any element in the page, given its selector.
 Params:
- - selector : The selector of the object to double click. Could be a css or xpath selector
+ - selector (optional): The selector of the object to double click. Could be a css or xpath selector
  - type (optional): The type of the selector to be used: "css/xpath". If missing, css will be used
+If no selector provided, the double click event is triggered wherever the mouse pointer is located.
 
 Example:
 ```
@@ -163,13 +165,41 @@ double click={
 ```
 #### right click - Right clickks any element in the page, given its selector.
 Params:
- - selector : The selector of the object to right click. Could be a css or xpath selector
+ - selector (optional): The selector of the object to right click. Could be a css or xpath selector
  - type (optional): The type of the selector to be used: "css/xpath". If missing, css will be used
+If no selector provided, the right click event is triggered wherever the mouse pointer is located.
 
 Example:
 ```
 right click={
     "selector": "Identificacion"
+}
+```
+
+#### place mouse pointer - Place the mouse pointer in screen
+Params:
+ - offsetType (optional): One of these:
+    FROM_UL_CORNER (default)- To place the mouse pointer relative to the upper left corner
+    FROM_CUR_LOCATION - To place the mouse pointer from its current location
+    FROM_CNTR_OBJECT - To place the mouse pointer from the center of a given object
+ - x: the horizontal pixels to move the mouse pointer
+ - y: the vertical pixels to move the mouse pointer
+ -selector: the selector for the object (use only with FROM_CNTR_OBJECT)
+ -type: Type of the selector for the object (default = css)
+Examples:
+```
+place mouse pointer={
+    "offsetType":"FROM_UL_CORNER",
+    "x":"150",
+    "y":"350"
+}
+```
+```
+place mouse pointer={
+    "offsetType":"FROM_CNTR_OBJECT",
+    "x":"150",
+    "y":"350",
+    "selector":"img:nth-of-type(2)"
 }
 ```
 
@@ -505,8 +535,9 @@ Si necesita escribir el texto "[%", sin referirse a ningún comando, escrí­balo a
 
 #### clic - Hace clic en un componente de la pagina dado un selector css.
 Argumentos:
- - selector : El selector para el objeto sobre el cual hacer clic. Puede ser un selector css o xpath
+ - selector : (Opcional) El selector para el objeto sobre el cual hacer clic. Puede ser un selector css o xpath
  - tipo (opcional): El tipo de selector que se está usando: "css/xpath". Si no se especifica, se usará css
+Si no se especifica un selector, se lanza el evento clic donde quiera que esté ubicado el cursor.
 
 Ejemplo:
 
@@ -518,8 +549,9 @@ clic={
 
 #### doble clic - Hace doble clic en algun elemento de la pagina, dado su selector.
 Argumentos:
- - selector : El selector para el objeto sobre el cual hacer doble clic. Puede ser un selector css o xpath
+- selector : (Opcional) El selector para el objeto sobre el cual hacer doble clic. Puede ser un selector css o xpath
  - tipo (opcional): El tipo de selector que se está usando: "css/xpath". Si no se especifica, se usará css
+Si no se especifica un selector, se lanza el evento doble clic donde quiera que esté ubicado el cursor.
 
 Ejemplo:
 
@@ -532,8 +564,9 @@ doble clic={
 
 #### clic derecho - Hace clic derecho en cualquier elemento de la pagina, dado su selector.
 Argumentos:
- - selector : El selector para el objeto sobre el cual hacer clic derecho. Puede ser un selector css o xpath
+- selector : (Opcional) El selector para el objeto sobre el cual hacer clic derecho. Puede ser un selector css o xpath
  - tipo (opcional): El tipo de selector que se está usando: "css/xpath". Si no se especifica, se usará css
+Si no se especifica un selector, se lanza el evento clic derecho donde quiera que esté ubicado el cursor.
 
 Ejemplo:
 
@@ -542,7 +575,65 @@ clic derecho={
     "selector": "Identificacion"
 }
 ```
+#### ubicar puntero raton - Ubica el puntero del ratón en una posición específica
+Parametros:
+ - tipoMovimiento (opcional): Una de las siguientes opciones:
+    FROM_UL_CORNER (por omisión)- Para ubicar el puntero en una posición relativa a la esquina superior izquierda.
+    FROM_CUR_LOCATION - Para ubicar el puntero moviéndolo desde su  ubicación actual.
+    FROM_CNTR_OBJECT - Para ubicarlo desde el centro de un objeto específico.
+ - x: el número de pixeles a desplazar horizontalmente(>0 a la derecha, <0 a la izquierda)
+ - y: el número de pixeles a desplazar verticalmente(>0 abajo, <0 arriba)
+ - selector (opcional): El selector para el objeto sobre el cual hacer el desplazamiento. Si no se especifica se toma la página activa (body).
+Sólo utilizar con FROM_CNTR_OBJECT
+ - tipo (opcional): El tipo de selector que se está usando: "css/xpath". Si no se especifica, se usará css
 
+Ejemplos:
+```
+ubicar puntero raton={
+    "tipoMovimiento":"FROM_UL_CORNER",
+    "x":"150",
+    "y":"350"
+}
+```
+```
+ubicar puntero raton={
+    "tipoMovimiento":"FROM_CNTR_OBJECT",
+    "x":"150",
+    "y":"350",
+    "selector":"img:nth-of-type(2)"
+}
+```
+
+#### desplazar - Realiza un desplazamiento por la pantalla horizontalmente (x) o verticalmente (Y)
+ una cierta cantidad de pixeles.
+Argumentos:
+ - x: el número de pixeles a desplazar horizontalmente(>0 a la derecha, <0 a la izquierda)
+ - y: el número de pixeles a desplazar verticalmente(>0 abajo, <0 arriba)
+ - selector (opcional): El selector para el objeto sobre el cual hacer el desplazamiento. Si no se especifica se toma la página activa (body)
+ - tipo (opcional): El tipo de selector que se está usando: "css/xpath". Si no se especifica, se usará css
+Ejemplos:
+```
+desplazar={
+   "x":"0",
+   "y":"100"
+}
+```
+
+```
+desplazar={
+   "x":"10",
+   "y":"-100"
+}
+```
+
+```
+desplazar={
+   "x":"10",
+   "y":"-100",
+   "selector":"//*[@id='main-content-inner']",
+   "tipo": "xpath"
+}
+```
 
 #### pausa - Espera cierto tiempo, antes de continuar con la siguiente instrucción.
 Argumentos:

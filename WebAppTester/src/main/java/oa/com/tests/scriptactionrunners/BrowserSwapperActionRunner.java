@@ -23,7 +23,7 @@ import oa.com.tests.actionrunners.exceptions.NoActionSupportedException;
 import oa.com.tests.actionrunners.interfaces.AbstractDefaultScriptActionRunner;
 import oa.com.tests.actions.TestAction;
 import oa.com.tests.globals.ActionRunnerManager;
-import oa.com.tests.webapptester.MainApp;
+import oa.com.tests.swing.MainApp;
 import org.openqa.selenium.WebDriver;
 
 /**

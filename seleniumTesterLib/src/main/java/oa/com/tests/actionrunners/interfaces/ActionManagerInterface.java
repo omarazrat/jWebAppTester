@@ -13,23 +13,30 @@
  */
 package oa.com.tests.actionrunners.interfaces;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.util.List;
+import java.util.logging.Logger;
+import oa.com.tests.actionrunners.exceptions.InvalidParamException;
+import oa.com.tests.actionrunners.exceptions.InvalidVarNameException;
 import org.openqa.selenium.WebDriver;
 
 /**
- * Definición de acción para implementación nativa.
+ *
  * @author nesto
  */
-public abstract class AbstractDefaultNativeActionRunner implements ActionRunner{
+public interface ActionManagerInterface {
+
     /**
-     * Ponga aquí el nombre de la dll a cargar.
-     * 
-     * @return 
+     * Ejecuta las instrucciones en un archivo.
+     *
+     * @param file
+     * @param log
      */
-    public abstract String getLibPath();
+    List<Exception> exec(File file, Logger log) throws InvalidVarNameException, FileNotFoundException, IOException, InvalidParamException;
+
+    void run(String command) throws IOException, InvalidVarNameException, InvalidParamException;
     
-    @Override
-    public void run(WebDriver driver) {
-        System.loadLibrary(getLibPath());
-    }
-    
+    WebDriver getDriver();
 }

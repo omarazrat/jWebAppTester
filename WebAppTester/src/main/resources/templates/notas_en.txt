@@ -81,16 +81,19 @@
 #
 #click - Clicks a component of the page given a css selector
 #Params:
-# - selector : The selector of the object to click. Could be a css or xpath selector
+ #- selector (optional): The selector of the object to click. Could be a css or xpath selector
 # - type (optional): The type of the selector to be used: "css/xpath". If missing, css will be used
+#If no selector provided, the click event is triggered wherever the mouse pointer is located.
 #Example:
 #click={ 
 #  "selector":"#search_button_homepage"
 #}
 #double click - Double-clicks any element in the page, given its selector.
 #Params:
-# - selector : The selector of the object to double click. Could be a css or xpath selector
+# - selector (optional): The selector of the object to double click. Could be a css or xpath selector
 # - type (optional): The type of the selector to be used: "css/xpath". If missing, css will be used
+#If no selector provided, the double click event is triggered wherever the mouse pointer is located.
+#
 #Example:
 #double click={
 #    "selector": "/html/body",
@@ -98,11 +101,37 @@
 #}
 #right click - Right clicks any element in the page, given its selector.
 #Params:
-# - selector : The selector of the object to right click. Could be a css or xpath selector
+# - selector (optional): The selector of the object to right click. Could be a css or xpath selector
 # - type (optional): The type of the selector to be used: "css/xpath". If missing, css will be used
+#If no selector provided, the right click event is triggered wherever the mouse pointer is located.
 #Example:
 #right click={
 #    "selector": "#Identificacion"
+#}
+#
+#### place mouse pointer - Place the mouse pointer in screen
+#Params:
+ #- offsetType (optional): One of these:
+#    FROM_UL_CORNER (default)- To place the mouse pointer relative to the upper left corner
+#    FROM_CUR_LOCATION - To place the mouse pointer from its current location
+#    FROM_CNTR_OBJECT - To place the mouse pointer from the center of a given object
+ #- x: the horizontal pixels to move the mouse pointer
+ #- y: the vertical pixels to move the mouse pointer
+# -selector: the selector for the object (use only with FROM_CNTR_OBJECT)
+# -type: Type of the selector for the object (default = CSS)
+#Examples:
+
+#place mouse pointer={
+#    "offsetType":"FROM_UL_CORNER",
+#    "x":"150",
+#    "y":"350"
+#}
+
+#place mouse pointer={
+#    "offsetType":"FROM_CNTR_OBJECT",
+#    "x":"150",
+#    "y":"350",
+#    "selector":"img:nth-of-type(2)"
 #}
 #
 #scroll - Scrolls the screen horizantally (x) or vertically (y)

@@ -13,20 +13,21 @@
  */
 package oa.com.tests.scriptactionrunners;
 
+import oa.com.tests.actionrunners.exceptions.BadSyntaxException;
 import oa.com.tests.actionrunners.exceptions.InvalidActionException;
 import oa.com.tests.actionrunners.exceptions.NoActionSupportedException;
 import oa.com.tests.actionrunners.interfaces.AbstractSelectorActionRunner;
 import oa.com.tests.actions.TestAction;
-import oa.com.utils.WebUtils;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.interactions.Actions;
 
 /**
  * doble clic en algun lado.
+ *
  * @author nesto
  */
-public class DoubleClickActionRunner extends AbstractSelectorActionRunner{
+public class DoubleClickActionRunner extends AbstractSelectorActionRunner {
 
     public DoubleClickActionRunner(TestAction action) throws NoActionSupportedException, InvalidActionException {
         super(action);
@@ -34,10 +35,15 @@ public class DoubleClickActionRunner extends AbstractSelectorActionRunner{
 
     @Override
     public void run(WebDriver driver) throws Exception {
-        final WebElement elem = get(driver);
-//        WebUtils.waitToBeClickable(driver, elem);
         Actions actions = new Actions(driver);
-        actions.moveToElement(elem).doubleClick().build().perform();
+        try {
+            final WebElement elem = get(driver);
+//        WebUtils.waitToBeClickable(driver, elem);
+            actions.moveToElement(elem).doubleClick().build().perform();
+        } catch (BadSyntaxException noSelectorEx) {
+            //click donde esté
+            actions.doubleClick().build().perform();
+        }
     }
-    
+
 }

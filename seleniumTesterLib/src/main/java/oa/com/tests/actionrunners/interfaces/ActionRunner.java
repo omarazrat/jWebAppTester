@@ -14,12 +14,28 @@ Copyright (C) 2021-Nestor Arias
 package oa.com.tests.actionrunners.interfaces;
 
 import org.openqa.selenium.WebDriver;
+import java.util.logging.Logger;
 
 /**
  * Un ejecutor de cualquier acción no incluida en un script.
  * @author nesto
  */
-@FunctionalInterface
 public interface ActionRunner {
-   void  run(WebDriver driver);
+
+    /**
+     * Ejecucion del script correspondiente.
+     *
+     * @param driver
+     * @throws Exception
+     */
+    public void run(WebDriver driver) throws Exception;
+
+    /**
+     * Ejecucion del script correspondiente.
+     *
+     * @param driver
+     * @param log Archivo de registro
+     * @throws Exception
+     */
+    public void run(WebDriver driver, Logger log) throws Exception;
 }

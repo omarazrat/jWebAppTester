@@ -13,17 +13,19 @@
  */
 package oa.com.tests.globals;
 
+import oa.com.tests.actionrunners.interfaces.ActionManagerInterface;
 import oa.com.tests.Utils;
 import oa.com.tests.actionrunners.exceptions.BadSyntaxException;
 import oa.com.tests.actionrunners.exceptions.NoActionSupportedException;
 import oa.com.tests.actionrunners.interfaces.AbstractDefaultScriptActionRunner;
 import oa.com.tests.actions.TestAction;
-import oa.com.tests.webapptester.MainApp;
+import oa.com.tests.swing.MainApp;
 import java.awt.HeadlessException;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.util.Arrays;
@@ -63,6 +65,8 @@ import oa.com.tests.scriptactionrunners.EndActionRunner;
 import oa.com.utils.Encryption;
 import org.openqa.selenium.Keys;
 import oa.com.tests.actionrunners.AbstractIteratorActionRunner;
+import oa.com.tests.plugins.AbstractDefaultPluginRunner;
+import oa.com.tests.plugins.PluginService;
 import oa.com.tests.scriptactionrunners.ForActionRunner;
 
 /**
@@ -71,7 +75,7 @@ import oa.com.tests.scriptactionrunners.ForActionRunner;
  * @author nesto
  */
 @Data
-public final class ActionRunnerManager {
+public final class ActionRunnerManager implements ActionManagerInterface {
 
     public enum BROWSERTYPE {
         CHROME,
@@ -115,16 +119,20 @@ public final class ActionRunnerManager {
     final private static String sqOpen = Pattern.quote("[");
     final private static String sqClose = Pattern.quote("]");
     final private static String KEY_SEPARATOR = ",";
+    private List<AbstractDefaultPluginRunner> plugins;
 
     private ActionRunnerManager() {
         //Clases
         try {
             //Carpetas
             rootTree = asTree();
-            //Acciones
+            plugins = PluginService.getInstance(AbstractDefaultPluginRunner.class).getPlugins();
+            for (AbstractDefaultPluginRunner plugin : plugins) {
+                plugin.setActionManager(instance);
+            }
         } //TODO: Mandar estas excepciones a UI
         catch (Exception ex) {
-            Logger.getLogger("Probador Web").log(Level.SEVERE, null, ex);
+            Logger.getLogger("WebAppTester").log(Level.SEVERE, null, ex);
         }
     }
 
@@ -164,7 +172,7 @@ public final class ActionRunnerManager {
         try {
             instance.rootTree = asTree();
         } catch (IOException ex) {
-            Logger.getLogger("Probador Web").log(Level.SEVERE, null, ex);
+            Logger.getLogger("WebAppTester").log(Level.SEVERE, null, ex);
         }
         return instance.getRootTree();
     }
@@ -308,6 +316,7 @@ public final class ActionRunnerManager {
      * @param file
      * @param log
      */
+    @Override
     public List<Exception> exec(File file, Logger log)
             throws InvalidVarNameException, FileNotFoundException, IOException, InvalidParamException {
         List<Exception> resp = new LinkedList<>();
@@ -320,7 +329,7 @@ public final class ActionRunnerManager {
             if (line.isEmpty() || line.startsWith("#")) {
                 continue;
             }
-            commandLine +=" "+ line;
+            commandLine += " " + line;
             commandLine = commandLine.trim();
             if (isValidCommand(commandLine)) {
                 filteredLines.add(commandLine);
@@ -352,7 +361,7 @@ public final class ActionRunnerManager {
                 if (isIterator) {
                     AbstractIteratorActionRunner iterator = (AbstractIteratorActionRunner) runner;
                     iterator.prepare(driver);
-                    lineCounter += iterator.seed(filteredLines.subList(lineCounter, filteredLines.size()-1), file.getAbsolutePath(), log);
+                    lineCounter += iterator.seed(filteredLines.subList(lineCounter, filteredLines.size() - 1), file.getAbsolutePath(), log);
                 }
                 //runner execution
                 execRunner(runner, log);
@@ -364,6 +373,23 @@ public final class ActionRunnerManager {
         }
 
         return resp;
+    }
+
+    @Override
+    public void run(String command) throws IOException, InvalidVarNameException, InvalidParamException {
+        File f = File.createTempFile("WebAppTest", null);
+        f.deleteOnExit();
+        FileWriter writer = new FileWriter(f);
+        writer.append(command);
+        writer.close();
+        Logger log = Logger.getLogger("WebAppTester");
+//        log.addHandler(new ConsoleHandler());
+
+        execInstance(f, log);
+    }
+
+    public static void runSt(String command) throws IOException, InvalidVarNameException, InvalidParamException {
+        instance.run(command);
     }
 
     public static void execRunner(ScriptActionRunner runner, Logger log) throws Exception {
@@ -586,6 +612,10 @@ public final class ActionRunnerManager {
      */
     public static WebDriver getStDriver() {
         return instance.getDriver();
+    }
+    
+    public static List<AbstractDefaultPluginRunner> getPluginsSt(){
+        return instance.getPlugins();
     }
 
     /**
