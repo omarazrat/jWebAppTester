@@ -14,12 +14,14 @@
 package oa.com.tests.lang;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 /**
  *
  * @author nesto
  */
 @Data
+@EqualsAndHashCode(callSuper = true)
 public class StringVariable extends Variable{
     public StringVariable(String name,String value) {
         super(TYPE.STRING);

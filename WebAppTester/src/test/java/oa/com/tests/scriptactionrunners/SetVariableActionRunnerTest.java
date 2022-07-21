@@ -17,6 +17,7 @@ import java.io.IOException;
 import oa.com.tests.actionrunners.exceptions.InvalidParamException;
 import oa.com.tests.actionrunners.exceptions.InvalidVarNameException;
 import oa.com.tests.globals.ActionRunnerBaseTest;
+import oa.com.tests.lang.StringVariable;
 import org.junit.Test;
 
 /**
@@ -27,10 +28,16 @@ public class SetVariableActionRunnerTest extends ActionRunnerBaseTest{
     
      @Test
      public void testit() throws IOException, InvalidVarNameException, InvalidParamException {
+         StringVariable pause_time=new StringVariable("pause_time", "7 s"),
+                 comment = new StringVariable("comment", "I like this");
+         //Bug: equalsTo function was failing
+         assert(!pause_time.equals(comment));
+         
+         run("set={\"name\":\"pause_time\",\"value\":\"7 s\"}");
          run("go={https://music-videos-only.icu/pet-shop-boys/watch/i-wouldn-t-normally-do-this-kind-of-thing_c2snohp7.html}");
          run("set={\"name\":\"comment\",\"value\":\"I like this\"}");
          run("write={\"selector\":\"#form-user_name\",\"text\":\"Nestor\"}");
          run("write={\"selector\":\"#form-comment\",\"text\":\"[:comment]\"}");
-         run("pause={\"time\":\"7 s\"}");
+         run("pause={\"time\":\"[:pause_time]\"}");
      }
 }

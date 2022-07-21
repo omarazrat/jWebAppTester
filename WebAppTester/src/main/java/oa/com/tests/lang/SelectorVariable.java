@@ -13,6 +13,7 @@
  */
 package oa.com.tests.lang;
 
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 import oa.com.tests.actionrunners.interfaces.PathKeeper;
@@ -24,6 +25,7 @@ import org.openqa.selenium.WebElement;
  */
 @Getter
 @Setter
+@EqualsAndHashCode(callSuper = true)
 public class SelectorVariable extends Variable{
     /**
      * Ruta Css para llegar a este objeto

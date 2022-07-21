@@ -16,26 +16,26 @@ package oa.com.tests.scriptactionrunners;
 import java.io.File;
 import java.io.IOException;
 import java.util.logging.Logger;
+import java.util.regex.Pattern;
 import oa.com.tests.actionrunners.exceptions.InvalidParamException;
 import oa.com.tests.actionrunners.exceptions.InvalidVarNameException;
 import oa.com.tests.globals.ActionRunnerBaseTest;
 import oa.com.tests.globals.ActionRunnerManager;
 import org.junit.Test;
-import static org.junit.Assert.*;
 
 /**
  *
  * @author nesto
  */
-public class DummyActionRunner extends ActionRunnerBaseTest {
+public class DummyActionRunnerTest extends ActionRunnerBaseTest {
 
-//    public DummyActionRunner() {
+//    public DummyActionRunnerTest() {
 //        super(ActionRunnerManager.BROWSERTYPE.CHROME);
 //    }
     // TODO add test methods here.
     // The methods must be annotated with annotation @Test. For example:
     //
-//    @Test
+    @Test
     public void testit() throws IOException, InvalidVarNameException, InvalidParamException {
 //        runFile();
 //        forInjqueryPagination();

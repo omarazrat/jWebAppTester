@@ -14,6 +14,7 @@
 package oa.com.tests.lang;
 
 import java.util.Objects;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
@@ -23,6 +24,7 @@ import lombok.RequiredArgsConstructor;
  * @author nesto
  */
 @Getter
+@EqualsAndHashCode(of = {"name","value"})
 @RequiredArgsConstructor
 public abstract class Variable {
     public enum TYPE{
@@ -45,31 +47,5 @@ public abstract class Variable {
      * @return 
      */
     protected Object value;
-
-    @Override
-    public int hashCode() {
-        int hash = 7;
-        hash = 53 * hash + Objects.hashCode(this.name);
-        return hash;
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj) {
-            return true;
-        }
-        if (obj == null) {
-            return false;
-        }
-        if (getClass() != obj.getClass()) {
-            return false;
-        }
-        final Variable other = (Variable) obj;
-        if (!Objects.equals(this.name, other.name)) {
-            return false;
-        }
-        return true;
-    }
-
 
 }
