@@ -26,7 +26,7 @@ import org.openqa.selenium.WebDriver;
  *
  * @author nesto
  */
-public interface ActionManagerInterface {
+public interface PluginInterface {
 
     /**
      * Ejecuta las instrucciones en un archivo.
@@ -36,6 +36,17 @@ public interface ActionManagerInterface {
      */
     List<Exception> exec(File file, Logger log) throws InvalidVarNameException, FileNotFoundException, IOException, InvalidParamException;
 
+    /**
+     * Decodifica cualquier candena de texto como:
+     * -[$CONTRASEÑA_ENCRIPTADA] -> contraseña
+     * -[%VARIABLE] - > valor de variable
+     * @param pwdString
+     * @return
+     * @throws InvalidVarNameException
+     * @throws InvalidParamException 
+     */
+    String parse(String pwdString) throws InvalidVarNameException, InvalidParamException;
+    
     void run(String command) throws IOException, InvalidVarNameException, InvalidParamException;
     
     WebDriver getDriver();

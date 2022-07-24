@@ -13,7 +13,6 @@
  */
 package oa.com.tests.globals;
 
-import oa.com.tests.actionrunners.interfaces.ActionManagerInterface;
 import oa.com.tests.Utils;
 import oa.com.tests.actionrunners.exceptions.BadSyntaxException;
 import oa.com.tests.actionrunners.exceptions.NoActionSupportedException;
@@ -68,6 +67,7 @@ import oa.com.tests.actionrunners.AbstractIteratorActionRunner;
 import oa.com.tests.plugins.AbstractDefaultPluginRunner;
 import oa.com.tests.plugins.PluginService;
 import oa.com.tests.scriptactionrunners.ForActionRunner;
+import oa.com.tests.actionrunners.interfaces.PluginInterface;
 
 /**
  * Gestor de acciones.
@@ -75,8 +75,7 @@ import oa.com.tests.scriptactionrunners.ForActionRunner;
  * @author nesto
  */
 @Data
-public final class ActionRunnerManager implements ActionManagerInterface {
-
+public final class ActionRunnerManager implements PluginInterface {
     public enum BROWSERTYPE {
         CHROME,
         EDGE,
@@ -97,16 +96,6 @@ public final class ActionRunnerManager implements ActionManagerInterface {
      * Listado con todas las clases de funciones registradas.
      */
     private static List<Class<? extends ScriptActionRunner>> runnersCls = null;
-
-    static {
-        try {
-            runnersCls = findRunnersCls();
-        } catch (ClassNotFoundException ex) {
-            Logger.getLogger(ActionRunnerManager.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (IOException ex) {
-            Logger.getLogger(ActionRunnerManager.class.getName()).log(Level.SEVERE, null, ex);
-        }
-    }
     /**
      * Listado con todas las funciones registradas.
      */
@@ -127,13 +116,30 @@ public final class ActionRunnerManager implements ActionManagerInterface {
             //Carpetas
             rootTree = asTree();
             plugins = PluginService.getInstance(AbstractDefaultPluginRunner.class).getPlugins();
-            for (AbstractDefaultPluginRunner plugin : plugins) {
-                plugin.setActionManager(instance);
-            }
+            instance = this;
         } //TODO: Mandar estas excepciones a UI
         catch (Exception ex) {
             Logger.getLogger("WebAppTester").log(Level.SEVERE, null, ex);
         }
+    }
+
+    static {
+        try {
+            runnersCls = findRunnersCls();
+            instance.init();
+        } catch (ClassNotFoundException ex) {
+            Logger.getLogger(ActionRunnerManager.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (IOException ex) {
+            Logger.getLogger(ActionRunnerManager.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
+    private void init() {
+        for (AbstractDefaultPluginRunner plugin : plugins) {
+//            Logger.getLogger("WebAppTester").log(Level.INFO, "asignando {0} a plugin {1}", new Object[]{instance, plugin});
+            plugin.setActionManager(instance);
+        }
+
     }
 
     public static void quit() {
@@ -429,8 +435,10 @@ public final class ActionRunnerManager implements ActionManagerInterface {
      * @param actionCommand
      * @throws InvalidVarNameException
      * @return
+     * @throws oa.com.tests.actionrunners.exceptions.InvalidParamException
      */
-    public static String parse(String actionCommand) throws InvalidVarNameException, InvalidParamException {
+    @Override
+    public String parse(String actionCommand) throws InvalidVarNameException, InvalidParamException {
         String resp = actionCommand;
         //Variables [:variable]
         resp = parseVariables(resp);
@@ -439,19 +447,24 @@ public final class ActionRunnerManager implements ActionManagerInterface {
         resp = parseKeys(resp);
         resp = resp.replace("[%%", "¨{%");
         //Contraseñas [$PWD]
-        resp = parsePWDs(resp);
+        resp = instance.parsePWDs(resp);
         resp = resp.replace("[$$", "[$");
         return resp;
     }
 
-    public static String parsePWDs(String resp) {
+    /**
+     * Decodifica una cadena de texto con una contraseña en su interior
+     * @param pwdString
+     * @return 
+     */
+    public String parsePWDs(String pwdString) {
         String regexp = "([0-9|a-z|A-Z|\\s]*)"
                 + "\\[\\$(.*)\\]"
                 + "([0-9|a-z|A-Z|\\s]*)";
         Pattern pattern = Pattern.compile(regexp);
-        Matcher matcher = pattern.matcher(resp);
+        Matcher matcher = pattern.matcher(pwdString);
         if (!matcher.find()) {
-            return resp;
+            return pwdString;
         }
 
         for (int i = 1; i <= matcher.groupCount(); i++) {
@@ -462,9 +475,9 @@ public final class ActionRunnerManager implements ActionManagerInterface {
                 continue;
             }
             String decrypted = firstGroup + Encryption.decrypt(original) + lastGroup;
-            resp = resp.replace(firstGroup + "[$" + original + "]" + lastGroup, decrypted);
+            pwdString = pwdString.replace(firstGroup + "[$" + original + "]" + lastGroup, decrypted);
         }
-        return resp;
+        return pwdString;
     }
 
     /**
@@ -613,8 +626,8 @@ public final class ActionRunnerManager implements ActionManagerInterface {
     public static WebDriver getStDriver() {
         return instance.getDriver();
     }
-    
-    public static List<AbstractDefaultPluginRunner> getPluginsSt(){
+
+    public static List<AbstractDefaultPluginRunner> getPluginsSt() {
         return instance.getPlugins();
     }
 

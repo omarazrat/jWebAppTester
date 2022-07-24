@@ -15,12 +15,19 @@ package oa.com.tests.plugins;
 
 import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.LinkedList;
+import java.util.List;
+import java.util.logging.Logger;
 import javax.imageio.ImageIO;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
-import oa.com.tests.actionrunners.interfaces.ActionManagerInterface;
+import oa.com.tests.actionrunners.exceptions.InvalidParamException;
+import oa.com.tests.actionrunners.exceptions.InvalidVarNameException;
+import oa.com.tests.actionrunners.interfaces.PluginInterface;
+import org.openqa.selenium.WebDriver;
 
 /**
  * Definición de acción para implementación nativa.
@@ -32,7 +39,7 @@ public abstract class AbstractDefaultPluginRunner{
     /**
      * Utilice esta interfaz para hacer sus llamados a funciones ya definidas.
      */
-    protected ActionManagerInterface actionManager;
+    protected static PluginInterface actionManager;
 
     /**
      * Constructora para plugins escritos en java, que no requieren dll's
@@ -88,8 +95,24 @@ public abstract class AbstractDefaultPluginRunner{
         return new ImageIcon(img);
     }
 
-    public void setActionManager(ActionManagerInterface actionManager) {
+    //Metodos delegados
+    public void setActionManager(PluginInterface actionManager) {
         this.actionManager = actionManager;
     }
 
+    public static List<Exception> exec(File file, Logger log) throws InvalidVarNameException, FileNotFoundException, IOException, InvalidParamException {
+        return actionManager.exec(file, log);
+    }
+
+    public static String parse(String pwdString) throws InvalidVarNameException, InvalidParamException {
+        return actionManager.parse(pwdString);
+    }
+
+    public static void run(String command) throws IOException, InvalidVarNameException, InvalidParamException {
+        actionManager.run(command);
+    }
+
+    public static WebDriver getDriver() {
+        return actionManager.getDriver();
+    }
 }

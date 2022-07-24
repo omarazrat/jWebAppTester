@@ -27,10 +27,10 @@ import oa.com.tests.actionrunners.interfaces.ScriptActionRunner;
 import oa.com.tests.actions.TestAction;
 import static oa.com.tests.globals.ActionRunnerManager.detectRunner;
 import static oa.com.tests.globals.ActionRunnerManager.execRunner;
-import static oa.com.tests.globals.ActionRunnerManager.parse;
 import static oa.com.tests.globals.ActionRunnerManager.prepareBadSystaxExMsg;
 import static oa.com.tests.globals.ActionRunnerManager.testEndCommand;
 import static oa.com.tests.globals.ActionRunnerManager.testIterativeCommand;
+import static oa.com.tests.plugins.AbstractDefaultPluginRunner.parse;
 import oa.com.tests.scriptactionrunners.EndActionRunner;
 import org.openqa.selenium.WebDriver;
 
