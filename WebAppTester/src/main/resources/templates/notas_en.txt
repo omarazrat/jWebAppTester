@@ -194,7 +194,7 @@
 #
 #Set variable - A handy way to assign text to a name.
 #Params:
-#- name : Name of the variable
+#- name : Name of the variable. Allowed characters in the name: numbers, letters and the signs _ -. e.g.: "MY_KEY","comment-02"
 #- value : The text inside it
 #
 #Example:

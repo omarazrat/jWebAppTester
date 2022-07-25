@@ -200,7 +200,7 @@
 #
 #Asignar variable - Es una forma de guardar texto asociado a un nombre.
 #Argumentos:
-#-nombre : Nombre que tendrá la variable 
+#-nombre : Nombre que tendrá la variable. Caracteres permitidos en el nombre: números, letras y los signos _ -. Ejemplos:"MI_CLAVE","commentario-02"
 #-valor : El texto a ingresar en esa variable
 #
 #Ejemplo:

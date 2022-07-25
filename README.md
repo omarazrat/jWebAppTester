@@ -270,7 +270,7 @@ pick choice={
 ```
 #### Set variable - A handy way to assign text to a name.
 Params:
-- name : Name of the variable
+- name : Name of the variable. Allowed characters in the name: numbers, letters and the signs _ -. e.g.: "MY_KEY","comment-02"
 - value : The text inside it
 
 Example:
@@ -682,7 +682,7 @@ seleccionar opcion={
 ```
 ####Asignar variable - Es una forma de guardar texto asociado a un nombre.
 Argumentos:
--nombre : Nombre que tendrá la variable 
+-nombre : Nombre que tendrá la variable. Caracteres permitidos en el nombre: números, letras y los signos _ -. Ejemplos:"MI_CLAVE","commentario-02"
 -valor : El texto a ingresar en esa variable
 
 Ejemplo:

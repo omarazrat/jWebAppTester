@@ -79,7 +79,7 @@ public class MainApp extends JFrame {
     private Image errImage, warnImage;
     private Canvas imageContainer;
     private final String NEW_LINE = System.getProperty("line.separator");
-    private final String LOG_NAME = "WebTester.log";
+    private static final String LOG_NAME = "WebTester.log";
     private static Logger log = Logger.getLogger("WebAppTester");
 
     public enum PROPS {
@@ -175,6 +175,16 @@ public class MainApp extends JFrame {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
+        final FileHandler fileHandler;
+        try {
+            fileHandler = new FileHandler(LOG_NAME);
+            fileHandler.setFormatter(new SimpleFormatter());
+            log.addHandler(fileHandler);
+        } catch (IOException ex) {
+            Logger.getLogger("WebAppTester").log(Level.SEVERE, null, ex);
+        } catch (SecurityException ex) {
+            Logger.getLogger("WebAppTester").log(Level.SEVERE, null, ex);
+        }
         instance = new MainApp();
         instance.pack();
         instance.setVisible(true);
@@ -461,16 +471,6 @@ public class MainApp extends JFrame {
             String message = globals.getString("settings.driver.emptyException");
             JOptionPane.showMessageDialog(null, message, ERR_TITLE, JOptionPane.WARNING_MESSAGE);
             return;
-        }
-        final FileHandler fileHandler;
-        try {
-            fileHandler = new FileHandler(LOG_NAME);
-            fileHandler.setFormatter(new SimpleFormatter());
-            log.addHandler(fileHandler);
-        } catch (IOException ex) {
-            Logger.getLogger("WebAppTester").log(Level.SEVERE, null, ex);
-        } catch (SecurityException ex) {
-            Logger.getLogger("WebAppTester").log(Level.SEVERE, null, ex);
         }
         Thread t = new Thread(new Runnable() {
             @Override

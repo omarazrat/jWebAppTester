@@ -341,7 +341,7 @@ public final class ActionRunnerManager implements PluginInterface {
                 filteredLines.add(commandLine);
                 commandLine = "";
             }
-        };
+        }
         reader.close();
 
         int lineCounter = 0;
@@ -350,6 +350,7 @@ public final class ActionRunnerManager implements PluginInterface {
             //Command preparation and parsing
             String actionCommand = filteredLines.get(lineCounter++);
             actionCommand = parse(actionCommand);
+//            log.info(actionCommand);
             ScriptActionRunner runner = null;
             //Runner detection 
             try {
@@ -402,6 +403,7 @@ public final class ActionRunnerManager implements PluginInterface {
         runner.run(instance.getDriver(), log);
         if (runner instanceof VariableProvider) {
             VariableProvider varprovider = (VariableProvider) runner;
+//            log.info(varprovider.getVariable().getName()+"="+varprovider.getVariable().getValue());
             Variable variable = varprovider.getVariable();
             instance.addVariable(variable);
         }
@@ -542,7 +544,7 @@ public final class ActionRunnerManager implements PluginInterface {
      */
     private static String parseVariables(String actionCommand)
             throws InvalidVarNameException, InvalidParamException {
-        String regexp = "(" + sqOpen + ":[0-9|a-z|A-Z]*" + sqClose + ")";
+        String regexp = "(" + sqOpen + ":[0-9|a-z|A-Z|\\-|_]*" + sqClose + ")";
         Pattern pattern = Pattern.compile(regexp);
         Matcher matcher = pattern.matcher(actionCommand);
 
