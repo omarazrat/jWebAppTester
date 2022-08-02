@@ -22,7 +22,6 @@ import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
-import java.awt.GridLayout;
 import java.awt.HeadlessException;
 import java.awt.Image;
 import java.awt.event.ActionEvent;
@@ -98,6 +97,8 @@ public class MainApp extends JFrame {
 
     private MainApp() {
 //        setResizable(false);
+//File f = new File(".");
+//JOptionPane.showMessageDialog(null,"running folder:"+f.getAbsolutePath());
         setIconImage(findImage("/icons/selenium.png"));
         setTitle(globals.getString("app.title"));
         init();

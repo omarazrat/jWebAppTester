@@ -433,6 +433,9 @@ public final class ActionRunnerManager implements PluginInterface {
         return badSyntazMsg;
     }
 
+    public static String parseSt(String command) throws InvalidVarNameException, InvalidParamException{
+        return instance.parse(command);
+    }
     /**
      * @param actionCommand
      * @throws InvalidVarNameException
