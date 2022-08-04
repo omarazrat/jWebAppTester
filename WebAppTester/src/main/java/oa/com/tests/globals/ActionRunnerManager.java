@@ -51,7 +51,12 @@ import org.openqa.selenium.opera.OperaDriver;
 import org.openqa.selenium.safari.SafariDriver;
 import oa.com.tests.actionrunners.interfaces.ScriptActionRunner;
 import java.lang.reflect.InvocationTargetException;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
+import java.util.SortedSet;
+import java.util.concurrent.ConcurrentSkipListSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import oa.com.tests.actionrunners.exceptions.InvalidParamException;
@@ -68,6 +73,7 @@ import oa.com.tests.plugins.AbstractDefaultPluginRunner;
 import oa.com.tests.plugins.PluginService;
 import oa.com.tests.scriptactionrunners.ForActionRunner;
 import oa.com.tests.actionrunners.interfaces.PluginInterface;
+import oa.com.tests.actionrunners.interfaces.PluginStoppedListener;
 
 /**
  * Gestor de acciones.
@@ -76,6 +82,7 @@ import oa.com.tests.actionrunners.interfaces.PluginInterface;
  */
 @Data
 public final class ActionRunnerManager implements PluginInterface {
+
     public enum BROWSERTYPE {
         CHROME,
         EDGE,
@@ -109,12 +116,17 @@ public final class ActionRunnerManager implements PluginInterface {
     final private static String sqClose = Pattern.quote("]");
     final private static String KEY_SEPARATOR = ",";
     private List<AbstractDefaultPluginRunner> plugins;
+    private static final Logger log = Logger.getLogger("WebAppTester");
+    private Set<Integer> runningPlugins;
+    private Map<Integer, List<PluginStoppedListener>> pluginStoppedListeners;
 
     private ActionRunnerManager() {
         //Clases
         try {
             //Carpetas
             rootTree = asTree();
+            runningPlugins = new ConcurrentSkipListSet<>();
+            pluginStoppedListeners = new HashMap<>();
             plugins = PluginService.getInstance(AbstractDefaultPluginRunner.class).getPlugins();
             instance = this;
         } //TODO: Mandar estas excepciones a UI
@@ -147,6 +159,61 @@ public final class ActionRunnerManager implements PluginInterface {
             instance.driver.quit();
         }
     }
+
+    // <editor-fold defaultstate="collapsed" desc="Manejo de plugins en ejecución y sus auditores de eventos">
+    public static void registerPluginListenerSt(AbstractDefaultPluginRunner plugin, PluginStoppedListener listener) {
+        instance.registerPluginListener(plugin, listener);
+    }
+
+    @Override
+    public void registerPluginListener(AbstractDefaultPluginRunner plugin, PluginStoppedListener listener) {
+        final int hashCode = plugin.hashCode();
+//        log.log(Level.INFO, "registering listener for plugin {0}", hashCode);
+        if (!isRunning(plugin)) {
+            registerStart(plugin);
+        }
+        List<PluginStoppedListener> listeners = instance.pluginStoppedListeners.get(hashCode);
+        boolean existing = listeners != null;
+//        log.log(Level.INFO, "existing:{0}", existing);
+        if (!existing) {
+            listeners = new LinkedList<>();
+        }
+        listeners.add(listener);
+        instance.pluginStoppedListeners.put(hashCode, listeners);
+//        log.info("listener registered");
+    }
+
+    public static void registerStartSt(AbstractDefaultPluginRunner plugin) {
+        instance.registerStart(plugin);
+    }
+
+    @Override
+    public void registerStart(AbstractDefaultPluginRunner plugin) {
+//        log.log(Level.INFO, "starting plugin {0}", plugin.hashCode());
+        instance.runningPlugins.add(plugin.hashCode());
+    }
+
+    @Override
+    public void registerStop(AbstractDefaultPluginRunner plugin) {
+        final int hashCode = plugin.hashCode();
+        log.log(Level.INFO, "stopping plugin {0}", hashCode);
+        if (!isRunning(plugin)) {
+            return;
+        }
+        List<PluginStoppedListener> listeners = instance.pluginStoppedListeners.remove(hashCode);
+        for (PluginStoppedListener listener : listeners) {
+            listener.unregistered(plugin);
+        }
+        instance.runningPlugins.remove(hashCode);
+    }
+
+    @Override
+    public boolean isRunning(AbstractDefaultPluginRunner plugin) {
+        final boolean resp = instance.runningPlugins.contains(plugin.hashCode());
+//        log.log(Level.INFO, "plugin {0} running? {1}", new Object[]{plugin.hashCode(), resp});
+        return resp;
+    }
+    // </editor-fold>
 
     private ScriptActionRunner findRunner(String actionCommand) throws BadSyntaxException {
         TestAction tester;
@@ -433,9 +500,10 @@ public final class ActionRunnerManager implements PluginInterface {
         return badSyntazMsg;
     }
 
-    public static String parseSt(String command) throws InvalidVarNameException, InvalidParamException{
+    public static String parseSt(String command) throws InvalidVarNameException, InvalidParamException {
         return instance.parse(command);
     }
+
     /**
      * @param actionCommand
      * @throws InvalidVarNameException
@@ -459,8 +527,9 @@ public final class ActionRunnerManager implements PluginInterface {
 
     /**
      * Decodifica una cadena de texto con una contraseña en su interior
+     *
      * @param pwdString
-     * @return 
+     * @return
      */
     public String parsePWDs(String pwdString) {
         String regexp = "([0-9|a-z|A-Z|\\s]*)"

@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.logging.Logger;
 import oa.com.tests.actionrunners.exceptions.InvalidParamException;
 import oa.com.tests.actionrunners.exceptions.InvalidVarNameException;
+import oa.com.tests.plugins.AbstractDefaultPluginRunner;
 import org.openqa.selenium.WebDriver;
 
 /**
@@ -33,6 +34,10 @@ public interface PluginInterface {
      *
      * @param file
      * @param log
+     * @return 
+     * @throws oa.com.tests.actionrunners.exceptions.InvalidVarNameException
+     * @throws java.io.FileNotFoundException
+     * @throws oa.com.tests.actionrunners.exceptions.InvalidParamException
      */
     List<Exception> exec(File file, Logger log) throws InvalidVarNameException, FileNotFoundException, IOException, InvalidParamException;
 
@@ -50,4 +55,13 @@ public interface PluginInterface {
     void run(String command) throws IOException, InvalidVarNameException, InvalidParamException;
     
     WebDriver getDriver();
+    
+    void registerPluginListener(AbstractDefaultPluginRunner plugin, PluginStoppedListener listener) ;
+
+    void registerStart(AbstractDefaultPluginRunner plugin) ;
+
+    void registerStop(AbstractDefaultPluginRunner plugin) ;
+
+    boolean isRunning(AbstractDefaultPluginRunner plugin) ;
+
 }

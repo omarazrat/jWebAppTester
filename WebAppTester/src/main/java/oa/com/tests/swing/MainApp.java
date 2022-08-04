@@ -25,6 +25,7 @@ import java.awt.GridBagLayout;
 import java.awt.HeadlessException;
 import java.awt.Image;
 import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.MouseEvent;
@@ -59,6 +60,7 @@ import javax.swing.JTextArea;
 import javax.swing.JTree;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import lombok.Data;
+import oa.com.tests.actionrunners.interfaces.PluginStoppedListener;
 import oa.com.tests.plugins.AbstractDefaultPluginRunner;
 import oa.com.utils.Encryption;
 
@@ -205,9 +207,9 @@ public class MainApp extends JFrame {
         final JScrollPane treeScrollPane = new JScrollPane(rootTree, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 
         // <editor-fold defaultstate="collapsed" desc="buttons">
-        JButton goButton = new JButton(globals.getString("button.runAction")), 
-                reloadButton = new JButton(globals.getString("button.reloadTree")), 
-                parseSIButton = new JButton(globals.getString("button.parseSIDE")), 
+        JButton goButton = new JButton(globals.getString("button.runAction")),
+                reloadButton = new JButton(globals.getString("button.reloadTree")),
+                parseSIButton = new JButton(globals.getString("button.parseSIDE")),
                 pwdButton = new JButton(globals.getString("button.buildPWD"));
         parseSIButton.addActionListener(evt -> {
             JFileChooser chooser = new JFileChooser();
@@ -255,8 +257,9 @@ public class MainApp extends JFrame {
                         globals.getString("button.buildPWD.message"),
                         globals.getString("button.buildPWD"),
                         JOptionPane.INFORMATION_MESSAGE);
-                if(unencrypted==null)
+                if (unencrypted == null) {
                     return;
+                }
                 final String encrypted = Encryption.encrypt(unencrypted);
                 JOptionPane.showInputDialog(this,
                         globals.getString("button.buildPWD.message.encrypted"),
@@ -265,13 +268,13 @@ public class MainApp extends JFrame {
                 log.log(Level.SEVERE, null, ex);
             }
         });
-        
+
         JTabbedPane tabs = new JTabbedPane();
         final JPanel buttonsPanel = new JPanel(new GridBagLayout());
         tabs.add(buttonsPanel);
         gbc.gridwidth = 2;
-        gbc.fill=GridBagConstraints.BOTH;
-        gbc.gridx=0;
+        gbc.fill = GridBagConstraints.BOTH;
+        gbc.gridx = 0;
         gbc.gridy++;
         gbc.anchor = GridBagConstraints.CENTER;
         buttonsPanel.add(goButton, gbc);
@@ -288,7 +291,6 @@ public class MainApp extends JFrame {
         tabs.add(globals.getString("window.tools.panel"), buttonsPanel);
 
         //</editor-fold>
-
         // <editor-fold defaultstate="collapsed" desc="Label and icon">
         label.setPreferredSize(new Dimension(330, 26));
         label.setSize(label.getPreferredSize());
@@ -360,7 +362,7 @@ public class MainApp extends JFrame {
         imageContainer.setMinimumSize(imageContainer.getPreferredSize());
         errImage = findImage("/icons/error.png");
         warnImage = findImage("/icons/warning.png");
-                //</editor-fold>
+        //</editor-fold>
 
         // <editor-fold defaultstate="collapsed" desc="Browser drop-down list">
         for (String item : Arrays.asList(ActionRunnerManager.BROWSERTYPE.values())
@@ -383,7 +385,7 @@ public class MainApp extends JFrame {
             browserTree.setSelectedItem(globals.getString("settings.driver." + storedBrowserName + ".name"));
         }
         updateBrowser(false);
-                //</editor-fold>
+        //</editor-fold>
 
         rootTree.setModel(ActionRunnerManager.getTreeModel());
         // <editor-fold defaultstate="collapsed" desc="Space for plugins">
@@ -406,12 +408,24 @@ public class MainApp extends JFrame {
                         gbc.gridx = 0;
                         gbc.gridy++;
                     }
+                    pluginBtn.addActionListener(new ActionListener() {
+                        @Override
+                        public void actionPerformed(ActionEvent e) {
+                            pluginBtn.setEnabled(false);
+                            ActionRunnerManager.registerPluginListenerSt(plugin, new PluginStoppedListener() {
+                                @Override
+                                public void unregistered(AbstractDefaultPluginRunner plugin) {
+                                    pluginBtn.setEnabled(true);
+                                }
+                            });
+                        }
+                    });
                     addedPlugins++;
                 } catch (IOException ex) {
                     log.log(Level.SEVERE, null, ex);
                 }
             }
-            
+
             tabs.add(globals.getString("window.plugins.panel"), pluginGrid);
         }
         //</editor-fold>
@@ -422,14 +436,14 @@ public class MainApp extends JFrame {
         gbc.gridx = gbc.gridy = 0;
         getContentPane().add(treeScrollPane, gbc);
 
-        gbc.gridwidth=6;
-        gbc.gridheight=3;
+        gbc.gridwidth = 6;
+        gbc.gridheight = 3;
         gbc.gridy++;
         gbc.fill = GridBagConstraints.BOTH;
-        getContentPane().add(tabs,gbc);
-        
-        gbc.gridy+=gbc.gridheight;
-        gbc.gridheight=1;
+        getContentPane().add(tabs, gbc);
+
+        gbc.gridy += gbc.gridheight;
+        gbc.gridheight = 1;
         gbc.gridwidth = 4;
         gbc.gridx = 0;
         gbc.fill = GridBagConstraints.BOTH;

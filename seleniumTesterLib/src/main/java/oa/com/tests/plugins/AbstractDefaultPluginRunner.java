@@ -34,7 +34,7 @@ import org.openqa.selenium.WebDriver;
  *
  * @author nesto
  */
-public abstract class AbstractDefaultPluginRunner{
+public abstract class AbstractDefaultPluginRunner {
 
     /**
      * Utilice esta interfaz para hacer sus llamados a funciones ya definidas.
@@ -52,21 +52,24 @@ public abstract class AbstractDefaultPluginRunner{
             System.loadLibrary(library);
         }
     }
-    
+
     // <editor-fold defaultstate="collapsed" desc="Required to implement methods">
     /**
-     * Asegúrese de que este mensaje cabrá en el botón de 32 pixeles de altura por máximo 190 px ancho
+     * Asegúrese de que este mensaje cabrá en el botón de 32 pixeles de altura
+     * por máximo 190 px ancho
+     *
      * @return
      */
     public abstract String getButtonActionCommand();
+
     /**
      * Este auditor de eventos se activará con el click del botón
-     * @return 
+     *
+     * @return
      */
     public abstract ActionListener getActionListener();
 
     // </editor-fold>
-
     /**
      * Retorne aquì todas las librerìas que use su plugin
      *
@@ -115,4 +118,103 @@ public abstract class AbstractDefaultPluginRunner{
     public static WebDriver getDriver() {
         return actionManager.getDriver();
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (!obj.getClass().equals(getClass())) {
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        return getClass().hashCode();
+    }
+
+    // <editor-fold defaultstate="collapsed" desc="Shortcut functions">
+    /**
+     * Opens a web page.
+     *
+     * Example:
+     *
+     * go={https://duckduckgo.com/}
+     *
+     * @param url
+     * @throws IOException
+     * @throws InvalidVarNameException
+     * @throws InvalidParamException
+     */
+    public static void fnGo(String url) throws IOException, InvalidVarNameException, InvalidParamException {
+        actionManager.run("go={" + url + "}");
+    }
+
+    /**
+     * Waits for a page to be completely loaded after a change in the location
+     * bar URL, or after clicking any element. The browser will wait until a
+     * given object (given its selector), appear or simply the page to be fully
+     * loaded
+     *
+     * Params:
+     *
+     * selector : The selector of the object to wait for. Could be a css or
+     * xpath selector type (Optional): The type of the selector to be used:
+     * "css/xpath". If missing, css will be used
+     *
+     * Examples:
+     *
+     * wait={}
+     *
+     * wait={ "selector":"duckbar" }
+     *
+     * wait={ "selector":"//*[@id="search_form_input_homepage"]", "type":"xpath"
+     * }
+     *
+     * @param selector
+     * @param type
+     * @throws IOException
+     * @throws InvalidVarNameException
+     * @throws InvalidParamException
+     */
+    public static void fnWait(String selector, String type) throws IOException, InvalidVarNameException, InvalidParamException {
+        if(type==null || ! type.equals("xpath"))
+            type = "css";
+        actionManager.run("wait={\"selector\":\""+selector+"\",\"type\":\""+type+"\"}");
+    }
+
+    /**
+     * Waits for a page to be completely loaded after a change in the location
+     * bar URL, or after clicking any element. The browser will wait until a
+     * given object (given its selector), appear or simply the page to be fully
+     * loaded
+     *
+     * Params:
+     *
+     * selector : The selector of the object to wait for. Could be a css or
+     * xpath selector type (Optional): The type of the selector to be used:
+     * "css/xpath". If missing, css will be used
+     *
+     * Examples:
+     *
+     * wait={}
+     *
+     * wait={ "selector":"duckbar" }
+     *
+     * wait={ "selector":"//*[@id="search_form_input_homepage"]", "type":"xpath"
+     * }
+     *
+     * @param selector
+     * @param type
+     * @throws IOException
+     * @throws InvalidVarNameException
+     * @throws InvalidParamException
+     */
+    public static void fnWait(String selector) throws IOException, InvalidVarNameException, InvalidParamException {
+        fnWait(selector, "css");
+    }
+//    public static void fn""
+    //</editor-fold>
 }
