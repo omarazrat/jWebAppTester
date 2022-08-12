@@ -21,11 +21,10 @@ import oa.com.tests.actionrunners.enums.PlaceMousePointerOffsetType;
 import oa.com.tests.actionrunners.exceptions.InvalidParamException;
 import oa.com.tests.actionrunners.exceptions.InvalidVarNameException;
 import oa.com.tests.globals.ActionRunnerManager;
+import org.junit.AfterClass;
 import org.junit.Test;
-import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.MethodOrderer;
-import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.TestMethodOrder;
 
 /**
@@ -74,7 +73,16 @@ public class AbstractDefaultPluginRunnerTest {
     }
 
     @Test
-    @Order(1)
+    public void doIt() throws IOException, InvalidParamException, InvalidVarNameException {
+        fnSetBrowser();
+        fnGo();
+        fnWait();
+        fnWait2();
+        fnWrite();
+        fnWrite2();
+    }
+//    @Order(value = 1)
+
     public void fnSetBrowser() throws IOException, InvalidVarNameException, InvalidParamException {
         Plugin.fnSetBrowser(BROWSERTYPE.EDGE);
         //Time for the browser to start
@@ -82,29 +90,29 @@ public class AbstractDefaultPluginRunnerTest {
         log.info("fnSetBrowser() ");
     }
 
-    @Test
-    @Order(2)
+//    @Test
+//    @Order(value = 2)
     public void fnGo() throws IOException, InvalidVarNameException, InvalidParamException {
         Plugin.fnGo("https://www.soccercoachingpro.com/how-many-players-on-a-soccer-team/");
         log.info("fnGo()");
     }
 
-    @Test
-    @Order(3)
+//    @Test
+//    @Order(3)
     public void fnWait() throws IOException, InvalidVarNameException, InvalidParamException {
         Plugin.fnWait("body");
         log.info("fnWait()");
     }
 
-    @Test
-    @Order(4)
+//    @Test
+//    @Order(4)
     public void fnWait2() throws IOException, InvalidVarNameException, InvalidParamException {
         Plugin.fnWait("//*[@id=\"recent-posts-4\"]", "xpath");
         log.info("fnWait2()");
     }
 
-    @Test
-    @Order(5)
+//    @Test
+//    @Order(5)
     public void fnWrite() throws IOException, InvalidVarNameException, InvalidParamException {
         final String selector = "div.tcb-flex-col:nth-child(1) > div:nth-child(1) > div:nth-child(1) > input:nth-child(1)";
         Plugin.fnScroll(0, 0, selector);
@@ -114,14 +122,14 @@ public class AbstractDefaultPluginRunnerTest {
         log.info("fnWrite()");
     }
 
-    @Test
-    @Order(6)
+//    @Test
+//    @Order(6)
     public void fnWrite2() throws IOException, InvalidVarNameException, InvalidParamException {
         String selector = "html body.post-template-default.single.single-post.postid-1891.single-format-standard.tve-desktop-browser.tve-mozilla-browser div.flex-cnt div.wrp.cnt div.bSeCont section.bSe.left article#comments div.awr div#thrive_container_form_add_comment.lrp form#commentform input#author.text_field.author//*[@id=\"author\"]";
-        Plugin.fnScroll(0, 0, selector);
         final String type = "xpath";
+        Plugin.fnScroll(0, 0, selector,type);
         Plugin.fnWait(selector, type);
-        Plugin.fnWrite(selector,"it's me", type);
+        Plugin.fnWrite(selector, "it's me", type);
         log.info("fnWrite2()");
     }
 
@@ -213,7 +221,7 @@ public class AbstractDefaultPluginRunnerTest {
         Plugin.fnSetVariable(name, value);
     }
 
-    @AfterAll
+    @AfterClass
     public static void finish() {
         Plugin.getDriver().quit();
     }

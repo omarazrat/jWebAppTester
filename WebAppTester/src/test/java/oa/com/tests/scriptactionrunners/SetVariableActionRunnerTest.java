@@ -16,7 +16,9 @@ package oa.com.tests.scriptactionrunners;
 import java.io.IOException;
 import oa.com.tests.actionrunners.exceptions.InvalidParamException;
 import oa.com.tests.actionrunners.exceptions.InvalidVarNameException;
+import oa.com.tests.actionrunners.interfaces.PathKeeper;
 import oa.com.tests.globals.ActionRunnerBaseTest;
+import oa.com.tests.lang.SelectorVariable;
 import oa.com.tests.lang.StringVariable;
 import org.junit.Test;
 
@@ -30,7 +32,10 @@ public class SetVariableActionRunnerTest extends ActionRunnerBaseTest {
     public void testit() throws IOException, InvalidVarNameException, InvalidParamException {
         StringVariable pause_time = new StringVariable("pause_time", "7 s"),
                 comment = new StringVariable("comment", "I like this");
+        SelectorVariable selvar1 = new SelectorVariable(null, "abc", new PathKeeper("/html[1]/body[1]/form[1]/table[1]/tbody[1]/tr[2]/td[2]/input[1]", "xpath")),
+                selvar2 = new SelectorVariable(null, "abc", new PathKeeper("/html[1]/body[1]/form[1]/table[1]/tbody[1]/tr[2]/td[2]/input[2]", "xpath"));
 
+        assert(selvar1.equals(selvar2));
         //testing variable names
         for (String varName : new String[]{"MY_CALENDAR", "MY-calendar02",
             "1234567890oiuytrewqsdfghjkl___________________jjj1234567890098765432qwertyuiopkjhgfdsxcvbnm",

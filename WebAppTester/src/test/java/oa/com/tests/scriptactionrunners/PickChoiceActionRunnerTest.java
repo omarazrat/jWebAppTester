@@ -33,7 +33,8 @@ public class PickChoiceActionRunnerTest extends ActionRunnerBaseTest {
 
     @Test
     public void testIt() throws IOException, InvalidVarNameException, InvalidParamException {
-        run("go={https://stackoverflow.com/}");
+        run("go={https://stackoverflow.com/}\n"
+                + "pause={\"time\":\"3 s\"}");
         run("pick choice={\"selector\":\"/html/body/footer/div/nav/div[3]/ul\",\"type\":\"xpath\",\"subselector\":\"li/a\","
                 + "\"variable\":\"link\",\"title\":\"" + getClass().getSimpleName() + ":\",\"message\":\"Select a link to navigate\""
                 + "\"sorted\":\"no\"}\n"

@@ -63,7 +63,8 @@ public class ForActionRunner extends AbstractIteratorActionRunner {
     private int intervalPtr = 0;
     private int interval_length = 0;
     private String varName;
-
+    private static Logger log = Logger.getLogger("WebAppTester");
+    
     public ForActionRunner(TestAction action) throws NoActionSupportedException, InvalidActionException {
         super(action);
     }
@@ -176,12 +177,23 @@ public class ForActionRunner extends AbstractIteratorActionRunner {
             }
             var = new StringVariable(varName, varValue);
         } else {
-            final WebElement element = WebUtils.getNthChild(path, driver, intervalPtr + 1);
-            if (element == null) {
-                return false;
+            try {
+                final List<WebElement> elements = WebUtils.getMany(path, driver);
+                if (intervalPtr == elements.size()) {
+                    return false;
+                }
+                final WebElement element = elements.get(intervalPtr);
+                if (element == null) {
+                    return false;
+                }
+                PathKeeper newPath = new PathKeeper(
+                        WebUtils.generateXPATH(element)
+                        ,PathKeeper.SearchTypes.XPATH);
+                var = new SelectorVariable(element, varName, newPath);
+            } catch (BadSyntaxException ex) {
+                log.log(Level.SEVERE, null, ex);
             }
-            var = new SelectorVariable(element, varName, WebUtils.getNthPathKeeper(path, intervalPtr + 1));
-            intervalPtr++;
+                intervalPtr++;
         }
         ActionRunnerManager.addStVariable(var);
         return var!=null;

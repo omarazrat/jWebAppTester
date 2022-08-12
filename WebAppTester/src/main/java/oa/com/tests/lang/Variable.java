@@ -24,7 +24,7 @@ import lombok.RequiredArgsConstructor;
  * @author nesto
  */
 @Getter
-@EqualsAndHashCode(of = {"name","value"})
+@EqualsAndHashCode(of = {"name"})
 @RequiredArgsConstructor
 public abstract class Variable {
     public enum TYPE{

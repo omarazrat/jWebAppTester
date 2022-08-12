@@ -16,6 +16,8 @@ package oa.com.utils;
 import java.time.Duration;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.openqa.selenium.NoSuchElementException;
 import oa.com.tests.actionrunners.exceptions.BadSyntaxException;
 import oa.com.tests.actionrunners.interfaces.PathKeeper;
@@ -33,7 +35,11 @@ import org.openqa.selenium.support.ui.WebDriverWait;
  * @author nesto
  */
 public class WebUtils {
-
+    private static final Logger log = Logger.getLogger("WebAppTester");
+    /**
+     * @param childElement
+     * @return 
+     */
     public static String generateXPATH(WebElement childElement) {
         return generateXPATH(childElement, "");
     }
@@ -150,6 +156,7 @@ public class WebUtils {
             }
             return resp;
         } catch (NoSuchElementException nsee) {
+            log.log(Level.SEVERE, "", nsee);
             return null;
         }
     }

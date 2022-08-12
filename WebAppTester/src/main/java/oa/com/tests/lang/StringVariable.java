@@ -21,12 +21,18 @@ import lombok.EqualsAndHashCode;
  * @author nesto
  */
 @Data
-@EqualsAndHashCode(callSuper = true)
+//Does not work!
+//@EqualsAndHashCode(callSuper = true)
 public class StringVariable extends Variable{
     public StringVariable(String name,String value) {
         super(TYPE.STRING);
         this.name=name;
         this.value = value;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        return super.equals(o);
     }
     
 }

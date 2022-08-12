@@ -622,14 +622,16 @@ public class ActionRunnerManager implements PluginInterface {
 
             final PathKeeper.SearchTypes type = getType(varDef);
             isSelector = type != null;
-            final String selector = resolveSelector4VarDef(varDef);
-            resp = resp.replace(varDef, selector);
+            String selector = resolveSelector4VarDef(varDef);
             if (isSelector) {
                 final boolean isXPath = type.compareTo(PathKeeper.SearchTypes.XPATH) == 0;
                 if (isXPath) {
-                    throw new InvalidParamException("xpath selector in variable resolution. " + varDef + "=" + selector);
+                    //give this a chance
+                    selector += "\",\"type\":\"xpath";
+//                    throw new InvalidParamException("xpath selector in variable resolution. " + varDef + "=" + selector);
                 }
             }
+            resp = resp.replace(varDef, selector);
         }
         return resp;
     }

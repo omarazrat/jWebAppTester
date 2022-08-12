@@ -13,9 +13,8 @@
  */
 package oa.com.tests.lang;
 
+import lombok.Data;
 import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.Setter;
 import oa.com.tests.actionrunners.interfaces.PathKeeper;
 import org.openqa.selenium.WebElement;
 
@@ -23,9 +22,9 @@ import org.openqa.selenium.WebElement;
  *
  * @author nesto
  */
-@Getter
-@Setter
-@EqualsAndHashCode(callSuper = true)
+@Data
+//Does not work!
+//@EqualsAndHashCode(callSuper = true)
 public class SelectorVariable extends Variable{
     /**
      * Ruta Css para llegar a este objeto
@@ -42,6 +41,11 @@ public class SelectorVariable extends Variable{
 
     private void setValue(WebElement value) {
         this.value = value;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        return super.equals(o);
     }
     
 }

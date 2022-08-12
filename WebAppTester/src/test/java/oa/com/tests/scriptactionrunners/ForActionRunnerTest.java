@@ -53,11 +53,11 @@ public class ForActionRunnerTest extends ActionRunnerBaseTest{
          "end={}\n"+
          "pause={\"time\":\"3 s\"}");
          //forma 3
-        run("go={https://mdbootstrap.com/docs/b4/jquery/tables/pagination#basic-example}");
+        run("go={file:///"+RESOURCES_FOLDER+"/files/checkboxesPage.html}");
         
-        run("for={\"var\":\"div\", \"selector\":\"ul.pagination > li.paginate_button\"}\n"+
-        "  click={\"selector\":\"[:div] > a\"}\n"+
-        "  pause={\"time\":\"10 s\"}\n"+
+        run("for={\"var\":\"cb\", \"selector\":\"input\"}\n"+
+        "  click={\"selector\":\"[:cb]\"}\n"+
+        "  pause={\"time\":\"4 s\"}\n"+
         "end={}\n"+
          "pause={\"time\":\"3 s\"}");
      }
