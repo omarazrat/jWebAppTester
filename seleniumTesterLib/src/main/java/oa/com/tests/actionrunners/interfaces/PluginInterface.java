@@ -13,6 +13,7 @@
  */
 package oa.com.tests.actionrunners.interfaces;
 
+import oa.com.tests.actionrunners.interfaces.listeners.PluginStoppedListener;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;

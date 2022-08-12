@@ -11,14 +11,19 @@
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  */
-package oa.com.tests.actionrunners.interfaces;
-
-import oa.com.tests.plugins.AbstractDefaultPluginRunner;
+package oa.com.tests.actionrunners.enums;
 
 /**
- *
- * @author nesto
+ * Tipo de movimiento
  */
-public interface PluginStoppedListener {
-    void unregistered(AbstractDefaultPluginRunner plugin);
+public enum PlaceMousePointerOffsetType {
+    /**
+     * Desde la esquina superior izquierda de la página
+     */
+    FROM_UL_CORNER, /**
+     * Desde el centro de cierto objeto
+     */ FROM_CNTR_OBJECT, /**
+     * Desde la ubicación actual, cualquiera que sea.
+     */ FROM_CUR_LOCATION
+    
 }

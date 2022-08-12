@@ -24,6 +24,9 @@ import java.util.logging.Logger;
 import javax.imageio.ImageIO;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
+import oa.com.tests.actionrunners.enums.BROWSERTYPE;
+import oa.com.tests.actionrunners.enums.PlaceMousePointerOffsetType;
+import static oa.com.tests.actionrunners.enums.PlaceMousePointerOffsetType.FROM_UL_CORNER;
 import oa.com.tests.actionrunners.exceptions.InvalidParamException;
 import oa.com.tests.actionrunners.exceptions.InvalidVarNameException;
 import oa.com.tests.actionrunners.interfaces.PluginInterface;
@@ -180,9 +183,10 @@ public abstract class AbstractDefaultPluginRunner {
      * @throws InvalidParamException
      */
     public static void fnWait(String selector, String type) throws IOException, InvalidVarNameException, InvalidParamException {
-        if(type==null || ! type.equals("xpath"))
+        if (type == null || !type.equals("xpath")) {
             type = "css";
-        actionManager.run("wait={\"selector\":\""+selector+"\",\"type\":\""+type+"\"}");
+        }
+        actionManager.run("wait={\"selector\":\"" + selector + "\",\"type\":\"" + type + "\"}");
     }
 
     /**
@@ -215,6 +219,727 @@ public abstract class AbstractDefaultPluginRunner {
     public static void fnWait(String selector) throws IOException, InvalidVarNameException, InvalidParamException {
         fnWait(selector, "css");
     }
-//    public static void fn""
+
+    /**
+     * write - Writes text in a page component given its css selector.Params:
+     *
+     * selector: the css selector of the component to write on, If selector=="",
+     * then the action is send to the whole page.e.g.: CTRL+P text: the text to
+     * write type (Optional): The type of the selector to be used:
+     * "css/xpath".If missing, css will be used
+     *
+     * Examples:
+     *
+     * write={ "selector":"search_form_input_homepage", "text":"inicio" }
+     *
+     * write={ "selector":"#search_form_input_homepage", "text":"inicio"
+     * "type":"css" }
+     *
+     * You can specify special commands (ALT, F1,ENTER, ESCAPE, etc) using this
+     * format:
+     *
+     * [%Keys.CONTROL]
+     *
+     * The full list of supported constants can be found in
+     * https://www.selenium.dev/selenium/docs/api/java/org/openqa/selenium/Keys.html
+     * If you need to send command combinations, you can write using this
+     * format:
+     *
+     * [%Keys.CONTROL,Keys.ALT]
+     *
+     * You can also add non-commands characters, like this:
+     *
+     * [%Keys.CONTROL,Keys.ALT]r
+     *
+     * Examples:
+     *
+     * write={ "selector":"search_form_input_homepage",
+     * "text":"[%Keys.CONTROL,Keys.ALT]r" }
+     *
+     * write={ "selector":"", "text":"[%Keys.CONTROL]p" }
+     *
+     * If you need to write the text "[%", instead write "[%%"
+     *
+     *
+     * @param selector
+     * @param text
+     * @throws java.io.IOException
+     * @throws oa.com.tests.actionrunners.exceptions.InvalidVarNameException
+     * @throws oa.com.tests.actionrunners.exceptions.InvalidParamException
+     */
+    public static void fnWrite(String selector, String text) throws IOException, InvalidVarNameException, InvalidParamException {
+        fnWrite(selector, text, null);
+    }
+
+    /**
+     * write - Writes text in a page component given its css selector.Params:
+     *
+     * selector: the css selector of the component to write on, If selector=="",
+     * then the action is send to the whole page.e.g.: CTRL+P text: the text to
+     * write type (Optional): The type of the selector to be used:
+     * "css/xpath".If missing, css will be used
+     *
+     * Examples:
+     *
+     * write={ "selector":"search_form_input_homepage", "text":"inicio" }
+     *
+     * write={ "selector":"#search_form_input_homepage", "text":"inicio"
+     * "type":"css" }
+     *
+     * You can specify special commands (ALT, F1,ENTER, ESCAPE, etc) using this
+     * format:
+     *
+     * [%Keys.CONTROL]
+     *
+     * The full list of supported constants can be found in
+     * https://www.selenium.dev/selenium/docs/api/java/org/openqa/selenium/Keys.html
+     * If you need to send command combinations, you can write using this
+     * format:
+     *
+     * [%Keys.CONTROL,Keys.ALT]
+     *
+     * You can also add non-commands characters, like this:
+     *
+     * [%Keys.CONTROL,Keys.ALT]r
+     *
+     * Examples:
+     *
+     * write={ "selector":"search_form_input_homepage",
+     * "text":"[%Keys.CONTROL,Keys.ALT]r" }
+     *
+     * write={ "selector":"", "text":"[%Keys.CONTROL]p" }
+     *
+     * If you need to write the text "[%", instead write "[%%"
+     *
+     *
+     * @param selector
+     * @param text
+     * @param type
+     * @throws java.io.IOException
+     * @throws oa.com.tests.actionrunners.exceptions.InvalidParamException
+     * @throws oa.com.tests.actionrunners.exceptions.InvalidVarNameException
+     */
+    public static void fnWrite(String selector, String text, String type) throws IOException, InvalidVarNameException, InvalidParamException {
+        if (type != null && !type.equals("xpath")) {
+            type = "css";
+        }
+        actionManager.run("write={\"selector\":\"" + selector + "\"\n"
+                + ", \"text\":\"" + text + "\"\n"
+                + ",  \"type\":\"" + type + "\"}");
+    }
+
+    /**
+     * click - clicks a component of the page given a css selector
+     *
+     * @param selector (optional): The selector of the object to click. Could be
+     * a css or xpath selector
+     * @param type (optional): The type of the selector to be used: "css/xpath".
+     * If missing, css will be used If no selector provided, the click event is
+     * triggered wherever the mouse pointer is located.
+     *
+     * Example:
+     *
+     * click={ "selector":"search_button_homepage" }
+     *
+     * @throws IOException
+     * @throws InvalidVarNameException
+     * @throws InvalidParamException
+     */
+    public static void fnClick() throws IOException, InvalidVarNameException, InvalidParamException {
+        fnClick(null, null);
+    }
+
+    /**
+     * click - clicks a component of the page given a css selector
+     *
+     * @param selector (optional): The selector of the object to click. Could be
+     * a css or xpath selector
+     * @param type (optional): The type of the selector to be used: "css/xpath".
+     * If missing, css will be used If no selector provided, the click event is
+     * triggered wherever the mouse pointer is located.
+     *
+     * Example:
+     *
+     * click={ "selector":"search_button_homepage" }
+     *
+     * @throws IOException
+     * @throws InvalidVarNameException
+     * @throws InvalidParamException
+     */
+    public static void fnClick(String selector) throws IOException, InvalidVarNameException, InvalidParamException {
+        fnClick(selector, null);
+    }
+
+    /**
+     * click - clicks a component of the page given a css selector
+     *
+     * @param selector (optional): The selector of the object to click. Could be
+     * a css or xpath selector
+     * @param type (optional): The type of the selector to be used: "css/xpath".
+     * If missing, css will be used If no selector provided, the click event is
+     * triggered wherever the mouse pointer is located.
+     *
+     * Example:
+     *
+     * click={ "selector":"search_button_homepage" }
+     *
+     * @throws IOException
+     * @throws InvalidVarNameException
+     * @throws InvalidParamException
+     */
+    public static void fnClick(String selector, String type) throws IOException, InvalidVarNameException, InvalidParamException {
+        String mouseCommand = "click";
+        runMouseCommand(mouseCommand, selector, type);
+    }
+
+    /**
+     * Double-clicks any element in the page, given its selector.
+     *
+     * @param selector (optional): The selector of the object to double click.
+     * Could be a css or xpath selector
+     * @param type (optional): The type of the selector to be used: "css/xpath".
+     * If missing, css will be used If no selector provided, the double click
+     * event is triggered wherever the mouse pointer is located.
+     *
+     * Example:
+     *
+     * double click={ "selector": "body" }
+     *
+     * @throws IOException
+     * @throws InvalidVarNameException
+     * @throws InvalidParamException
+     */
+    public static void fnDoubleClick() throws IOException, InvalidVarNameException, InvalidParamException {
+        fnDoubleClick(null, null);
+    }
+
+    /**
+     * Double-clicks any element in the page, given its selector.
+     *
+     * @param selector (optional): The selector of the object to double click.
+     * Could be a css or xpath selector
+     * @param type (optional): The type of the selector to be used: "css/xpath".
+     * If missing, css will be used If no selector provided, the double click
+     * event is triggered wherever the mouse pointer is located.
+     *
+     * Example:
+     *
+     * double click={ "selector": "body" }
+     *
+     * @throws IOException
+     * @throws InvalidVarNameException
+     * @throws InvalidParamException
+     */
+    public static void fnDoubleClick(String selector) throws IOException, InvalidVarNameException, InvalidParamException {
+        fnDoubleClick(selector, null);
+    }
+
+    /**
+     * Double-clicks any element in the page, given its selector.
+     *
+     * @param selector (optional): The selector of the object to double click.
+     * Could be a css or xpath selector
+     * @param type (optional): The type of the selector to be used: "css/xpath".
+     * If missing, css will be used If no selector provided, the double click
+     * event is triggered wherever the mouse pointer is located.
+     *
+     * Example:
+     *
+     * double click={ "selector": "body" }
+     *
+     * @throws IOException
+     * @throws InvalidVarNameException
+     * @throws InvalidParamException
+     */
+    public static void fnDoubleClick(String selector, String type) throws IOException, InvalidVarNameException, InvalidParamException {
+        String mouseCommand = "double click";
+        runMouseCommand(mouseCommand, selector, type);
+    }
+
+    /**
+     * Right clicks any element in the page, given its selector.
+     *
+     * @param selector (optional): The selector of the object to right click.
+     * Could be a css or xpath selector
+     * @param type (optional): The type of the selector to be used: "css/xpath".
+     * If missing, css will be used If no selector provided, the right click
+     * event is triggered wherever the mouse pointer is located.
+     *
+     * Example:
+     *
+     * right click={ "selector": "Identificacion" }
+     *
+     * @param selector
+     * @param type
+     * @throws IOException
+     * @throws InvalidVarNameException
+     * @throws InvalidParamException
+     */
+    public static void fnRightClick() throws IOException, InvalidVarNameException, InvalidParamException {
+        fnRightClick(null);
+    }
+
+    /**
+     * Right clicks any element in the page, given its selector.
+     *
+     * @param selector (optional): The selector of the object to right click.
+     * Could be a css or xpath selector
+     * @param type (optional): The type of the selector to be used: "css/xpath".
+     * If missing, css will be used If no selector provided, the right click
+     * event is triggered wherever the mouse pointer is located.
+     *
+     * Example:
+     *
+     * right click={ "selector": "Identificacion" }
+     *
+     * @param selector
+     * @param type
+     * @throws IOException
+     * @throws InvalidVarNameException
+     * @throws InvalidParamException
+     */
+    public static void fnRightClick(String selector) throws IOException, InvalidVarNameException, InvalidParamException {
+        fnRightClick(selector, null);
+    }
+
+    /**
+     * Right clicks any element in the page, given its selector.
+     *
+     * @param selector (optional): The selector of the object to right click.
+     * Could be a css or xpath selector
+     * @param type (optional): The type of the selector to be used: "css/xpath".
+     * If missing, css will be used If no selector provided, the right click
+     * event is triggered wherever the mouse pointer is located.
+     *
+     * Example:
+     *
+     * right click={ "selector": "Identificacion" }
+     *
+     * @param selector
+     * @param type
+     * @throws IOException
+     * @throws InvalidVarNameException
+     * @throws InvalidParamException
+     */
+    public static void fnRightClick(String selector, String type) throws IOException, InvalidVarNameException, InvalidParamException {
+        String mouseCommand = "right click";
+        runMouseCommand(mouseCommand, selector, type);
+    }
+
+    /**
+     * Scrolls the screen horizantally (x) or vertically (y) a given amount of
+     * pixels.
+     *
+     * Examples:
+     *
+     * scroll={ "x":"0", "y":"100" }
+     *
+     * scroll={ "x":"10", "y":"-100" }
+     *
+     * scroll={ "x":"10", "y":"-100",
+     * "selector":"//*[@id='main-content-inner']", "type": "xpath" }
+     *
+     * @param selector (optional): The selector of the object to scroll on.
+     * Could be a css or xpath selector. If missing, the whole page will be
+     * selected (body)
+     * @param type (optional): The type of the selector to be used: "css/xpath".
+     * If missing, css will be used
+     * @param x : pixels to scroll in horizontal axis (>0 right, <0 left) @
+     * param y : pixels to scroll in vertical axis (>0 down, <0 up)
+     *
+     * @throws IOException
+     * @throws InvalidVarNameException
+     * @throws InvalidParamException
+     */
+    public static void fnScroll(int x, int y) throws IOException, InvalidVarNameException, InvalidParamException {
+        fnScroll(x, y, null);
+    }
+
+    /**
+     * Scrolls the screen horizantally (x) or vertically (y) a given amount of
+     * pixels.
+     *
+     * Examples:
+     *
+     * scroll={ "x":"0", "y":"100" }
+     *
+     * scroll={ "x":"10", "y":"-100" }
+     *
+     * scroll={ "x":"10", "y":"-100",
+     * "selector":"//*[@id='main-content-inner']", "type": "xpath" }
+     *
+     * @param selector (optional): The selector of the object to scroll on.
+     * Could be a css or xpath selector. If missing, the whole page will be
+     * selected (body)
+     * @param type (optional): The type of the selector to be used: "css/xpath".
+     * If missing, css will be used
+     * @param x : pixels to scroll in horizontal axis (>0 right, <0 left) @
+     * param y : pixels to scroll in vertical axis (>0 down, <0 up)
+     *
+     * @throws IOException
+     * @throws InvalidVarNameException
+     * @throws InvalidParamException
+     */
+    public static void fnScroll(int x, int y, String selector) throws IOException, InvalidVarNameException, InvalidParamException {
+        fnScroll(x, y, selector, null);
+    }
+
+    /**
+     * Scrolls the screen horizantally (x) or vertically (y) a given amount of
+     * pixels.
+     *
+     * Examples:
+     *
+     * scroll={ "x":"0", "y":"100" }
+     *
+     * scroll={ "x":"10", "y":"-100" }
+     *
+     * scroll={ "x":"10", "y":"-100",
+     * "selector":"//*[@id='main-content-inner']", "type": "xpath" }
+     *
+     * @param selector (optional): The selector of the object to scroll on.
+     * Could be a css or xpath selector. If missing, the whole page will be
+     * selected (body)
+     * @param type (optional): The type of the selector to be used: "css/xpath".
+     * If missing, css will be used
+     * @param x : pixels to scroll in horizontal axis (>0 right, <0 left) @
+     * param y : pixels to scroll in vertical axis (>0 down, <0 up)
+     *
+     * @throws IOException
+     * @throws InvalidVarNameException
+     * @throws InvalidParamException
+     */
+    public static void fnScroll(int x, int y, String selector, String type) throws IOException, InvalidVarNameException, InvalidParamException {
+        String command = "scroll={\"x\":\"" + x + "\",\"y\":\"" + y + "\"";
+        if (selector != null) {
+            if (type == null || type != "xpath") {
+                type = "css";
+            }
+            command += ",\"selector\":\"" + selector + "\",\"type\":\"" + type + "\"";
+        }
+        command += "}";
+        actionManager.run(command);
+    }
+
+    /**
+     * Place the mouse pointer in screen
+     *
+     * Examples:
+     *
+     * place mouse pointer={ "offsetType":"FROM_UL_CORNER", "x":"150", "y":"350"
+     * }
+     *
+     * place mouse pointer={ "offsetType":"FROM_CNTR_OBJECT", "x":"150",
+     * "y":"350", "selector":"img:nth-of-type(2)" }
+     *
+     * @param offsetType (optional): One of these: FROM_UL_CORNER (default)- To
+     * place the mouse pointer relative to the upper left corner
+     * FROM_CUR_LOCATION - To place the mouse pointer from its current location
+     * FROM_CNTR_OBJECT - To place the mouse pointer from the center of a given
+     * object
+     * @param x: the horizontal pixels to move the mouse pointer
+     * @param y: the vertical pixels to move the mouse pointer
+     * @param selector: the selector for the object (use only with
+     * FROM_CNTR_OBJECT) -
+     * @param type: Type of the selector for the object (default = css)
+     *
+     * @throws IOException
+     * @throws InvalidVarNameException
+     * @throws InvalidParamException
+     */
+    public static void fnPlaceMousePointer(int x, int y) throws IOException, InvalidVarNameException, InvalidParamException {
+        fnPlaceMousePointer(x, y, FROM_UL_CORNER);
+    }
+
+    /**
+     * Place the mouse pointer in screen
+     *
+     * Examples:
+     *
+     * place mouse pointer={ "offsetType":"FROM_UL_CORNER", "x":"150", "y":"350"
+     * }
+     *
+     * place mouse pointer={ "offsetType":"FROM_CNTR_OBJECT", "x":"150",
+     * "y":"350", "selector":"img:nth-of-type(2)" }
+     *
+     * @param offsetType (optional): One of these: FROM_UL_CORNER (default)- To
+     * place the mouse pointer relative to the upper left corner
+     * FROM_CUR_LOCATION - To place the mouse pointer from its current location
+     * FROM_CNTR_OBJECT - To place the mouse pointer from the center of a given
+     * object
+     * @param x: the horizontal pixels to move the mouse pointer
+     * @param y: the vertical pixels to move the mouse pointer
+     * @param selector: the selector for the object (use only with
+     * FROM_CNTR_OBJECT) -
+     * @param type: Type of the selector for the object (default = css)
+     *
+     * @throws IOException
+     * @throws InvalidVarNameException
+     * @throws InvalidParamException
+     */
+    public static void fnPlaceMousePointer(int x, int y, PlaceMousePointerOffsetType offsetType) throws IOException, InvalidVarNameException, InvalidParamException {
+        fnPlaceMousePointer(x, y, offsetType, null);
+    }
+
+    /**
+     * Place the mouse pointer in screen
+     *
+     * Examples:
+     *
+     * place mouse pointer={ "offsetType":"FROM_UL_CORNER", "x":"150", "y":"350"
+     * }
+     *
+     * place mouse pointer={ "offsetType":"FROM_CNTR_OBJECT", "x":"150",
+     * "y":"350", "selector":"img:nth-of-type(2)" }
+     *
+     * @param offsetType (optional): One of these: FROM_UL_CORNER (default)- To
+     * place the mouse pointer relative to the upper left corner
+     * FROM_CUR_LOCATION - To place the mouse pointer from its current location
+     * FROM_CNTR_OBJECT - To place the mouse pointer from the center of a given
+     * object
+     * @param x: the horizontal pixels to move the mouse pointer
+     * @param y: the vertical pixels to move the mouse pointer
+     * @param selector: the selector for the object (use only with
+     * FROM_CNTR_OBJECT) -
+     * @param type: Type of the selector for the object (default = css)
+     *
+     * @throws IOException
+     * @throws InvalidVarNameException
+     * @throws InvalidParamException
+     */
+    public static void fnPlaceMousePointer(int x, int y, PlaceMousePointerOffsetType offsetType, String selector) throws IOException, InvalidVarNameException, InvalidParamException {
+        fnPlaceMousePointer(x, y, offsetType, selector, null);
+    }
+
+    /**
+     * Place the mouse pointer in screen
+     *
+     * Examples:
+     *
+     * place mouse pointer={ "offsetType":"FROM_UL_CORNER", "x":"150", "y":"350"
+     * }
+     *
+     * place mouse pointer={ "offsetType":"FROM_CNTR_OBJECT", "x":"150",
+     * "y":"350", "selector":"img:nth-of-type(2)" }
+     *
+     * @param offsetType (optional): One of these: FROM_UL_CORNER (default)- To
+     * place the mouse pointer relative to the upper left corner
+     * FROM_CUR_LOCATION - To place the mouse pointer from its current location
+     * FROM_CNTR_OBJECT - To place the mouse pointer from the center of a given
+     * object
+     * @param x: the horizontal pixels to move the mouse pointer
+     * @param y: the vertical pixels to move the mouse pointer
+     * @param selector: the selector for the object (use only with
+     * FROM_CNTR_OBJECT) -
+     * @param type: Type of the selector for the object (default = css)
+     *
+     * @throws IOException
+     * @throws InvalidVarNameException
+     * @throws InvalidParamException
+     */
+    public static void fnPlaceMousePointer(int x, int y, PlaceMousePointerOffsetType offsetType, String selector, String type) throws IOException, InvalidVarNameException, InvalidParamException {
+        if (offsetType == null) {
+            offsetType = FROM_UL_CORNER;
+        }
+        String command = "place mouse pointer={\"offsetType\":\"" + offsetType + "\",\"x\":" + x + ",\"y\":" + y + "\"";
+        if (selector != null) {
+            command += ",\"selector\":\"" + selector + "\"";
+            if (type == null || type != "xpath") {
+                type = "css";
+            }
+            command += ",\"type\":\"" + type + "\"";
+        }
+        command += "}";
+        actionManager.run(command);
+    }
+
+    /**
+     *
+     * Waits a given number of seconds
+     *
+     * @param seconds
+     * @throws IOException
+     * @throws InvalidVarNameException
+     * @throws InvalidParamException
+     */
+    public static void fnPause(int seconds) throws IOException, InvalidVarNameException, InvalidParamException {
+        fnPause("" + seconds + " s");;
+    }
+
+    /**
+     * Waits a given time, before proceeding with the next instruction.
+     *
+     *
+     * Example:
+     *
+     * To wait three seconds
+     *
+     * pause={"time":"3 s"}
+     *
+     * To wait 10 minutes
+     *
+     * pause={"time":"10 m"}
+     *
+     * @param time: NUMBER UNITS, Where UNITS can be one of these values:
+     * S=milliseconds,s=seconds, m=minutes, h=hours, d=days
+     * @throws IOException
+     * @throws InvalidVarNameException
+     * @throws InvalidParamException
+     */
+    public static void fnPause(String time) throws IOException, InvalidVarNameException, InvalidParamException {
+        actionManager.run("pause={\"time\":\"" + time + "\"}");
+    }
+
+    /**
+     * Prompts user to pick a single choice among a list, stores selected
+     *
+     * option in a variable. Example:
+     *
+     * pick choice={ "selector":"div.central-featured-lang", "subselector": "a",
+     * "sorted":"yes", "title":"Wikipedia", "message":"Select a language",
+     * "variable":"Language" }
+     *
+     * @param selector: Required. This selector must match to a collection of
+     * HTML elements
+     * @param subselector: Secondary css path, to specify the element of every
+     * option to be shown to the user. By default, the text of every element
+     * gathered with the "selector" will be used as option.
+     * @param type (optional): The type of the selector to be used: "css/xpath".
+     * If missing, css will be used
+     * @param variable: Required. Name of the variable used to store user's
+     * selection.
+     * @param title: Title for the promtpt window
+     * @param message: Message to use in the prompt window.
+     * @param sorted: Sort options alphabetically? (yes/no)
+     * @throws IOException
+     * @throws InvalidVarNameException
+     * @throws InvalidParamException
+     */
+    public static void fnPickChoice(String selector, String variable, String title, String message, boolean sorted) throws IOException, InvalidVarNameException, InvalidParamException {
+        fnPickChoice(selector, variable, title, message, sorted, null);
+    }
+
+    /**
+     * Prompts user to pick a single choice among a list, stores selected
+     *
+     * option in a variable. Example:
+     *
+     * pick choice={ "selector":"div.central-featured-lang", "subselector": "a",
+     * "sorted":"yes", "title":"Wikipedia", "message":"Select a language",
+     * "variable":"Language" }
+     *
+     * @param selector: Required. This selector must match to a collection of
+     * HTML elements
+     * @param subselector: Secondary css path, to specify the element of every
+     * option to be shown to the user. By default, the text of every element
+     * gathered with the "selector" will be used as option.
+     * @param type (optional): The type of the selector to be used: "css/xpath".
+     * If missing, css will be used
+     * @param variable: Required. Name of the variable used to store user's
+     * selection.
+     * @param title: Title for the promtpt window
+     * @param message: Message to use in the prompt window.
+     * @param sorted: Sort options alphabetically? (yes/no)
+     * @throws IOException
+     * @throws InvalidVarNameException
+     * @throws InvalidParamException
+     */
+    public static void fnPickChoice(String selector, String variable, String title, String message, boolean sorted, String subselector) throws IOException, InvalidVarNameException, InvalidParamException {
+        fnPickChoice(selector, variable, title, message, sorted, subselector, null);
+    }
+
+    /**
+     * Prompts user to pick a single choice among a list, stores selected
+     *
+     * option in a variable. Example:
+     *
+     * pick choice={ "selector":"div.central-featured-lang", "subselector": "a",
+     * "sorted":"yes", "title":"Wikipedia", "message":"Select a language",
+     * "variable":"Language" }
+     *
+     * @param selector: Required. This selector must match to a collection of
+     * HTML elements
+     * @param subselector: Secondary css path, to specify the element of every
+     * option to be shown to the user. By default, the text of every element
+     * gathered with the "selector" will be used as option.
+     * @param type (optional): The type of the selector to be used: "css/xpath".
+     * If missing, css will be used
+     * @param variable: Required. Name of the variable used to store user's
+     * selection.
+     * @param title: Title for the promtpt window
+     * @param message: Message to use in the prompt window.
+     * @param sorted: Sort options alphabetically? (yes/no)
+     * @throws IOException
+     * @throws InvalidVarNameException
+     * @throws InvalidParamException
+     */
+    public static void fnPickChoice(String selector, String variable, String title, String message, boolean sorted, String subselector, String type) throws IOException, InvalidVarNameException, InvalidParamException {
+        String command = "pick choice={\"selector\":\"" + selector + "\" "
+                + ",\"variable\":\"" + variable + "\",\"title\":\"" + title + "\""
+                + ",\"message\":\"" + message + "\",\"sorted\":\"" + sorted + "\"";
+        if (subselector != null) {
+            command += ",\"subselector\":\"" + subselector + "\"";
+        }
+        if (type == null || type != "xpath") {
+            type = "css";
+        }
+        command += ",\"type\":\"" + type + "\"}";
+        actionManager.run(command);
+    }
+
+    /**
+     * A handy way to assign text to a name.
+     *
+     * Example:
+     *
+     * set={"name":"comment","value":"I like this"}
+     *
+     * @param name : Name of the variable. Allowed characters in the name:
+     * numbers, letters and the signs _ -. e.g.: "MY_KEY","comment-02"
+     * @param value : The text inside it
+     *
+     * @throws IOException
+     * @throws InvalidVarNameException
+     * @throws InvalidParamException
+     */
+    public static void fnSetVariable(String name, String value) throws IOException, InvalidVarNameException, InvalidParamException {
+        actionManager.run("set={\"name\":\"" + name + "\",\"value\":\"" + value + "\"}");
+    }
+
+    /**
+     * Use to change between these browsers:
+     *
+     * CHROME, EDGE, FIREFOX, INTERNET_EXPLORER, OPERA, SAFARI
+     *
+     * Example:
+     *
+     * browser={SAFARI}
+     *
+     * Note: When a new browser is set, the default page will be loaded and all
+     * authentication data will be lost
+     *
+     * @param browser
+     * @throws IOException
+     * @throws InvalidVarNameException
+     * @throws InvalidParamException
+     */
+    public static void fnSetBrowser(BROWSERTYPE browser) throws IOException, InvalidVarNameException, InvalidParamException {
+        actionManager.run("browser={" + browser.name() + "}");
+    }
+
+    private static void runMouseCommand(String mouseCommand, String selector, String type) throws IOException, InvalidVarNameException, InvalidParamException {
+        String command = mouseCommand + "={ \n";
+        if (selector != null) {
+            command += "  \"selector\":\"" + selector + "\"\n";
+            if (type != null) {
+                if (type != "xpath") {
+                    type = "css";
+                }
+                command += "  \"type\":\"" + type + "\"\n";
+            }
+        }
+        command += "}";
+        actionManager.run(command);
+    }
     //</editor-fold>
 }
