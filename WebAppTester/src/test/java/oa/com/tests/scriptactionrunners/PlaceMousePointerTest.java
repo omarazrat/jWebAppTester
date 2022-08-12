@@ -15,10 +15,10 @@ package oa.com.tests.scriptactionrunners;
 
 import java.io.IOException;
 import java.util.logging.Logger;
+import oa.com.tests.actionrunners.enums.BROWSERTYPE;
 import oa.com.tests.actionrunners.exceptions.InvalidParamException;
 import oa.com.tests.actionrunners.exceptions.InvalidVarNameException;
 import oa.com.tests.globals.ActionRunnerBaseTest;
-import oa.com.tests.globals.ActionRunnerManager;
 import org.junit.Test;
 
 /**
@@ -28,7 +28,7 @@ import org.junit.Test;
 public class PlaceMousePointerTest extends ActionRunnerBaseTest{
 
     public PlaceMousePointerTest() {
-        super(ActionRunnerManager.BROWSERTYPE.FIREFOX);
+        super(BROWSERTYPE.FIREFOX);
     }
     
     @Test

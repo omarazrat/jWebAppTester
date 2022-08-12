@@ -13,6 +13,7 @@
  */
 package oa.com.tests.globals;
 
+import oa.com.tests.actionrunners.enums.BROWSERTYPE;
 import oa.com.tests.Utils;
 import oa.com.tests.actionrunners.exceptions.BadSyntaxException;
 import oa.com.tests.actionrunners.exceptions.NoActionSupportedException;
@@ -55,7 +56,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-import java.util.SortedSet;
 import java.util.concurrent.ConcurrentSkipListSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -73,7 +73,7 @@ import oa.com.tests.plugins.AbstractDefaultPluginRunner;
 import oa.com.tests.plugins.PluginService;
 import oa.com.tests.scriptactionrunners.ForActionRunner;
 import oa.com.tests.actionrunners.interfaces.PluginInterface;
-import oa.com.tests.actionrunners.interfaces.PluginStoppedListener;
+import oa.com.tests.actionrunners.interfaces.listeners.PluginStoppedListener;
 
 /**
  * Gestor de acciones.
@@ -81,16 +81,7 @@ import oa.com.tests.actionrunners.interfaces.PluginStoppedListener;
  * @author nesto
  */
 @Data
-public final class ActionRunnerManager implements PluginInterface {
-
-    public enum BROWSERTYPE {
-        CHROME,
-        EDGE,
-        FIREFOX,
-        INTERNET_EXPLORER,
-        OPERA,
-        SAFARI
-    }
+public class ActionRunnerManager implements PluginInterface {
 
     public enum ACTIONTYPE {
         START,
@@ -111,7 +102,7 @@ public final class ActionRunnerManager implements PluginInterface {
     private WebDriver driver;
     @SuppressWarnings("unchecked")
     private List<Variable> variables = new LinkedList();
-    private static ActionRunnerManager instance = new ActionRunnerManager();
+    protected static ActionRunnerManager instance = new ActionRunnerManager();
     final private static String sqOpen = Pattern.quote("[");
     final private static String sqClose = Pattern.quote("]");
     final private static String KEY_SEPARATOR = ",";
@@ -120,7 +111,7 @@ public final class ActionRunnerManager implements PluginInterface {
     private Set<Integer> runningPlugins;
     private Map<Integer, List<PluginStoppedListener>> pluginStoppedListeners;
 
-    private ActionRunnerManager() {
+    protected ActionRunnerManager() {
         //Clases
         try {
             //Carpetas
@@ -196,7 +187,7 @@ public final class ActionRunnerManager implements PluginInterface {
     @Override
     public void registerStop(AbstractDefaultPluginRunner plugin) {
         final int hashCode = plugin.hashCode();
-        log.log(Level.INFO, "stopping plugin {0}", hashCode);
+//        log.log(Level.INFO, "stopping plugin {0}", hashCode);
         if (!isRunning(plugin)) {
             return;
         }

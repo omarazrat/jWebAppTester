@@ -13,6 +13,7 @@
  */
 package oa.com.tests.globals;
 
+import oa.com.tests.actionrunners.enums.BROWSERTYPE;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -30,7 +31,7 @@ import org.junit.AfterClass;
 public abstract class ActionRunnerBaseTest {
 
     public ActionRunnerBaseTest() {
-        this(ActionRunnerManager.BROWSERTYPE.FIREFOX);
+        this(BROWSERTYPE.FIREFOX);
     }
     
     
@@ -39,7 +40,7 @@ public abstract class ActionRunnerBaseTest {
      * Change browser in @BeforeClass as you wish
      * @param command 
      */
-    public ActionRunnerBaseTest(ActionRunnerManager.BROWSERTYPE browser) {
+    public ActionRunnerBaseTest(BROWSERTYPE browser) {
         ActionRunnerManager.set(browser);
     }
     

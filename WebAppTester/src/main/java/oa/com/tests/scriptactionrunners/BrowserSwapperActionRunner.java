@@ -23,6 +23,7 @@ import oa.com.tests.actionrunners.exceptions.NoActionSupportedException;
 import oa.com.tests.actionrunners.interfaces.AbstractDefaultScriptActionRunner;
 import oa.com.tests.actions.TestAction;
 import oa.com.tests.globals.ActionRunnerManager;
+import oa.com.tests.actionrunners.enums.BROWSERTYPE;
 import oa.com.tests.swing.MainApp;
 import org.openqa.selenium.WebDriver;
 
@@ -33,7 +34,7 @@ import org.openqa.selenium.WebDriver;
  */
 public class BrowserSwapperActionRunner extends AbstractDefaultScriptActionRunner {
 
-    private ActionRunnerManager.BROWSERTYPE browser;
+    private BROWSERTYPE browser;
 
     public BrowserSwapperActionRunner(TestAction action) throws NoActionSupportedException, InvalidActionException {
         super(action);
@@ -42,7 +43,7 @@ public class BrowserSwapperActionRunner extends AbstractDefaultScriptActionRunne
         if (!matcher.matches()) {
             throw new InvalidActionException(action.getCommand());
         }
-        browser = ActionRunnerManager.BROWSERTYPE.valueOf(matcher.group(1));
+        browser = BROWSERTYPE.valueOf(matcher.group(1));
     }
 
     @Override

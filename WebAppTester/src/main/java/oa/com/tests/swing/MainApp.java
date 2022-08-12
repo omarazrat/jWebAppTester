@@ -60,7 +60,8 @@ import javax.swing.JTextArea;
 import javax.swing.JTree;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import lombok.Data;
-import oa.com.tests.actionrunners.interfaces.PluginStoppedListener;
+import oa.com.tests.actionrunners.interfaces.listeners.PluginStoppedListener;
+import oa.com.tests.actionrunners.enums.BROWSERTYPE;
 import oa.com.tests.plugins.AbstractDefaultPluginRunner;
 import oa.com.utils.Encryption;
 
@@ -365,7 +366,7 @@ public class MainApp extends JFrame {
         //</editor-fold>
 
         // <editor-fold defaultstate="collapsed" desc="Browser drop-down list">
-        for (String item : Arrays.asList(ActionRunnerManager.BROWSERTYPE.values())
+        for (String item : Arrays.asList(BROWSERTYPE.values())
                 .stream()
                 .map(bn -> globals.getString("settings.driver." + bn.name() + ".name"))
                 .collect(toList())) {
@@ -379,8 +380,8 @@ public class MainApp extends JFrame {
         });
         final String storedBrowserName = Preferences.userRoot().get("webapptester.browser", null);
         if (storedBrowserName != null) {
-            final ActionRunnerManager.BROWSERTYPE storedBrowser
-                    = ActionRunnerManager.BROWSERTYPE.valueOf(storedBrowserName);
+            final BROWSERTYPE storedBrowser
+                    = BROWSERTYPE.valueOf(storedBrowserName);
             ActionRunnerManager.set(storedBrowser);
             browserTree.setSelectedItem(globals.getString("settings.driver." + storedBrowserName + ".name"));
         }
@@ -396,12 +397,15 @@ public class MainApp extends JFrame {
         if (hasPlugins) {
             gbc.gridx = gbc.gridy = 0;
             gbc.fill = GridBagConstraints.BOTH;
+            gbc.gridheight=gbc.gridwidth=1;
             for (AbstractDefaultPluginRunner plugin : plugins) {
+//                log.info("cargando "+plugin.getButtonActionCommand());
                 JButton pluginBtn;
                 try {
                     pluginBtn = new JButton(plugin.getButtonActionCommand(), plugin.getIcon());
                     pluginBtn.addActionListener(plugin.getActionListener());
                     pluginGrid.add(pluginBtn, gbc);
+//                    log.info("plugin added at "+(gbc.gridx)+","+gbc.gridy);
                     pluginBtn.setPreferredSize(new Dimension(190, 32));
                     gbc.gridx++;
                     if (gbc.gridx == 2) {
@@ -458,7 +462,7 @@ public class MainApp extends JFrame {
      *
      * @param type
      */
-    public static void setBrowser(ActionRunnerManager.BROWSERTYPE type) {
+    public static void setBrowser(BROWSERTYPE type) {
         if (instance == null) {
             return;
         }
@@ -507,17 +511,17 @@ public class MainApp extends JFrame {
      * @param withUsrMsg
      * @return El tipo de navegador seleccionado, o null si ninguno lo fue.
      */
-    private ActionRunnerManager.BROWSERTYPE updateBrowser(boolean withUsrMsg) throws HeadlessException {
+    private BROWSERTYPE updateBrowser(boolean withUsrMsg) throws HeadlessException {
         final String item = (String) browserTree.getSelectedItem();
         if (item == null) {
             return null;
         }
-        final Optional<ActionRunnerManager.BROWSERTYPE> browserMatch = Arrays.asList(ActionRunnerManager.BROWSERTYPE.values())
+        final Optional<BROWSERTYPE> browserMatch = Arrays.asList(BROWSERTYPE.values())
                 .parallelStream()
                 .filter(bn -> item.equals(globals.getString("settings.driver." + bn.name() + ".name")))
                 .findFirst();
         if (browserMatch.isPresent()) {
-            final ActionRunnerManager.BROWSERTYPE resp = browserMatch.get();
+            final BROWSERTYPE resp = browserMatch.get();
             ActionRunnerManager.set(resp);
             Preferences.userRoot().put("webapptester.browser", resp.name());
             return resp;

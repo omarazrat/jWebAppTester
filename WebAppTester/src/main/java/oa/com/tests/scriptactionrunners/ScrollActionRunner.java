@@ -84,7 +84,7 @@ public class ScrollActionRunner extends AbstractSelectorActionRunner {
             js.executeScript("arguments[0].scrollLeft+="+x+";",element);
             js.executeScript("arguments[0].scrollTop+="+y+ ";",element);
         }else{//Va sin selector...
-            driver.manage().window().maximize();
+//            driver.manage().window().maximize();
             js.executeScript("window.scrollBy(" + getX() + "," + getY() + ")");
         }
     }

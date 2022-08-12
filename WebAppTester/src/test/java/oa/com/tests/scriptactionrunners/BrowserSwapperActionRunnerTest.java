@@ -16,7 +16,7 @@ package oa.com.tests.scriptactionrunners;
 import java.io.IOException;
 import oa.com.tests.actionrunners.exceptions.InvalidVarNameException;
 import oa.com.tests.globals.ActionRunnerBaseTest;
-import oa.com.tests.globals.ActionRunnerManager.BROWSERTYPE;
+import oa.com.tests.actionrunners.enums.BROWSERTYPE;
 import org.junit.Test;
 
 /**

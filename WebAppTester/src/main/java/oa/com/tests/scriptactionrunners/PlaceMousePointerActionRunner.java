@@ -13,6 +13,7 @@
  */
 package oa.com.tests.scriptactionrunners;
 
+import oa.com.tests.actionrunners.enums.PlaceMousePointerOffsetType;
 import java.time.Duration;
 import java.util.Collections;
 import java.util.ResourceBundle;
@@ -35,24 +36,7 @@ import org.openqa.selenium.remote.RemoteWebDriver;
  */
 public class PlaceMousePointerActionRunner extends AbstractSelectorActionRunner {
 
-    /**
-     * Tipo de movimiento
-     */
-    public enum OffsetType {
-        /**
-         * Desde la esquina superior izquierda de la página
-         */
-        FROM_UL_CORNER,
-        /**
-         * Desde el centro de cierto objeto
-         */
-        FROM_CNTR_OBJECT,
-        /**
-         * Desde la ubicación actual, cualquiera que sea.
-         */
-        FROM_CUR_LOCATION
-    };
-    private final OffsetType offType;
+    private final PlaceMousePointerOffsetType offType;
     private final int x;
     private final int y;
 
@@ -63,7 +47,7 @@ public class PlaceMousePointerActionRunner extends AbstractSelectorActionRunner 
 
         String key = simpleName + ".attr.type";
         final String provoffType = Utils.getJSONAttributeML(actionCommand, key);
-        this.offType = provoffType == null ? OffsetType.FROM_UL_CORNER : OffsetType.valueOf(provoffType);
+        this.offType = provoffType == null ? PlaceMousePointerOffsetType.FROM_UL_CORNER : PlaceMousePointerOffsetType.valueOf(provoffType);
 
         key = simpleName + ".attr.x";
         this.x = Integer.parseInt(Utils.getJSONAttributeML(actionCommand, key));
@@ -108,7 +92,7 @@ public class PlaceMousePointerActionRunner extends AbstractSelectorActionRunner 
         }
         
         String msg = bundle.getString(key);
-        if (offType.equals(OffsetType.FROM_CNTR_OBJECT)) {
+        if (offType.equals(PlaceMousePointerOffsetType.FROM_CNTR_OBJECT)) {
             msg = msg.replace("2", get(driver).toString());
 
         }
