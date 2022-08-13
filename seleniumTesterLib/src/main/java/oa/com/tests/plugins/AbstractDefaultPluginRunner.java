@@ -106,15 +106,15 @@ public abstract class AbstractDefaultPluginRunner {
         this.actionManager = actionManager;
     }
 
-    public static List<Exception> exec(File file, Logger log) throws InvalidVarNameException, FileNotFoundException, IOException, InvalidParamException {
+    public static List<Exception> exec(File file, Logger log) throws InvalidVarNameException, FileNotFoundException, IOException, InvalidParamException,Exception {
         return actionManager.exec(file, log);
     }
 
-    public static String parse(String pwdString) throws InvalidVarNameException, InvalidParamException {
+    public static String parse(String pwdString) throws InvalidVarNameException, InvalidParamException,Exception {
         return actionManager.parse(pwdString);
     }
 
-    public static void run(String command) throws IOException, InvalidVarNameException, InvalidParamException {
+    public static void run(String command) throws IOException, InvalidVarNameException, InvalidParamException,Exception {
         actionManager.run(command);
     }
 
@@ -151,7 +151,7 @@ public abstract class AbstractDefaultPluginRunner {
      * @throws InvalidVarNameException
      * @throws InvalidParamException
      */
-    public static void fnGo(String url) throws IOException, InvalidVarNameException, InvalidParamException {
+    public static void fnGo(String url) throws IOException, InvalidVarNameException, InvalidParamException,Exception {
         actionManager.run("go={" + url + "}");
     }
 
@@ -182,7 +182,7 @@ public abstract class AbstractDefaultPluginRunner {
      * @throws InvalidVarNameException
      * @throws InvalidParamException
      */
-    public static void fnWait(String selector, String type) throws IOException, InvalidVarNameException, InvalidParamException {
+    public static void fnWait(String selector, String type) throws IOException, InvalidVarNameException, InvalidParamException,Exception {
         if (type == null || !type.equals("xpath")) {
             type = "css";
         }
@@ -216,7 +216,7 @@ public abstract class AbstractDefaultPluginRunner {
      * @throws InvalidVarNameException
      * @throws InvalidParamException
      */
-    public static void fnWait(String selector) throws IOException, InvalidVarNameException, InvalidParamException {
+    public static void fnWait(String selector) throws IOException, InvalidVarNameException, InvalidParamException,Exception {
         fnWait(selector, "css");
     }
 
@@ -267,7 +267,7 @@ public abstract class AbstractDefaultPluginRunner {
      * @throws oa.com.tests.actionrunners.exceptions.InvalidVarNameException
      * @throws oa.com.tests.actionrunners.exceptions.InvalidParamException
      */
-    public static void fnWrite(String selector, String text) throws IOException, InvalidVarNameException, InvalidParamException {
+    public static void fnWrite(String selector, String text) throws IOException, InvalidVarNameException, InvalidParamException,Exception {
         fnWrite(selector, text, null);
     }
 
@@ -319,8 +319,8 @@ public abstract class AbstractDefaultPluginRunner {
      * @throws oa.com.tests.actionrunners.exceptions.InvalidParamException
      * @throws oa.com.tests.actionrunners.exceptions.InvalidVarNameException
      */
-    public static void fnWrite(String selector, String text, String type) throws IOException, InvalidVarNameException, InvalidParamException {
-        if (type != null && !type.equals("xpath")) {
+    public static void fnWrite(String selector, String text, String type) throws IOException, InvalidVarNameException, InvalidParamException,Exception {
+        if (type == null || !type.equals("xpath")) {
             type = "css";
         }
         actionManager.run("write={\"selector\":\"" + selector + "\"\n"
@@ -345,7 +345,7 @@ public abstract class AbstractDefaultPluginRunner {
      * @throws InvalidVarNameException
      * @throws InvalidParamException
      */
-    public static void fnClick() throws IOException, InvalidVarNameException, InvalidParamException {
+    public static void fnClick() throws IOException, InvalidVarNameException, InvalidParamException,Exception {
         fnClick(null, null);
     }
 
@@ -366,7 +366,7 @@ public abstract class AbstractDefaultPluginRunner {
      * @throws InvalidVarNameException
      * @throws InvalidParamException
      */
-    public static void fnClick(String selector) throws IOException, InvalidVarNameException, InvalidParamException {
+    public static void fnClick(String selector) throws IOException, InvalidVarNameException, InvalidParamException,Exception {
         fnClick(selector, null);
     }
 
@@ -387,7 +387,7 @@ public abstract class AbstractDefaultPluginRunner {
      * @throws InvalidVarNameException
      * @throws InvalidParamException
      */
-    public static void fnClick(String selector, String type) throws IOException, InvalidVarNameException, InvalidParamException {
+    public static void fnClick(String selector, String type) throws IOException, InvalidVarNameException, InvalidParamException,Exception {
         String mouseCommand = "click";
         runMouseCommand(mouseCommand, selector, type);
     }
@@ -409,7 +409,7 @@ public abstract class AbstractDefaultPluginRunner {
      * @throws InvalidVarNameException
      * @throws InvalidParamException
      */
-    public static void fnDoubleClick() throws IOException, InvalidVarNameException, InvalidParamException {
+    public static void fnDoubleClick() throws IOException, InvalidVarNameException, InvalidParamException,Exception {
         fnDoubleClick(null, null);
     }
 
@@ -430,7 +430,7 @@ public abstract class AbstractDefaultPluginRunner {
      * @throws InvalidVarNameException
      * @throws InvalidParamException
      */
-    public static void fnDoubleClick(String selector) throws IOException, InvalidVarNameException, InvalidParamException {
+    public static void fnDoubleClick(String selector) throws IOException, InvalidVarNameException, InvalidParamException,Exception {
         fnDoubleClick(selector, null);
     }
 
@@ -451,7 +451,7 @@ public abstract class AbstractDefaultPluginRunner {
      * @throws InvalidVarNameException
      * @throws InvalidParamException
      */
-    public static void fnDoubleClick(String selector, String type) throws IOException, InvalidVarNameException, InvalidParamException {
+    public static void fnDoubleClick(String selector, String type) throws IOException, InvalidVarNameException, InvalidParamException,Exception {
         String mouseCommand = "double click";
         runMouseCommand(mouseCommand, selector, type);
     }
@@ -475,7 +475,7 @@ public abstract class AbstractDefaultPluginRunner {
      * @throws InvalidVarNameException
      * @throws InvalidParamException
      */
-    public static void fnRightClick() throws IOException, InvalidVarNameException, InvalidParamException {
+    public static void fnRightClick() throws IOException, InvalidVarNameException, InvalidParamException,Exception {
         fnRightClick(null);
     }
 
@@ -498,7 +498,7 @@ public abstract class AbstractDefaultPluginRunner {
      * @throws InvalidVarNameException
      * @throws InvalidParamException
      */
-    public static void fnRightClick(String selector) throws IOException, InvalidVarNameException, InvalidParamException {
+    public static void fnRightClick(String selector) throws IOException, InvalidVarNameException, InvalidParamException,Exception {
         fnRightClick(selector, null);
     }
 
@@ -521,7 +521,7 @@ public abstract class AbstractDefaultPluginRunner {
      * @throws InvalidVarNameException
      * @throws InvalidParamException
      */
-    public static void fnRightClick(String selector, String type) throws IOException, InvalidVarNameException, InvalidParamException {
+    public static void fnRightClick(String selector, String type) throws IOException, InvalidVarNameException, InvalidParamException,Exception {
         String mouseCommand = "right click";
         runMouseCommand(mouseCommand, selector, type);
     }
@@ -551,7 +551,7 @@ public abstract class AbstractDefaultPluginRunner {
      * @throws InvalidVarNameException
      * @throws InvalidParamException
      */
-    public static void fnScroll(int x, int y) throws IOException, InvalidVarNameException, InvalidParamException {
+    public static void fnScroll(int x, int y) throws IOException, InvalidVarNameException, InvalidParamException,Exception {
         fnScroll(x, y, null);
     }
 
@@ -580,7 +580,7 @@ public abstract class AbstractDefaultPluginRunner {
      * @throws InvalidVarNameException
      * @throws InvalidParamException
      */
-    public static void fnScroll(int x, int y, String selector) throws IOException, InvalidVarNameException, InvalidParamException {
+    public static void fnScroll(int x, int y, String selector) throws IOException, InvalidVarNameException, InvalidParamException,Exception {
         fnScroll(x, y, selector, null);
     }
 
@@ -609,7 +609,7 @@ public abstract class AbstractDefaultPluginRunner {
      * @throws InvalidVarNameException
      * @throws InvalidParamException
      */
-    public static void fnScroll(int x, int y, String selector, String type) throws IOException, InvalidVarNameException, InvalidParamException {
+    public static void fnScroll(int x, int y, String selector, String type) throws IOException, InvalidVarNameException, InvalidParamException,Exception {
         String command = "scroll={\"x\":\"" + x + "\",\"y\":\"" + y + "\"";
         if (selector != null) {
             if (type == null || type != "xpath") {
@@ -647,7 +647,7 @@ public abstract class AbstractDefaultPluginRunner {
      * @throws InvalidVarNameException
      * @throws InvalidParamException
      */
-    public static void fnPlaceMousePointer(int x, int y) throws IOException, InvalidVarNameException, InvalidParamException {
+    public static void fnPlaceMousePointer(int x, int y) throws IOException, InvalidVarNameException, InvalidParamException,Exception {
         fnPlaceMousePointer(x, y, FROM_UL_CORNER);
     }
 
@@ -677,7 +677,7 @@ public abstract class AbstractDefaultPluginRunner {
      * @throws InvalidVarNameException
      * @throws InvalidParamException
      */
-    public static void fnPlaceMousePointer(int x, int y, PlaceMousePointerOffsetType offsetType) throws IOException, InvalidVarNameException, InvalidParamException {
+    public static void fnPlaceMousePointer(int x, int y, PlaceMousePointerOffsetType offsetType) throws IOException, InvalidVarNameException, InvalidParamException,Exception {
         fnPlaceMousePointer(x, y, offsetType, null);
     }
 
@@ -707,7 +707,7 @@ public abstract class AbstractDefaultPluginRunner {
      * @throws InvalidVarNameException
      * @throws InvalidParamException
      */
-    public static void fnPlaceMousePointer(int x, int y, PlaceMousePointerOffsetType offsetType, String selector) throws IOException, InvalidVarNameException, InvalidParamException {
+    public static void fnPlaceMousePointer(int x, int y, PlaceMousePointerOffsetType offsetType, String selector) throws IOException, InvalidVarNameException, InvalidParamException,Exception {
         fnPlaceMousePointer(x, y, offsetType, selector, null);
     }
 
@@ -737,7 +737,7 @@ public abstract class AbstractDefaultPluginRunner {
      * @throws InvalidVarNameException
      * @throws InvalidParamException
      */
-    public static void fnPlaceMousePointer(int x, int y, PlaceMousePointerOffsetType offsetType, String selector, String type) throws IOException, InvalidVarNameException, InvalidParamException {
+    public static void fnPlaceMousePointer(int x, int y, PlaceMousePointerOffsetType offsetType, String selector, String type) throws IOException, InvalidVarNameException, InvalidParamException,Exception {
         if (offsetType == null) {
             offsetType = FROM_UL_CORNER;
         }
@@ -762,7 +762,7 @@ public abstract class AbstractDefaultPluginRunner {
      * @throws InvalidVarNameException
      * @throws InvalidParamException
      */
-    public static void fnPause(int seconds) throws IOException, InvalidVarNameException, InvalidParamException {
+    public static void fnPause(int seconds) throws IOException, InvalidVarNameException, InvalidParamException,Exception {
         fnPause("" + seconds + " s");;
     }
 
@@ -786,7 +786,7 @@ public abstract class AbstractDefaultPluginRunner {
      * @throws InvalidVarNameException
      * @throws InvalidParamException
      */
-    public static void fnPause(String time) throws IOException, InvalidVarNameException, InvalidParamException {
+    public static void fnPause(String time) throws IOException, InvalidVarNameException, InvalidParamException,Exception {
         actionManager.run("pause={\"time\":\"" + time + "\"}");
     }
 
@@ -815,7 +815,7 @@ public abstract class AbstractDefaultPluginRunner {
      * @throws InvalidVarNameException
      * @throws InvalidParamException
      */
-    public static void fnPickChoice(String selector, String variable, String title, String message, boolean sorted) throws IOException, InvalidVarNameException, InvalidParamException {
+    public static void fnPickChoice(String selector, String variable, String title, String message, boolean sorted) throws IOException, InvalidVarNameException, InvalidParamException,Exception {
         fnPickChoice(selector, variable, title, message, sorted, null);
     }
 
@@ -844,7 +844,7 @@ public abstract class AbstractDefaultPluginRunner {
      * @throws InvalidVarNameException
      * @throws InvalidParamException
      */
-    public static void fnPickChoice(String selector, String variable, String title, String message, boolean sorted, String subselector) throws IOException, InvalidVarNameException, InvalidParamException {
+    public static void fnPickChoice(String selector, String variable, String title, String message, boolean sorted, String subselector) throws IOException, InvalidVarNameException, InvalidParamException,Exception {
         fnPickChoice(selector, variable, title, message, sorted, subselector, null);
     }
 
@@ -873,7 +873,7 @@ public abstract class AbstractDefaultPluginRunner {
      * @throws InvalidVarNameException
      * @throws InvalidParamException
      */
-    public static void fnPickChoice(String selector, String variable, String title, String message, boolean sorted, String subselector, String type) throws IOException, InvalidVarNameException, InvalidParamException {
+    public static void fnPickChoice(String selector, String variable, String title, String message, boolean sorted, String subselector, String type) throws IOException, InvalidVarNameException, InvalidParamException,Exception {
         String command = "pick choice={\"selector\":\"" + selector + "\" "
                 + ",\"variable\":\"" + variable + "\",\"title\":\"" + title + "\""
                 + ",\"message\":\"" + message + "\",\"sorted\":\"" + sorted + "\"";
@@ -902,7 +902,7 @@ public abstract class AbstractDefaultPluginRunner {
      * @throws InvalidVarNameException
      * @throws InvalidParamException
      */
-    public static void fnSetVariable(String name, String value) throws IOException, InvalidVarNameException, InvalidParamException {
+    public static void fnSetVariable(String name, String value) throws IOException, InvalidVarNameException, InvalidParamException,Exception {
         actionManager.run("set={\"name\":\"" + name + "\",\"value\":\"" + value + "\"}");
     }
 
@@ -923,11 +923,11 @@ public abstract class AbstractDefaultPluginRunner {
      * @throws InvalidVarNameException
      * @throws InvalidParamException
      */
-    public static void fnSetBrowser(BROWSERTYPE browser) throws IOException, InvalidVarNameException, InvalidParamException {
+    public static void fnSetBrowser(BROWSERTYPE browser) throws IOException, InvalidVarNameException, InvalidParamException,Exception {
         actionManager.run("browser={" + browser.name() + "}");
     }
 
-    private static void runMouseCommand(String mouseCommand, String selector, String type) throws IOException, InvalidVarNameException, InvalidParamException {
+    private static void runMouseCommand(String mouseCommand, String selector, String type) throws IOException, InvalidVarNameException, InvalidParamException,Exception {
         String command = mouseCommand + "={ \n";
         if (selector != null) {
             command += "  \"selector\":\"" + selector + "\"\n";

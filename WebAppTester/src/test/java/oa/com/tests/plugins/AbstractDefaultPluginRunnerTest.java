@@ -73,7 +73,7 @@ public class AbstractDefaultPluginRunnerTest {
     }
 
     @Test
-    public void doIt() throws IOException, InvalidParamException, InvalidVarNameException {
+    public void doIt() throws IOException, InvalidParamException, InvalidVarNameException,Exception {
         fnSetBrowser();
         fnGo();
         fnWait();
@@ -83,7 +83,7 @@ public class AbstractDefaultPluginRunnerTest {
     }
 //    @Order(value = 1)
 
-    public void fnSetBrowser() throws IOException, InvalidVarNameException, InvalidParamException {
+    public void fnSetBrowser() throws IOException, InvalidVarNameException, InvalidParamException,Exception {
         Plugin.fnSetBrowser(BROWSERTYPE.EDGE);
         //Time for the browser to start
         fnPause(4);
@@ -92,28 +92,28 @@ public class AbstractDefaultPluginRunnerTest {
 
 //    @Test
 //    @Order(value = 2)
-    public void fnGo() throws IOException, InvalidVarNameException, InvalidParamException {
+    public void fnGo() throws IOException, InvalidVarNameException, InvalidParamException,Exception {
         Plugin.fnGo("https://www.soccercoachingpro.com/how-many-players-on-a-soccer-team/");
         log.info("fnGo()");
     }
 
 //    @Test
 //    @Order(3)
-    public void fnWait() throws IOException, InvalidVarNameException, InvalidParamException {
+    public void fnWait() throws IOException, InvalidVarNameException, InvalidParamException,Exception {
         Plugin.fnWait("body");
         log.info("fnWait()");
     }
 
 //    @Test
 //    @Order(4)
-    public void fnWait2() throws IOException, InvalidVarNameException, InvalidParamException {
+    public void fnWait2() throws IOException, InvalidVarNameException, InvalidParamException,Exception {
         Plugin.fnWait("//*[@id=\"recent-posts-4\"]", "xpath");
         log.info("fnWait2()");
     }
 
 //    @Test
 //    @Order(5)
-    public void fnWrite() throws IOException, InvalidVarNameException, InvalidParamException {
+    public void fnWrite() throws IOException, InvalidVarNameException, InvalidParamException,Exception {
         final String selector = "div.tcb-flex-col:nth-child(1) > div:nth-child(1) > div:nth-child(1) > input:nth-child(1)";
         Plugin.fnScroll(0, 0, selector);
         Plugin.fnWait(selector);
@@ -124,7 +124,7 @@ public class AbstractDefaultPluginRunnerTest {
 
 //    @Test
 //    @Order(6)
-    public void fnWrite2() throws IOException, InvalidVarNameException, InvalidParamException {
+    public void fnWrite2() throws IOException, InvalidVarNameException, InvalidParamException,Exception {
         String selector = "html body.post-template-default.single.single-post.postid-1891.single-format-standard.tve-desktop-browser.tve-mozilla-browser div.flex-cnt div.wrp.cnt div.bSeCont section.bSe.left article#comments div.awr div#thrive_container_form_add_comment.lrp form#commentform input#author.text_field.author//*[@id=\"author\"]";
         final String type = "xpath";
         Plugin.fnScroll(0, 0, selector,type);
@@ -133,91 +133,91 @@ public class AbstractDefaultPluginRunnerTest {
         log.info("fnWrite2()");
     }
 
-    public void fnClick() throws IOException, InvalidVarNameException, InvalidParamException {
+    public void fnClick() throws IOException, InvalidVarNameException, InvalidParamException,Exception {
         Plugin.fnClick();
     }
 
-    public void fnClick(String selector) throws IOException, InvalidVarNameException, InvalidParamException {
+    public void fnClick(String selector) throws IOException, InvalidVarNameException, InvalidParamException,Exception {
         Plugin.fnClick(selector);
     }
 
-    public void fnClick(String selector, String type) throws IOException, InvalidVarNameException, InvalidParamException {
+    public void fnClick(String selector, String type) throws IOException, InvalidVarNameException, InvalidParamException,Exception {
         Plugin.fnClick(selector, type);
     }
 
-    public void fnDoubleClick() throws IOException, InvalidVarNameException, InvalidParamException {
+    public void fnDoubleClick() throws IOException, InvalidVarNameException, InvalidParamException,Exception {
         Plugin.fnDoubleClick();
     }
 
-    public void fnDoubleClick(String selector) throws IOException, InvalidVarNameException, InvalidParamException {
+    public void fnDoubleClick(String selector) throws IOException, InvalidVarNameException, InvalidParamException,Exception {
         Plugin.fnDoubleClick(selector);
     }
 
-    public void fnDoubleClick(String selector, String type) throws IOException, InvalidVarNameException, InvalidParamException {
+    public void fnDoubleClick(String selector, String type) throws IOException, InvalidVarNameException, InvalidParamException,Exception {
         Plugin.fnDoubleClick(selector, type);
     }
 
-    public void fnRightClick() throws IOException, InvalidVarNameException, InvalidParamException {
+    public void fnRightClick() throws IOException, InvalidVarNameException, InvalidParamException,Exception {
         Plugin.fnRightClick();
     }
 
-    public void fnRightClick(String selector) throws IOException, InvalidVarNameException, InvalidParamException {
+    public void fnRightClick(String selector) throws IOException, InvalidVarNameException, InvalidParamException,Exception {
         Plugin.fnRightClick(selector);
     }
 
-    public void fnRightClick(String selector, String type) throws IOException, InvalidVarNameException, InvalidParamException {
+    public void fnRightClick(String selector, String type) throws IOException, InvalidVarNameException, InvalidParamException,Exception {
         Plugin.fnRightClick(selector, type);
     }
 
-    public void fnScroll(int x, int y) throws IOException, InvalidVarNameException, InvalidParamException {
+    public void fnScroll(int x, int y) throws IOException, InvalidVarNameException, InvalidParamException,Exception {
         Plugin.fnScroll(x, y);
     }
 
-    public void fnScroll(int x, int y, String selector) throws IOException, InvalidVarNameException, InvalidParamException {
+    public void fnScroll(int x, int y, String selector) throws IOException, InvalidVarNameException, InvalidParamException,Exception {
         Plugin.fnScroll(x, y, selector);
     }
 
-    public void fnScroll(int x, int y, String selector, String type) throws IOException, InvalidVarNameException, InvalidParamException {
+    public void fnScroll(int x, int y, String selector, String type) throws IOException, InvalidVarNameException, InvalidParamException,Exception {
         Plugin.fnScroll(x, y, selector, type);
     }
 
-    public void fnPlaceMousePointer(int x, int y) throws IOException, InvalidVarNameException, InvalidParamException {
+    public void fnPlaceMousePointer(int x, int y) throws IOException, InvalidVarNameException, InvalidParamException,Exception {
         Plugin.fnPlaceMousePointer(x, y);
     }
 
-    public void fnPlaceMousePointer(int x, int y, PlaceMousePointerOffsetType offsetType) throws IOException, InvalidVarNameException, InvalidParamException {
+    public void fnPlaceMousePointer(int x, int y, PlaceMousePointerOffsetType offsetType) throws IOException, InvalidVarNameException, InvalidParamException,Exception {
         Plugin.fnPlaceMousePointer(x, y, offsetType);
     }
 
-    public void fnPlaceMousePointer(int x, int y, PlaceMousePointerOffsetType offsetType, String selector) throws IOException, InvalidVarNameException, InvalidParamException {
+    public void fnPlaceMousePointer(int x, int y, PlaceMousePointerOffsetType offsetType, String selector) throws IOException, InvalidVarNameException, InvalidParamException,Exception {
         Plugin.fnPlaceMousePointer(x, y, offsetType, selector);
     }
 
-    public void fnPlaceMousePointer(int x, int y, PlaceMousePointerOffsetType offsetType, String selector, String type) throws IOException, InvalidVarNameException, InvalidParamException {
+    public void fnPlaceMousePointer(int x, int y, PlaceMousePointerOffsetType offsetType, String selector, String type) throws IOException, InvalidVarNameException, InvalidParamException,Exception {
         Plugin.fnPlaceMousePointer(x, y, offsetType, selector, type);
     }
 
-    public void fnPause(int seconds) throws IOException, InvalidVarNameException, InvalidParamException {
+    public void fnPause(int seconds) throws IOException, InvalidVarNameException, InvalidParamException,Exception {
         Plugin.fnPause(seconds);
     }
 
-    public void fnPause(String time) throws IOException, InvalidVarNameException, InvalidParamException {
+    public void fnPause(String time) throws IOException, InvalidVarNameException, InvalidParamException,Exception {
         Plugin.fnPause(time);
     }
 
-    public void fnPickChoice(String selector, String variable, String title, String message, boolean sorted) throws IOException, InvalidVarNameException, InvalidParamException {
+    public void fnPickChoice(String selector, String variable, String title, String message, boolean sorted) throws IOException, InvalidVarNameException, InvalidParamException,Exception {
         Plugin.fnPickChoice(selector, variable, title, message, sorted);
     }
 
-    public void fnPickChoice(String selector, String variable, String title, String message, boolean sorted, String subselector) throws IOException, InvalidVarNameException, InvalidParamException {
+    public void fnPickChoice(String selector, String variable, String title, String message, boolean sorted, String subselector) throws IOException, InvalidVarNameException, InvalidParamException,Exception {
         Plugin.fnPickChoice(selector, variable, title, message, sorted, subselector);
     }
 
-    public void fnPickChoice(String selector, String variable, String title, String message, boolean sorted, String subselector, String type) throws IOException, InvalidVarNameException, InvalidParamException {
+    public void fnPickChoice(String selector, String variable, String title, String message, boolean sorted, String subselector, String type) throws IOException, InvalidVarNameException, InvalidParamException,Exception {
         Plugin.fnPickChoice(selector, variable, title, message, sorted, subselector, type);
     }
 
-    public void fnSetVariable(String name, String value) throws IOException, InvalidVarNameException, InvalidParamException {
+    public void fnSetVariable(String name, String value) throws IOException, InvalidVarNameException, InvalidParamException,Exception {
         Plugin.fnSetVariable(name, value);
     }
 

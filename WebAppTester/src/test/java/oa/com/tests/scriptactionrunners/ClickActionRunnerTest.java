@@ -31,7 +31,7 @@ public class ClickActionRunnerTest extends ActionRunnerBaseTest{
     
 
      @Test
-     public void testIt() throws IOException, InvalidVarNameException, InvalidParamException {
+     public void testIt() throws IOException, InvalidVarNameException, InvalidParamException,Exception {
         run("go={http://www.csszengarden.com}");
         run("wait={\"selector\":\".next > a:nth-child(1)\",\"type\":\"css\"}");
         run("click={\"selector\":\".next > a:nth-child(1)\",\"type\":\"css\"}");

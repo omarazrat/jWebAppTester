@@ -74,6 +74,12 @@ import oa.com.tests.plugins.PluginService;
 import oa.com.tests.scriptactionrunners.ForActionRunner;
 import oa.com.tests.actionrunners.interfaces.PluginInterface;
 import oa.com.tests.actionrunners.interfaces.listeners.PluginStoppedListener;
+import oa.com.utils.WebUtils;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebElement;
 
 /**
  * Gestor de acciones.
@@ -297,9 +303,10 @@ public class ActionRunnerManager implements PluginInterface {
      * Ejecuta una opcion del arbol
      *
      * @param item
+     * @param log
      */
     public static void exec(TreePath item, Logger log)
-            throws InvalidVarNameException, FileNotFoundException, IOException, InvalidParamException {
+            throws InvalidVarNameException, FileNotFoundException, IOException, InvalidParamException,Exception {
         File file = Utils.getFile(item);
         final String ERR_TITLE = globals.getString("globals.error.title");
         if (file.isDirectory()) {
@@ -382,7 +389,7 @@ public class ActionRunnerManager implements PluginInterface {
      */
     @Override
     public List<Exception> exec(File file, Logger log)
-            throws InvalidVarNameException, FileNotFoundException, IOException, InvalidParamException {
+            throws InvalidVarNameException, FileNotFoundException, IOException, InvalidParamException,Exception {
         List<Exception> resp = new LinkedList<>();
         final List<String> filteredLines = new LinkedList<>();
         BufferedReader reader = new BufferedReader(new FileReader(file));
@@ -441,7 +448,7 @@ public class ActionRunnerManager implements PluginInterface {
     }
 
     @Override
-    public void run(String command) throws IOException, InvalidVarNameException, InvalidParamException {
+    public void run(String command) throws IOException, InvalidVarNameException, InvalidParamException,Exception {
         File f = File.createTempFile("WebAppTest", null);
         f.deleteOnExit();
         FileWriter writer = new FileWriter(f);
@@ -453,7 +460,7 @@ public class ActionRunnerManager implements PluginInterface {
         execInstance(f, log);
     }
 
-    public static void runSt(String command) throws IOException, InvalidVarNameException, InvalidParamException {
+    public static void runSt(String command) throws IOException, InvalidVarNameException, InvalidParamException,Exception {
         instance.run(command);
     }
 
@@ -491,7 +498,7 @@ public class ActionRunnerManager implements PluginInterface {
         return badSyntazMsg;
     }
 
-    public static String parseSt(String command) throws InvalidVarNameException, InvalidParamException {
+    public static String parseSt(String command) throws InvalidVarNameException, InvalidParamException, Exception {
         return instance.parse(command);
     }
 
@@ -502,7 +509,7 @@ public class ActionRunnerManager implements PluginInterface {
      * @throws oa.com.tests.actionrunners.exceptions.InvalidParamException
      */
     @Override
-    public String parse(String actionCommand) throws InvalidVarNameException, InvalidParamException {
+    public String parse(String actionCommand) throws InvalidVarNameException, InvalidParamException,Exception {
         String resp = actionCommand;
         //Variables [:variable]
         resp = parseVariables(resp);
@@ -606,7 +613,7 @@ public class ActionRunnerManager implements PluginInterface {
      * @throws InvalidVarNameException
      */
     private static String parseVariables(String actionCommand)
-            throws InvalidVarNameException, InvalidParamException {
+            throws InvalidVarNameException, InvalidParamException, ParseException, BadSyntaxException {
         String regexp = "(" + sqOpen + ":[0-9|a-z|A-Z|\\-|_]*" + sqClose + ")";
         Pattern pattern = Pattern.compile(regexp);
         Matcher matcher = pattern.matcher(actionCommand);
@@ -620,20 +627,57 @@ public class ActionRunnerManager implements PluginInterface {
         for (int i = 1; i <= matcher.groupCount(); i++) {
             String varDef = matcher.group(i);
 
-            final PathKeeper.SearchTypes type = getType(varDef);
-            isSelector = type != null;
+            final PathKeeper.SearchTypes varType = getVariableType(varDef);
+            isSelector = varType != null;
             String selector = resolveSelector4VarDef(varDef);
             if (isSelector) {
-                final boolean isXPath = type.compareTo(PathKeeper.SearchTypes.XPATH) == 0;
-                if (isXPath) {
-                    //give this a chance
-                    selector += "\",\"type\":\"xpath";
-//                    throw new InvalidParamException("xpath selector in variable resolution. " + varDef + "=" + selector);
+                PathKeeper.SearchTypes commandType = getJSONType(actionCommand);
+                if(!commandType.equals(varType)){
+                    WebDriver driver = ActionRunnerManager.getStDriver();
+                    By varSelector = null;
+                    switch(varType){
+                        case CSS:
+                            varSelector = By.cssSelector(selector);
+                            break;
+                        case XPATH:
+                        default:
+                            varSelector = By.xpath(selector);
+                    }
+                    WebElement variableElement = driver.findElement(varSelector);
+                    switch(varType){
+                        case CSS:
+                            selector = WebUtils.generateXPATH(variableElement);
+                            break;
+                        case XPATH:
+                        default:
+                            selector = WebUtils.generateCSS(variableElement);
+                    }
                 }
             }
             resp = resp.replace(varDef, selector);
         }
         return resp;
+    }
+
+    private static PathKeeper.SearchTypes getJSONType(String actionCommand) throws ParseException, BadSyntaxException {
+        PathKeeper.SearchTypes commandType;
+        JSONParser parser = new JSONParser();
+        TestAction ta = new TestAction(actionCommand);
+        JSONObject object = (JSONObject) parser.parse(ta.getCommand());
+        Object objType = object.get("type");
+        commandType = (objType==null?
+                PathKeeper.SearchTypes.CSS:
+                PathKeeper.SearchTypes.valueOf(objType.toString()));
+        return commandType;
+    }
+
+    private boolean parseable(String value) {
+//        [:variable]
+//        //Teclas especiales.[%keys]
+//        //Contraseñas [$PWD]
+        Pattern pattern = Pattern.compile("$.*" + sqOpen + "[:|%|\\$]" + sqClose + ".*^");
+        Matcher matcher = pattern.matcher(value);
+        return matcher.matches();
     }
 
     /**
@@ -651,7 +695,7 @@ public class ActionRunnerManager implements PluginInterface {
         return var.getValue().toString();
     }
 
-    private static PathKeeper.SearchTypes getType(String varDef) throws InvalidVarNameException {
+    private static PathKeeper.SearchTypes getVariableType(String varDef) throws InvalidVarNameException {
         Variable var = getVariable(varDef);
         if (var instanceof SelectorVariable) {
             return ((SelectorVariable) var).getFinder().getType();
@@ -669,7 +713,7 @@ public class ActionRunnerManager implements PluginInterface {
                 .filter(var -> var.getName().equals(varName))
                 .findAny();
         if (varMatch.isEmpty()) {
-            throw new InvalidVarNameException(varName);
+            throw new InvalidVarNameException("couldn't find variable " + varName);
         }
         Variable var = varMatch.get();
         return var;
@@ -681,7 +725,7 @@ public class ActionRunnerManager implements PluginInterface {
      * @param file
      * @param log
      */
-    public static List<Exception> execInstance(File file, Logger log) throws InvalidVarNameException, IOException, InvalidParamException {
+    public static List<Exception> execInstance(File file, Logger log) throws InvalidVarNameException, IOException, InvalidParamException,Exception {
         return instance.exec(file, log);
     }
 

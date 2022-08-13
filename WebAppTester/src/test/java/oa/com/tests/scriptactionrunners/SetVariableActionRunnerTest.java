@@ -29,7 +29,7 @@ import org.junit.Test;
 public class SetVariableActionRunnerTest extends ActionRunnerBaseTest {
 
     @Test
-    public void testit() throws IOException, InvalidVarNameException, InvalidParamException {
+    public void testit() throws IOException, InvalidVarNameException, InvalidParamException,Exception {
         StringVariable pause_time = new StringVariable("pause_time", "7 s"),
                 comment = new StringVariable("comment", "I like this");
         SelectorVariable selvar1 = new SelectorVariable(null, "abc", new PathKeeper("/html[1]/body[1]/form[1]/table[1]/tbody[1]/tr[2]/td[2]/input[1]", "xpath")),

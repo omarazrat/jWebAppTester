@@ -26,7 +26,7 @@ import org.junit.Test;
 public class ForActionRunnerTest extends ActionRunnerBaseTest{
 
      @Test
-     public void testIt() throws IOException, InvalidVarNameException, InvalidParamException {
+     public void testIt() throws IOException, InvalidVarNameException, InvalidParamException,Exception {
          //forma 1 incremental
          run("go={https://blankslate.io/}\n"+
          "for={\"var\":\"i\", \"exp\":\"{-1..50}\"}\n"+

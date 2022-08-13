@@ -40,5 +40,6 @@ public abstract class AbstractException extends Exception {
      */
     public AbstractException(String msg) {
         super(msg);
+        context = msg;
     }
 }

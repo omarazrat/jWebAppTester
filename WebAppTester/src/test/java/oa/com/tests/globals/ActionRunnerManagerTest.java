@@ -31,7 +31,7 @@ public class ActionRunnerManagerTest {
     // The methods must be annotated with annotation @Test. For example:
     //
      @Test
-     public void hello() throws InvalidVarNameException, InvalidParamException {
+     public void hello() throws InvalidVarNameException, InvalidParamException,Exception {
          System.out.println(ActionRunnerManager.parseSt("[$bDGuVQZfuq+LgoP71HDavw==]"));
      }
 }

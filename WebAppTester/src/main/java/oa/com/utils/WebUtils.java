@@ -21,6 +21,7 @@ import java.util.logging.Logger;
 import org.openqa.selenium.NoSuchElementException;
 import oa.com.tests.actionrunners.exceptions.BadSyntaxException;
 import oa.com.tests.actionrunners.interfaces.PathKeeper;
+import oa.com.tests.globals.ActionRunnerManager;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.Point;
@@ -35,10 +36,12 @@ import org.openqa.selenium.support.ui.WebDriverWait;
  * @author nesto
  */
 public class WebUtils {
+
     private static final Logger log = Logger.getLogger("WebAppTester");
+
     /**
      * @param childElement
-     * @return 
+     * @return
      */
     public static String generateXPATH(WebElement childElement) {
         return generateXPATH(childElement, "");
@@ -63,6 +66,30 @@ public class WebUtils {
             }
         }
         return null;
+    }
+
+    /**
+     * From https://stackoverflow.com/questions/36546825/get-css-selector-string-from-webelement-in-selenium-webdriver-java
+     * @param element
+     * @return 
+     */
+    public static String generateCSS(WebElement element) {
+        WebDriver driver = ActionRunnerManager.getStDriver();
+        final String JS_BUILD_CSS_SELECTOR
+                = "for(var e=arguments[0],n=[],i=function(e,n){if(!e||!n)return 0;f"
+                + "or(var i=0,a=e.length;a>i;i++)if(-1==n.indexOf(e[i]))return 0;re"
+                + "turn 1};e&&1==e.nodeType&&'HTML'!=e.nodeName;e=e.parentNode){if("
+                + "e.id){n.unshift('#'+e.id);break}for(var a=1,r=1,o=e.localName,l="
+                + "e.className&&e.className.trim().split(/[\\s,]+/g),t=e.previousSi"
+                + "bling;t;t=t.previousSibling)10!=t.nodeType&&t.nodeName==e.nodeNa"
+                + "me&&(i(l,t.className)&&(l=null),r=0,++a);for(var t=e.nextSibling"
+                + ";t;t=t.nextSibling)t.nodeName==e.nodeName&&(i(l,t.className)&&(l"
+                + "=null),r=0);n.unshift(r?o:o+(l?'.'+l.join('.'):':nth-child('+a+'"
+                + ")'))}return n.join(' > ');";
+
+        JavascriptExecutor js = (JavascriptExecutor) driver;
+        String selector = (String)js.executeScript(JS_BUILD_CSS_SELECTOR, element);
+        return selector;
     }
 
     /*  public static String getXpath(WebDriver driver, WebElement selectedElem) {
@@ -179,4 +206,5 @@ public class WebUtils {
             js.executeScript("window.scrollTo(arguments[0],arguments[1]);", point.x, point.y);
         }
     }
+
 }

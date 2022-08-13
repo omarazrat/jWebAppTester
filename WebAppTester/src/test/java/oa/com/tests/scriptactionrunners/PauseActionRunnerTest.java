@@ -25,7 +25,7 @@ import org.junit.Test;
  */
 public class PauseActionRunnerTest extends ActionRunnerBaseTest {
     @Test
-    public void testit() throws IOException, InvalidVarNameException, InvalidParamException{
+    public void testit() throws IOException, InvalidVarNameException, InvalidParamException,Exception{
         String command = "set={\"name\":\"pausetime\",\"value\":\"3 s\"}\n"
                 + "go={https://theuselessweb.com/}\n"
                 + "pause={\"time\":\"[:pausetime]\"}\n"

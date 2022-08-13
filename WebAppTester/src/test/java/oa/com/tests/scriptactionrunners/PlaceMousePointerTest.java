@@ -32,7 +32,7 @@ public class PlaceMousePointerTest extends ActionRunnerBaseTest{
     }
     
     @Test
-    public void testIt() throws IOException, InvalidParamException, InvalidVarNameException{
+    public void testIt() throws IOException, InvalidParamException, InvalidVarNameException,Exception{
         final Logger log = Logger.getAnonymousLogger();
         log.info("testing type=FROM_UL_CORNER");
         run("go={https://www.facebook.com/thestrangepage}\n"+

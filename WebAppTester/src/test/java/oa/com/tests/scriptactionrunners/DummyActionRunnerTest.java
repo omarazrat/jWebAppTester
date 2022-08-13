@@ -42,7 +42,7 @@ public class DummyActionRunnerTest extends ActionRunnerBaseTest {
 //        forInFreePeople();
     }
 
-    public void forInFreePeople() throws InvalidVarNameException, InvalidParamException, IOException {
+    public void forInFreePeople() throws InvalidVarNameException, InvalidParamException, IOException,Exception {
         run("for={\"var\":\"browser\", \"exp\":\"CHROME EDGE FIREFOX OPERA SAFARI INTERNET_EXPLORER\"}");
         run("  browser={[:browser]}");
         run("  go={https://www.freepeople.com/}");
@@ -63,7 +63,7 @@ public class DummyActionRunnerTest extends ActionRunnerBaseTest {
 
     }
 
-    private void forInjqueryPagination() throws InvalidParamException, InvalidVarNameException, IOException {
+    private void forInjqueryPagination() throws InvalidParamException, InvalidVarNameException, IOException,Exception {
         run("for={\"var\":\"browser\", \"exp\":\"CHROME EDGE FIREFOX OPERA SAFARI INTERNET_EXPLORER\"}");
         run("  browser={[:browser]}");
         run("  go={https://mdbootstrap.com/docs/b4/jquery/tables/pagination#basic-example}");
@@ -82,7 +82,7 @@ public class DummyActionRunnerTest extends ActionRunnerBaseTest {
 //        run("end={}");
     }
 
-    private void runFile() throws InvalidVarNameException, IOException, InvalidParamException {
+    private void runFile() throws InvalidVarNameException, IOException, InvalidParamException,Exception {
         final String BASE_PATH = "C:\\Users\\nesto\\OneDrive\\Documentos\\Laboral\\Empresas\\Blackboard\\bin\\scripts\\Escape Room\\";
         for (String path : new String[]{BASE_PATH + "escapePsiquiatrico.txt"}) {
             File f = new File(path);

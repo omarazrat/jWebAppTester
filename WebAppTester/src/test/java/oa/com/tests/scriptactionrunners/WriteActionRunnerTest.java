@@ -30,7 +30,7 @@ public class WriteActionRunnerTest extends ActionRunnerBaseTest{
     // The methods must be annotated with annotation @Test. For example:
     //
      @Test
-     public void testit() throws IOException, InvalidVarNameException, InvalidParamException {
+     public void testit() throws IOException, InvalidVarNameException, InvalidParamException,Exception {
          run("go={https://yari-demos.prod.mdn.mozit.cloud/es/docs/Web/HTML/Element/textarea/_sample_.example.html}");
          run("wait={\"selector\":\"body > textarea\"}");
          run("write={\"selector\":\"textarea\","

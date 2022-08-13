@@ -30,7 +30,7 @@ public class Click_RightClick_DoubleClick_ActionRunnerTest extends ActionRunnerB
     }
 
     @Test
-    public void testIt() throws IOException, InvalidVarNameException, InvalidParamException {
+    public void testIt() throws IOException, InvalidVarNameException, InvalidParamException,Exception {
         run("go={https://dustinbrett.com/}");
         run("wait={\"selector\":\"li.sc-2412a3de-0:nth-child(1) > button:nth-child(1)\",\"type\":\"css\"}");
         run("right click={\"selector\":\"li.sc-2412a3de-0:nth-child(1) > button:nth-child(1)\",\"type\":\"css\"}");

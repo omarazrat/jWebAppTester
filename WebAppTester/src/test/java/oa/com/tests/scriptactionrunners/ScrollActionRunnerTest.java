@@ -47,7 +47,7 @@ public class ScrollActionRunnerTest extends ActionRunnerBaseTest {
     }
 
     @Test
-    public void testIt() throws IOException, InvalidVarNameException, InvalidParamException {
+    public void testIt() throws IOException, InvalidVarNameException, InvalidParamException,Exception {
         //test on page
         run("go={https://lipsum.com/}");
         run("scroll={\"x\":\"10\", \"y\":\"100\"}");

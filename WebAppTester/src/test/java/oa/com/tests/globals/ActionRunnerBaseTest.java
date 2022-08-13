@@ -55,7 +55,7 @@ public abstract class ActionRunnerBaseTest {
         ActionRunnerManager.set(browser);
     }
 
-    public void run(String command) throws IOException, InvalidVarNameException, InvalidParamException {
+    public void run(String command) throws IOException, InvalidVarNameException, InvalidParamException,Exception {
         ActionRunnerManager.runSt(command);
     }
 

@@ -17,6 +17,7 @@ import oa.com.tests.actionrunners.interfaces.listeners.PluginStoppedListener;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.text.ParseException;
 import java.util.List;
 import java.util.logging.Logger;
 import oa.com.tests.actionrunners.exceptions.InvalidParamException;
@@ -40,7 +41,7 @@ public interface PluginInterface {
      * @throws java.io.FileNotFoundException
      * @throws oa.com.tests.actionrunners.exceptions.InvalidParamException
      */
-    List<Exception> exec(File file, Logger log) throws InvalidVarNameException, FileNotFoundException, IOException, InvalidParamException;
+    List<Exception> exec(File file, Logger log) throws InvalidVarNameException, FileNotFoundException, IOException, InvalidParamException,Exception;
 
     /**
      * Decodifica cualquier candena de texto como:
@@ -51,9 +52,9 @@ public interface PluginInterface {
      * @throws InvalidVarNameException
      * @throws InvalidParamException 
      */
-    String parse(String pwdString) throws InvalidVarNameException, InvalidParamException;
+    String parse(String pwdString) throws InvalidVarNameException, InvalidParamException,Exception;
     
-    void run(String command) throws IOException, InvalidVarNameException, InvalidParamException;
+    void run(String command) throws IOException, InvalidVarNameException, InvalidParamException,Exception;
     
     WebDriver getDriver();
     
