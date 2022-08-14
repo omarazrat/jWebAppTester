@@ -31,7 +31,7 @@ public class PickChoiceActionRunnerTest extends ActionRunnerBaseTest {
 //        super(ActionRunnerManager.BROWSERTYPE.OPERA);
     }
 
-    @Test
+//    @Test --User-message
     public void testIt() throws IOException, InvalidVarNameException, InvalidParamException,Exception {
         run("go={https://stackoverflow.com/}\n"
                 + "pause={\"time\":\"3 s\"}");

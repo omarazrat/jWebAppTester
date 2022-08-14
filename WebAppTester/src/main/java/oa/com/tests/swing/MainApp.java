@@ -403,6 +403,7 @@ public class MainApp extends JFrame {
                 JButton pluginBtn;
                 try {
                     pluginBtn = new JButton(plugin.getButtonActionCommand(), plugin.getIcon());
+                    pluginBtn.setToolTipText(pluginBtn.getActionCommand());
                     pluginBtn.addActionListener(plugin.getActionListener());
                     pluginGrid.add(pluginBtn, gbc);
 //                    log.info("plugin added at "+(gbc.gridx)+","+gbc.gridy);

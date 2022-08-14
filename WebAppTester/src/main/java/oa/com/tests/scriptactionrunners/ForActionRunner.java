@@ -187,8 +187,8 @@ public class ForActionRunner extends AbstractIteratorActionRunner {
                     return false;
                 }
                 PathKeeper newPath = new PathKeeper(
-                        WebUtils.generateXPATH(element)
-                        ,PathKeeper.SearchTypes.XPATH);
+                        WebUtils.generateCSS(element)
+                        ,PathKeeper.SearchTypes.CSS);
                 var = new SelectorVariable(element, varName, newPath);
             } catch (BadSyntaxException ex) {
                 log.log(Level.SEVERE, null, ex);

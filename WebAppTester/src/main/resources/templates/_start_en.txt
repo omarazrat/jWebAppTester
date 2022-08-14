@@ -31,6 +31,6 @@ click={
 double click={
     "selector": "body"
 }
-right click={
-    "selector": "body"
-}
+#right click={
+#    "selector": "body"
+#}

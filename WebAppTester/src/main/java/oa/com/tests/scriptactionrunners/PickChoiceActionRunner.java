@@ -131,9 +131,9 @@ implements VariableProvider{
                 .indexOf(selection);
 
         final WebElement selectedElem = elements.get(idx);
-        String xpath = WebUtils.generateXPATH( selectedElem);
+        String css = WebUtils.generateCSS( selectedElem);
 
-        PathKeeper finder = new PathKeeper(xpath,PathKeeper.SearchTypes.XPATH);
+        PathKeeper finder = new PathKeeper(css,PathKeeper.SearchTypes.CSS);
         this.variable = new SelectorVariable(selectedElem,varName,finder);
     }
 
