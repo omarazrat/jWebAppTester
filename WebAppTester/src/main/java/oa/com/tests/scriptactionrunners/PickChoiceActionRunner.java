@@ -35,6 +35,7 @@ import oa.com.tests.actionrunners.interfaces.PathKeeper;
 import oa.com.tests.actionrunners.interfaces.VariableProvider;
 import oa.com.tests.actions.TestAction;
 import oa.com.tests.lang.SelectorVariable;
+import oa.com.utils.I18n;
 import oa.com.utils.WebUtils;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -99,6 +100,10 @@ implements VariableProvider{
         JSONParser parser = new JSONParser();
         JSONObject JSObj = (JSONObject) parser.parse(getAction().getCommand());
         String strSubSelector = Utils.getJSONAttributeML(JSObj, clsName + ".attr.subselector");
+        if(strSubSelector==null){
+            String message = bundle.getString(clsName + ".attr.subselectorRequired");
+            throw new InvalidActionException(message);
+        }
         subSelector = new PathKeeper(getAction());
         subSelector.setPath(strSubSelector);
         elements = getMany(driver);
@@ -108,7 +113,7 @@ implements VariableProvider{
             throw new InvalidActionException(message);
         }
         String ssorted = Utils.getJSONAttributeML(JSObj, clsName + ".attr.sorted");
-        sorted = ssorted == null ? false : ssorted.equals(bundle.getString("options.value.YES"));
+        sorted = ssorted == null ? false : I18n.aliases("options.value.YES").contains(ssorted);
         //Combo con opciones
         Stream<String> elementsStr = elements.stream()
                 .map(webElementToString);
@@ -124,7 +129,8 @@ implements VariableProvider{
             msg = bundle.getString(clsName + ".attr.msg.default");
         }
         String varName = Utils.getJSONAttributeML(JSObj, clsName + ".attr.varName");
-        String selection = promptUser(elementsStr.collect(toList()), msg, title);
+        List<String> items = elementsStr.collect(toList());
+        String selection = promptUser(items, msg, title);
         int idx = elements.stream()
                 .map(webElementToString)
                 .collect(toList())

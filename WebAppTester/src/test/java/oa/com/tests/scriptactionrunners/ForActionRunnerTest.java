@@ -17,7 +17,7 @@ import java.io.IOException;
 import oa.com.tests.actionrunners.exceptions.InvalidParamException;
 import oa.com.tests.actionrunners.exceptions.InvalidVarNameException;
 import oa.com.tests.globals.ActionRunnerBaseTest;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /**
  *
@@ -53,7 +53,8 @@ public class ForActionRunnerTest extends ActionRunnerBaseTest{
          "end={}\n"+
          "pause={\"time\":\"3 s\"}");
          //forma 3
-        run("go={file:///"+RESOURCES_FOLDER+"/files/checkboxesPage.html}");
+//        run("go={file:///"+RESOURCES_FOLDER+"/files/checkboxesPage.html}");
+        run("go={https://www.w3.org/WAI/ARIA/apg/example-index/checkbox/checkbox-mixed#ex_label}");
         
         run("for={\"var\":\"cb\", \"selector\":\"input\"}\n"+
         "  click={\"selector\":\"[:cb]\"}\n"+

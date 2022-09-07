@@ -17,9 +17,6 @@ import java.io.IOException;
 import oa.com.tests.actionrunners.exceptions.InvalidParamException;
 import oa.com.tests.actionrunners.exceptions.InvalidVarNameException;
 import oa.com.tests.globals.ActionRunnerBaseTest;
-import oa.com.tests.globals.ActionRunnerManager;
-import org.junit.Test;
-import static org.junit.Assert.*;
 
 /**
  *

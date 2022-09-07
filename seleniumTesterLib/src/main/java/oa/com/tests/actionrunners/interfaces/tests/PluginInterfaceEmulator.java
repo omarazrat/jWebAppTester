@@ -23,6 +23,7 @@ import oa.com.tests.actionrunners.exceptions.InvalidVarNameException;
 import oa.com.tests.actionrunners.interfaces.PluginInterface;
 import oa.com.tests.actionrunners.interfaces.listeners.PluginStoppedListener;
 import oa.com.tests.plugins.AbstractDefaultPluginRunner;
+import org.junit.jupiter.api.AfterAll;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.firefox.FirefoxDriver;
 
@@ -40,7 +41,7 @@ public abstract class PluginInterfaceEmulator implements PluginInterface{
         plugin.setActionManager(this);
     }
     
-    @org.junit.AfterClass
+    @AfterAll
     public void destroy(){
         driver.close();
     }

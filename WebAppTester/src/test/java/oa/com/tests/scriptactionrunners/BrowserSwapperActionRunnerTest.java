@@ -17,7 +17,7 @@ import java.io.IOException;
 import oa.com.tests.actionrunners.exceptions.InvalidVarNameException;
 import oa.com.tests.globals.ActionRunnerBaseTest;
 import oa.com.tests.actionrunners.enums.BROWSERTYPE;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /**
  *

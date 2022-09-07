@@ -17,7 +17,6 @@ import oa.com.tests.actionrunners.interfaces.listeners.PluginStoppedListener;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.text.ParseException;
 import java.util.List;
 import java.util.logging.Logger;
 import oa.com.tests.actionrunners.exceptions.InvalidParamException;

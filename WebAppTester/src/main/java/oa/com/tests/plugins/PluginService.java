@@ -72,9 +72,8 @@ public class PluginService<T>{
                 log.log(Level.INFO, "-{0}", iterator.next().getClass().getCanonicalName());
             }
             return loader.stream().map(t -> t.get()).collect(Collectors.toList());
-        } catch (ServiceConfigurationError serviceError) {
+        } catch (Exception serviceError) {
             serviceError.printStackTrace();
-
         }
         return null;
     }

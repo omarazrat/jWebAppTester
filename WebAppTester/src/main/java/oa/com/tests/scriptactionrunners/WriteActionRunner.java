@@ -51,7 +51,10 @@ public class WriteActionRunner extends AbstractSelectorActionRunner {
     @Override
     public void run(WebDriver driver, Logger log) throws Exception {
         String templateMsg = getActionLog();
-        log.log(Level.INFO, templateMsg, new Object[]{originalText, getSelector()});
+        String dspText = ActionRunnerManager.isPassword(originalText)?
+                "********":
+                originalText;
+        log.log(Level.INFO, templateMsg, new Object[]{dspText, getSelector()});
         run(driver);
     }
 

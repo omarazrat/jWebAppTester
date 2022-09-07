@@ -24,6 +24,7 @@ import java.util.logging.Logger;
 import javax.imageio.ImageIO;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
+import lombok.Getter;
 import oa.com.tests.actionrunners.enums.BROWSERTYPE;
 import oa.com.tests.actionrunners.enums.PlaceMousePointerOffsetType;
 import static oa.com.tests.actionrunners.enums.PlaceMousePointerOffsetType.FROM_UL_CORNER;
@@ -38,11 +39,13 @@ import org.openqa.selenium.WebDriver;
  * @author nesto
  */
 public abstract class AbstractDefaultPluginRunner {
+    private static final Logger log = Logger.getLogger("WebAppTester");
 
     /**
      * Utilice esta interfaz para hacer sus llamados a funciones ya definidas.
      */
-    protected static PluginInterface actionManager;
+    @Getter
+    public static PluginInterface actionManager;
 
     /**
      * Constructora para plugins escritos en java, que no requieren dll's
@@ -51,9 +54,6 @@ public abstract class AbstractDefaultPluginRunner {
      * @param actionManager
      */
     public AbstractDefaultPluginRunner() {
-        for (String library : getLibraries()) {
-            System.loadLibrary(library);
-        }
     }
 
     // <editor-fold defaultstate="collapsed" desc="Required to implement methods">
@@ -182,11 +182,8 @@ public abstract class AbstractDefaultPluginRunner {
      * @throws InvalidVarNameException
      * @throws InvalidParamException
      */
-    public static void fnWait(String selector, String type) throws IOException, InvalidVarNameException, InvalidParamException,Exception {
-        if (type == null || !type.equals("xpath")) {
-            type = "css";
-        }
-        actionManager.run("wait={\"selector\":\"" + selector + "\",\"type\":\"" + type + "\"}");
+    public static void fnWait() throws IOException, InvalidVarNameException, InvalidParamException,Exception {
+        fnWait("body");
     }
 
     /**
@@ -218,6 +215,40 @@ public abstract class AbstractDefaultPluginRunner {
      */
     public static void fnWait(String selector) throws IOException, InvalidVarNameException, InvalidParamException,Exception {
         fnWait(selector, "css");
+    }
+
+    /**
+     * Waits for a page to be completely loaded after a change in the location
+     * bar URL, or after clicking any element. The browser will wait until a
+     * given object (given its selector), appear or simply the page to be fully
+     * loaded
+     *
+     * Params:
+     *
+     * selector : The selector of the object to wait for. Could be a css or
+     * xpath selector type (Optional): The type of the selector to be used:
+     * "css/xpath". If missing, css will be used
+     *
+     * Examples:
+     *
+     * wait={}
+     *
+     * wait={ "selector":"duckbar" }
+     *
+     * wait={ "selector":"//*[@id="search_form_input_homepage"]", "type":"xpath"
+     * }
+     *
+     * @param selector
+     * @param type
+     * @throws IOException
+     * @throws InvalidVarNameException
+     * @throws InvalidParamException
+     */
+    public static void fnWait(String selector, String type) throws IOException, InvalidVarNameException, InvalidParamException,Exception {
+        if (type == null || !type.equals("xpath")) {
+            type = "css";
+        }
+        actionManager.run("wait={\"selector\":\"" + selector + "\",\"type\":\"" + type + "\"}");
     }
 
     /**
@@ -741,7 +772,7 @@ public abstract class AbstractDefaultPluginRunner {
         if (offsetType == null) {
             offsetType = FROM_UL_CORNER;
         }
-        String command = "place mouse pointer={\"offsetType\":\"" + offsetType + "\",\"x\":" + x + ",\"y\":" + y + "\"";
+        String command = "place mouse pointer={\"offsetType\":\"" + offsetType + "\",\"x\":\"" + x + "\",\"y\":\"" + y + "\"";
         if (selector != null) {
             command += ",\"selector\":\"" + selector + "\"";
             if (type == null || type != "xpath") {
@@ -815,35 +846,6 @@ public abstract class AbstractDefaultPluginRunner {
      * @throws InvalidVarNameException
      * @throws InvalidParamException
      */
-    public static void fnPickChoice(String selector, String variable, String title, String message, boolean sorted) throws IOException, InvalidVarNameException, InvalidParamException,Exception {
-        fnPickChoice(selector, variable, title, message, sorted, null);
-    }
-
-    /**
-     * Prompts user to pick a single choice among a list, stores selected
-     *
-     * option in a variable. Example:
-     *
-     * pick choice={ "selector":"div.central-featured-lang", "subselector": "a",
-     * "sorted":"yes", "title":"Wikipedia", "message":"Select a language",
-     * "variable":"Language" }
-     *
-     * @param selector: Required. This selector must match to a collection of
-     * HTML elements
-     * @param subselector: Secondary css path, to specify the element of every
-     * option to be shown to the user. By default, the text of every element
-     * gathered with the "selector" will be used as option.
-     * @param type (optional): The type of the selector to be used: "css/xpath".
-     * If missing, css will be used
-     * @param variable: Required. Name of the variable used to store user's
-     * selection.
-     * @param title: Title for the promtpt window
-     * @param message: Message to use in the prompt window.
-     * @param sorted: Sort options alphabetically? (yes/no)
-     * @throws IOException
-     * @throws InvalidVarNameException
-     * @throws InvalidParamException
-     */
     public static void fnPickChoice(String selector, String variable, String title, String message, boolean sorted, String subselector) throws IOException, InvalidVarNameException, InvalidParamException,Exception {
         fnPickChoice(selector, variable, title, message, sorted, subselector, null);
     }
@@ -874,9 +876,10 @@ public abstract class AbstractDefaultPluginRunner {
      * @throws InvalidParamException
      */
     public static void fnPickChoice(String selector, String variable, String title, String message, boolean sorted, String subselector, String type) throws IOException, InvalidVarNameException, InvalidParamException,Exception {
+        String ssorted = sorted?"yes":"no";
         String command = "pick choice={\"selector\":\"" + selector + "\" "
                 + ",\"variable\":\"" + variable + "\",\"title\":\"" + title + "\""
-                + ",\"message\":\"" + message + "\",\"sorted\":\"" + sorted + "\"";
+                + ",\"message\":\"" + message + "\",\"sorted\":\"" + ssorted + "\"";
         if (subselector != null) {
             command += ",\"subselector\":\"" + subselector + "\"";
         }

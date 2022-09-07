@@ -16,11 +16,10 @@ package oa.com.tests.globals;
 import oa.com.tests.actionrunners.enums.BROWSERTYPE;
 import java.io.File;
 import java.io.IOException;
-import java.util.regex.Pattern;
 import lombok.Getter;
 import oa.com.tests.actionrunners.exceptions.InvalidParamException;
 import oa.com.tests.actionrunners.exceptions.InvalidVarNameException;
-import org.junit.AfterClass;
+import org.junit.jupiter.api.AfterAll;
 
 /**
  *
@@ -59,7 +58,7 @@ public abstract class ActionRunnerBaseTest {
         ActionRunnerManager.runSt(command);
     }
 
-    @AfterClass
+    @AfterAll
     public static void tearDownClass() {
         ActionRunnerManager.quit();
     }

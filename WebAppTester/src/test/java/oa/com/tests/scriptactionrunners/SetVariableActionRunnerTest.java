@@ -20,7 +20,7 @@ import oa.com.tests.actionrunners.interfaces.PathKeeper;
 import oa.com.tests.globals.ActionRunnerBaseTest;
 import oa.com.tests.lang.SelectorVariable;
 import oa.com.tests.lang.StringVariable;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /**
  *

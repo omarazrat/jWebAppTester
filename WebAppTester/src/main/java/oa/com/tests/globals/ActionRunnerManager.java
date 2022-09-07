@@ -53,6 +53,7 @@ import org.openqa.selenium.safari.SafariDriver;
 import oa.com.tests.actionrunners.interfaces.ScriptActionRunner;
 import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
@@ -116,6 +117,7 @@ public class ActionRunnerManager implements PluginInterface {
     private static final Logger log = Logger.getLogger("WebAppTester");
     private Set<Integer> runningPlugins;
     private Map<Integer, List<PluginStoppedListener>> pluginStoppedListeners;
+    private Set<String> passwords = new HashSet<>() ;
 
     protected ActionRunnerManager() {
         //Clases
@@ -155,6 +157,10 @@ public class ActionRunnerManager implements PluginInterface {
         if (instance.driver != null) {
             instance.driver.quit();
         }
+    }
+    
+    public static boolean isPassword(String word){
+        return instance.passwords.contains(word);
     }
 
     // <editor-fold defaultstate="collapsed" desc="Manejo de plugins en ejecución y sus auditores de eventos">
@@ -548,6 +554,7 @@ public class ActionRunnerManager implements PluginInterface {
             }
             String decrypted = firstGroup + Encryption.decrypt(original) + lastGroup;
             pwdString = pwdString.replace(firstGroup + "[$" + original + "]" + lastGroup, decrypted);
+            passwords.add(decrypted);
         }
         return pwdString;
     }

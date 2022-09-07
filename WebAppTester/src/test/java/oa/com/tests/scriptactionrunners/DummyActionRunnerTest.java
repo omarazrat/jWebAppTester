@@ -16,12 +16,11 @@ package oa.com.tests.scriptactionrunners;
 import java.io.File;
 import java.io.IOException;
 import java.util.logging.Logger;
-import java.util.regex.Pattern;
 import oa.com.tests.actionrunners.exceptions.InvalidParamException;
 import oa.com.tests.actionrunners.exceptions.InvalidVarNameException;
 import oa.com.tests.globals.ActionRunnerBaseTest;
 import oa.com.tests.globals.ActionRunnerManager;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /**
  *

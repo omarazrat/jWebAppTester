@@ -15,11 +15,9 @@ package oa.com.tests.actionrunners.interfaces;
 
 import java.io.IOException;
 import oa.com.tests.actionrunners.exceptions.InvalidVarNameException;
-import oa.com.tests.globals.ActionRunnerBaseTest;
-import oa.com.tests.lang.SelectorVariable;
 import oa.com.tests.lang.Variable;
-import org.junit.Test;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import org.junit.jupiter.api.Test;
 
 /**
  *
