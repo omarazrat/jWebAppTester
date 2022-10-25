@@ -8,6 +8,7 @@
     <modules>
         <module>seleniumTesterLib</module>
         <module>WebAppTester</module>
+        <module>mgonzalezPlugin</module>
     </modules>
     <properties>
         <project.build.sourceEncoding>ISO-8859-1</project.build.sourceEncoding>
