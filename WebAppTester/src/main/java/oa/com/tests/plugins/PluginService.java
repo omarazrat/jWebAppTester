@@ -35,7 +35,7 @@ public class PluginService<T>{
     private static PluginService service;
     private ServiceLoader<T> loader;
     //Donde cargar los plugins
-    private final String FOLDER_NAME = "lib";
+    private final String FOLDER_NAME = getPathPrefix()+"lib";
 
     public PluginService(JarClassLoader clsLoader,Class<T> clazz) throws MalformedURLException {
         File f = new File(FOLDER_NAME);
@@ -76,5 +76,17 @@ public class PluginService<T>{
             serviceError.printStackTrace();
         }
         return null;
+    }
+
+    private String getPathPrefix() {
+        if(getCurDir().equals("/")){
+            return System.getProperty("user.dir")+"/";
+        }
+        return "";
+    }
+
+    private String getCurDir() {
+        File f = new File(".");
+        return f.getAbsolutePath();
     }
 }
