@@ -64,6 +64,7 @@ import oa.com.tests.actionrunners.interfaces.listeners.PluginStoppedListener;
 import oa.com.tests.actionrunners.enums.BROWSERTYPE;
 import oa.com.tests.plugins.AbstractDefaultPluginRunner;
 import oa.com.utils.Encryption;
+import static oa.com.utils.FileHelper.getPathPrefix;
 
 //import static javafx.application.Application.launch;
 //import javafx.fxml.FXMLLoader;
@@ -181,7 +182,7 @@ public class MainApp extends JFrame {
     public static void main(String[] args) {
         final FileHandler fileHandler;
         try {
-            fileHandler = new FileHandler(LOG_NAME);
+            fileHandler = new FileHandler(getPathPrefix()+LOG_NAME);
             fileHandler.setFormatter(new SimpleFormatter());
             log.addHandler(fileHandler);
         } catch (IOException ex) {

@@ -20,11 +20,11 @@ import java.net.URL;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ResourceBundle;
-import java.util.ServiceConfigurationError;
 import java.util.ServiceLoader;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
+import static oa.com.utils.FileHelper.getPathPrefix;
 
 /**
  *
@@ -78,15 +78,4 @@ public class PluginService<T>{
         return null;
     }
 
-    private String getPathPrefix() {
-        if(getCurDir().equals("/")){
-            return System.getProperty("user.dir")+"/";
-        }
-        return "";
-    }
-
-    private String getCurDir() {
-        File f = new File(".");
-        return f.getAbsolutePath();
-    }
 }
