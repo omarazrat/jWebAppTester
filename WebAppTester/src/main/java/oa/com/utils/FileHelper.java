@@ -21,25 +21,26 @@ import javax.swing.JOptionPane;
  * @author nesto
  */
 public final class FileHelper {
+
     public static String getPathPrefix() {
-	String resp = "";
-	//Mac installation in root dir?
-        if(getCurDir().equals("/")){
+        String resp = "";
+        //Mac installation in root dir?
+        if (getCurDir().equals("/")) {
             final String workDir = System.getProperty("user.dir");
 //JOptionPane.showMessageDialog(null,workDir);
             File f = new File(workDir);
-		if(!f.exists()){
-			try{
-			f.mkdirs();
-			}catch(SecurityException e){
+            if (!f.exists()) {
+                try {
+                    f.mkdirs();
+                } catch (SecurityException e) {
 //TODO: localize this message
-				JOptionPane.showMessageDialog(null,"Couldn't create working directory");
-				System.exit(-1);
-			}
-		}
-		resp = workDir+"/";
+                    JOptionPane.showMessageDialog(null, "Couldn't create working directory");
+                    System.exit(-1);
+                }
+            }
+            resp = workDir + "/";
         }
-	resp = "";
+        resp = "";
 //JOptionPane.showMessageDialog(null,resp);
         return "";
     }
@@ -48,5 +49,5 @@ public final class FileHelper {
         File f = new File("");
         return f.getAbsolutePath();
     }
-    
+
 }
