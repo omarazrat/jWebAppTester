@@ -29,11 +29,21 @@ import org.junit.jupiter.api.Test;
 public class SetVariableActionRunnerTest extends ActionRunnerBaseTest {
 
     @Test
+    public void testScriptMode() throws Exception {
+        run("go={https://www.walgreens.com/store/c/walgreens-free-&-pure-men's-multivitamin-gummies-zero-sugar-natural-mixed-berry-&-strawberry/ID=300448182-product}\n"
+                + "pause={\"time\":\"10s\"}\n"
+                + "set={\"name\":\"fullState\",\"script\":\"return JSON.stringify(window.__APP_INITIAL_STATE__, null, 2);\"}\n"
+                + "set={\"name\":\"title\",\"script\":\"return window.__APP_INITIAL_STATE__.productData.productInfo.title;\"}\n"
+                + "set={\"name\":\"price\",\"script\":\"return window.__APP_INITIAL_STATE__.productData.priceInfo.regularPrice;\"}\n"
+                + "set={\"name\":\"productType\",\"script\":\"return window.__APP_INITIAL_STATE__.productData.productInfo.productType;\"}");
+    }
+
+    @Test
     public void testit() throws IOException, InvalidVarNameException, InvalidParamException,Exception {
         StringVariable pause_time = new StringVariable("pause_time", "7 s"),
                 comment = new StringVariable("comment", "I like this");
-        SelectorVariable selvar1 = new SelectorVariable(null, "abc", new PathKeeper("/html[1]/body[1]/form[1]/table[1]/tbody[1]/tr[2]/td[2]/input[1]", "xpath")),
-                selvar2 = new SelectorVariable(null, "abc", new PathKeeper("/html[1]/body[1]/form[1]/table[1]/tbody[1]/tr[2]/td[2]/input[2]", "xpath"));
+        SelectorVariable selvar1 = new SelectorVariable("abc", new PathKeeper("/html[1]/body[1]/form[1]/table[1]/tbody[1]/tr[2]/td[2]/input[1]", "xpath"),null),
+                selvar2 = new SelectorVariable("abc", new PathKeeper("/html[1]/body[1]/form[1]/table[1]/tbody[1]/tr[2]/td[2]/input[2]", "xpath"),null);
 
         assert(selvar1.equals(selvar2));
         //testing variable names

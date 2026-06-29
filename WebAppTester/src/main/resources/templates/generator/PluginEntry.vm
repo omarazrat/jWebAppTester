@@ -1,0 +1,65 @@
+##Location: src/main/java/$package_dir/$ClassName.java
+$LICENSE
+package $package;
+
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
+import java.util.List;
+import javax.imageio.ImageIO;
+import javax.swing.*;
+import oa.com.tests.actionrunners.interfaces.ScriptActionRunner;
+import oa.com.tests.plugins.AbstractDefaultPluginRunner;
+import oa.com.tests.actionrunners.interfaces.PluginInterface;
+import $package${dot}scriptactionrunners${dot}DummyActionRunner;
+
+$CLASS_DOC
+public class $ClassName extends AbstractDefaultPluginRunner {
+
+    public $ClassName() {
+    }
+
+    $GETBUTTONACTIONCOMMAND_DOC
+    @Override
+    public String getButtonActionCommand() {
+        return "$GetButtonActionCommand";
+    }
+
+    $GETACTIONLISTENER_DOC
+    @Override
+    public ActionListener getActionListener() {
+        return new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+            $COMMENT_ACTIONLISTENER_CODE
+            }
+        };
+    }
+
+    $SETACTIONMANAGER_DOC
+    @Override
+    public void setActionManager(PluginInterface actionManager) {
+        super.setActionManager(actionManager);
+        $SETACTIONMANAGER_CODE
+    }
+
+    $GETICON_DOC
+    @Override
+    public Icon getIcon() throws IOException {
+        final BufferedImage img = ImageIO.read(getClass().getResource("/src/main/resources/imgs/${ClassName}${dot}png"));
+        return new ImageIcon(img);
+    }
+
+    $DESTROY_DOC
+    @Override
+    protected void finalize() {
+        $DESTROY_DOC_OTHER_ACTIONS
+        actionManager.registerStop(this);
+    }
+
+    $GETACTIONRUNNERS_DOC
+    public List<Class<? extends ScriptActionRunner>> getActionRunners(){
+        return List.of(DummyActionRunner.class);
+    }
+}

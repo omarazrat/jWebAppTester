@@ -17,11 +17,11 @@ import oa.com.tests.actionrunners.exceptions.BadSyntaxException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import lombok.Getter;
-import oa.com.tests.actionrunners.interfaces.ActionRunner;
+import oa.com.tests.actionrunners.interfaces.ScriptActionRunner;
 
 /**
  * Una accion debe tener:
- * un nombre unico, que corresponda con un {@link ActionRunner}
+ * un nombre unico, que corresponda con un {@link ScriptActionRunner}
  * un comando que sera interpretado por ese ActionRunner
  * Ejemplo:
  * go:{https://www.wolframalpha.com/}

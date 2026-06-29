@@ -13,26 +13,16 @@
  */
 package oa.com.tests.lang;
 
-import lombok.Data;
-import lombok.EqualsAndHashCode;
+import lombok.*;
 
 /**
  *
  * @author nesto
  */
-@Data
-//Does not work!
-//@EqualsAndHashCode(callSuper = true)
-public class StringVariable extends Variable{
+@Getter
+@Setter
+@ToString(callSuper = true)public class StringVariable extends Variable{
     public StringVariable(String name,String value) {
-        super(TYPE.STRING);
-        this.name=name;
-        this.value = value;
+        super(TYPE.STRING,name,value);
     }
-
-    @Override
-    public boolean equals(Object o) {
-        return super.equals(o);
-    }
-    
 }

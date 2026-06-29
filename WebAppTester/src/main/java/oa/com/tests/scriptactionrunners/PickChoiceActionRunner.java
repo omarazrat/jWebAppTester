@@ -140,7 +140,7 @@ implements VariableProvider{
         String css = WebUtils.generateCSS( selectedElem);
 
         PathKeeper finder = new PathKeeper(css,PathKeeper.SearchTypes.CSS);
-        this.variable = new SelectorVariable(selectedElem,varName,finder);
+        this.variable = new SelectorVariable(varName,finder,selectedElem);
     }
 
     /**

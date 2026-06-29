@@ -13,24 +13,22 @@
  */
 package oa.com.tests.lang;
 
-import java.util.Objects;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
+import lombok.*;
 
 /**
  * Una variable en el entorno de ejecución de pruebas
  * @author nesto
  */
 @Getter
-@EqualsAndHashCode(of = {"name"})
+@EqualsAndHashCode(of = "name")
 @RequiredArgsConstructor
 public abstract class Variable {
     public enum TYPE{
         STRING,
         NUMBER,
-        WEB_SELECTOR}
+        WEB_SELECTOR,
+        WEB_ELEMENT
+    }
     /**
      * Tipo de esta variable
      * @return 
@@ -41,11 +39,13 @@ public abstract class Variable {
      * Nombre de la variable.Distintivo entre una y otra.
      * @return 
      */
+    @NonNull
     protected String name;
     /**
      * Valor de la variable
      * @return 
      */
+    @NonNull
     protected Object value;
 
 }

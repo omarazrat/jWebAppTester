@@ -31,6 +31,7 @@ import static oa.com.tests.actionrunners.enums.PlaceMousePointerOffsetType.FROM_
 import oa.com.tests.actionrunners.exceptions.InvalidParamException;
 import oa.com.tests.actionrunners.exceptions.InvalidVarNameException;
 import oa.com.tests.actionrunners.interfaces.PluginInterface;
+import oa.com.tests.actionrunners.interfaces.ScriptActionRunner;
 import org.openqa.selenium.WebDriver;
 
 /**
@@ -136,6 +137,14 @@ public abstract class AbstractDefaultPluginRunner {
     @Override
     public int hashCode() {
         return getClass().hashCode();
+    }
+
+    /**
+     * Subclases deben impolementar este método para exponer ejecutores que serán agregadas a la lista.
+     * @return
+     */
+    public List<Class<? extends ScriptActionRunner>> getActionRunners(){
+        return List.of();
     }
 
     // <editor-fold defaultstate="collapsed" desc="Shortcut functions">

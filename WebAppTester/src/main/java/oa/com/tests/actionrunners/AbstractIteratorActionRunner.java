@@ -18,11 +18,16 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import static java.util.stream.Collectors.joining;
+
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.Setter;
 import oa.com.tests.actionrunners.exceptions.BadSyntaxException;
 import oa.com.tests.actionrunners.exceptions.ExceptionList;
 import oa.com.tests.actionrunners.exceptions.InvalidActionException;
 import oa.com.tests.actionrunners.exceptions.NoActionSupportedException;
 import oa.com.tests.actionrunners.interfaces.AbstractDefaultScriptActionRunner;
+import oa.com.tests.actionrunners.interfaces.PathKeeper;
 import oa.com.tests.actionrunners.interfaces.ScriptActionRunner;
 import oa.com.tests.actions.TestAction;
 import static oa.com.tests.globals.ActionRunnerManager.detectRunner;
@@ -33,6 +38,7 @@ import static oa.com.tests.globals.ActionRunnerManager.testIterativeCommand;
 import static oa.com.tests.plugins.AbstractDefaultPluginRunner.parse;
 import oa.com.tests.scriptactionrunners.EndActionRunner;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
 
 /**
  *
@@ -40,7 +46,9 @@ import org.openqa.selenium.WebDriver;
  */
 public abstract class AbstractIteratorActionRunner
         extends AbstractDefaultScriptActionRunner {
-
+    @Setter(AccessLevel.PROTECTED)
+    @Getter(AccessLevel.PROTECTED)
+    private WebDriver driver;
     private int openedContexts = 0;
     private String absolutePath;
     private Logger log;
@@ -52,12 +60,12 @@ public abstract class AbstractIteratorActionRunner
     }
 
     /**
-     * Inicia o continúa la iteraciòn. Tiene la responsabilida de definir la
+     * Inicia o continï¿½a la iteraciï¿½n. Tiene la responsabilida de definir la
      * variable de sistema usando
      * {@link oa.com.tests.globals.ActionRunnerManager#addStVariable(oa.com.tests.lang.Variable)}
      *
      * @param driver
-     * @return La variable que sigue o null, si ya terminó la iteración
+     * @return La variable que sigue o null, si ya terminï¿½ la iteraciï¿½n
      */
     public abstract boolean iterate(WebDriver driver);
 
@@ -71,8 +79,8 @@ public abstract class AbstractIteratorActionRunner
 
     /**
      * Alimenta este iterador con las lineas proporcinadas hasta que ya no haya
-     * nada mas que ingresar o hasta que se encuentre una instrucción end que
-     * finalice pre: hay uno y sólo un enunciado por línea
+     * nada mas que ingresar o hasta que se encuentre una instrucciï¿½n end que
+     * finalice pre: hay uno y sï¿½lo un enunciado por lï¿½nea
      *
      * @param filteredLines
      * @return
@@ -102,10 +110,20 @@ public abstract class AbstractIteratorActionRunner
 
     @Override
     public void run(WebDriver driver) throws Exception {
+        setDriver(driver);
         List<Exception> resp = new LinkedList<>();
         while (iterate(driver)) {
             for (int i = 0; i < instructions.size(); i++) {
-                String actionCommand = parse(instructions.get(i));
+                String actionCommand;
+                try {
+                    actionCommand = parse(instructions.get(i));
+                } catch (Exception ex) {
+                    log.log(Level.SEVERE, "Error parsing instruction: {0}", instructions.get(i));
+                    log.log(Level.SEVERE, ex.getMessage(), ex);
+                    BadSyntaxException badSyntaxException = new BadSyntaxException(prepareBadSystaxExMsg(instructions.get(i), absolutePath));
+                    resp.add(badSyntaxException);
+                    continue;
+                }
                 ScriptActionRunner runner = null;
                 //Runner detection 
                 try {
@@ -117,7 +135,6 @@ public abstract class AbstractIteratorActionRunner
                     continue;
                 }
 
-                final boolean isEnd = runner instanceof EndActionRunner;
                 try {
                     final boolean isIterator = runner instanceof AbstractIteratorActionRunner;
                     if (isIterator) {
@@ -135,6 +152,14 @@ public abstract class AbstractIteratorActionRunner
             }
         }
     }
+
+    /**
+     * Obtiene un elemento Web, que cambia en cada iteraciï¿½n
+     * @param driver
+     * @return El elemento especificado internamente con algï¿½n {@link PathKeeper}
+     * @throws BadSyntaxException
+     */
+    protected abstract WebElement getWebElement(WebDriver driver) throws BadSyntaxException ;
 
     private void addInstruction(String actionCommand) {
         instructions.add(actionCommand);

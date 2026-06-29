@@ -24,16 +24,20 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import static java.util.stream.Collectors.toList;
 import java.util.stream.IntStream;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.Setter;
 import oa.com.tests.Utils;
 import oa.com.tests.actionrunners.exceptions.BadSyntaxException;
 import oa.com.tests.actionrunners.exceptions.InvalidActionException;
 import oa.com.tests.actionrunners.exceptions.InvalidParamException;
 import oa.com.tests.actionrunners.exceptions.NoActionSupportedException;
-import oa.com.tests.actionrunners.interfaces.AbstractDefaultScriptActionRunner;
+import oa.com.tests.actionrunners.interfaces.AbstractSelectorActionRunner;
 import oa.com.tests.actionrunners.interfaces.PathKeeper;
+import oa.com.tests.actionrunners.interfaces.VariableProvider;
 import oa.com.tests.actions.TestAction;
 import oa.com.tests.globals.ActionRunnerManager;
-import oa.com.tests.lang.SelectorVariable;
+import oa.com.tests.lang.WebElementVariable;
 import oa.com.tests.lang.StringVariable;
 import oa.com.tests.lang.Variable;
 import oa.com.utils.WebUtils;
@@ -44,9 +48,9 @@ import oa.com.tests.actionrunners.AbstractIteratorActionRunner;
 
 /**
  * for estilo linux argumentos: var=nombre de la variable a usar expr
- * [Opcional]=expresión a utilizar que puede ser de dos formas:
- * selector[Opcional]=selector css/xpath cuyos hijos serán utilizados como
- * opciones. type[Opcional]=Tipo del selector (css/xpath). Por momisión = css
+ * [Opcional]=expresiï¿½n a utilizar que puede ser de dos formas:
+ * selector[Opcional]=selector css/xpath cuyos hijos serï¿½n utilizados como
+ * opciones. type[Opcional]=Tipo del selector (css/xpath). Por momisiï¿½n = css
  * <ul>
  * <li>{a..b} Recorrido de la variable "var" entre los numeros a y b. b puede
  * ser menor que a.</li>
@@ -56,14 +60,26 @@ import oa.com.tests.actionrunners.AbstractIteratorActionRunner;
  *
  * @author nesto
  */
-public class ForActionRunner extends AbstractIteratorActionRunner {
-
-    private List<String> interval;
+public class ForActionRunner extends AbstractIteratorActionRunner
+implements VariableProvider {
+    private enum ContentType {
+        NUMERIC,
+        STRING,
+        WEB_ELEMENTS
+    }
+    private List<Object> interval;
     private PathKeeper path;
     private int intervalPtr = 0;
     private int interval_length = 0;
     private String varName;
     private static Logger log = Logger.getLogger("WebAppTester");
+    @Getter(AccessLevel.PRIVATE)
+    @Setter(AccessLevel.PRIVATE)
+    private ContentType contentType;
+
+    @Getter
+    private Variable variable;
+
     
     public ForActionRunner(TestAction action) throws NoActionSupportedException, InvalidActionException {
         super(action);
@@ -88,6 +104,7 @@ public class ForActionRunner extends AbstractIteratorActionRunner {
                 try {
                     int termA = Integer.parseInt(stermA);
                     int termB = Integer.parseInt(stermB);
+                    setContentType(ContentType.NUMERIC);
                     interval = IntStream.rangeClosed(Math.min(termA, termB), Math.max(termA, termB))
                             .mapToObj(i -> "" + i).map(Object::toString).collect(toList());
                     interval_length = stermA.length();
@@ -100,9 +117,11 @@ public class ForActionRunner extends AbstractIteratorActionRunner {
                     throw new InvalidActionException("Invalid numbers: {" + stermA + "," + stermB + "}");
                 }
             } else {//forma 2: distinas palabras separadas por espacios
+                setContentType(ContentType.STRING);
                 interval = Arrays.asList(expression.split(" "));
             }
         } else { //Selector based for
+            setContentType(ContentType.WEB_ELEMENTS);
             key = "CssSelectorActionRunner.attr.selector";
             final String selector = Utils.getJSONAttributeML(actionCommand, key);
             if (selector == null) {
@@ -121,6 +140,14 @@ public class ForActionRunner extends AbstractIteratorActionRunner {
                 throw new InvalidParamException("only selectors of type CSS are supported");
             }
             path = new PathKeeper(selector, type);
+            interval = WebUtils.getMany(path, driver)
+                    .stream().map(we->{
+                        String cssSelector = WebUtils.generateCSS(we);
+                        String text = we.getText();
+                        String href = we.getAttribute("href");
+                        return new WebElementVariable("",new PathKeeper(cssSelector,PathKeeper.SearchTypes.CSS),text,href,we);
+                    })
+                    .collect(toList());
         }
     }
 
@@ -146,57 +173,56 @@ public class ForActionRunner extends AbstractIteratorActionRunner {
 
     @Override
     public void run(WebDriver driver, Logger log) throws Exception {
-        run(driver);
         String templateMsg = getActionLog();
         if (interval != null) {
-            log.log(Level.INFO, templateMsg, interval.stream().collect(Collectors.joining(" ")));
+            log.log(Level.INFO, templateMsg, interval.size());
         } else {
             final ResourceBundle bundle = ResourceBundle.getBundle("application");
             final String key = getClass().getSimpleName() + ".action.log2";
             templateMsg = bundle.getString(key);
             log.log(Level.INFO, templateMsg, path.getPath());
         }
+        run(driver);
     }
 
     @Override
     public boolean iterate(WebDriver driver) {
-        final boolean usingInterval = interval != null;
-        final int listSize = usingInterval ? interval.size() : Integer.MAX_VALUE;
-        if (intervalPtr >= listSize) {
+        if (intervalPtr >= interval.size()) {
             return false;
         }
-        Variable var = null;
-        if (usingInterval) {
-            String point = interval.get(intervalPtr++);
-            String varValue
-                    = interval_length == 0
-                            ? point
-                            : StringUtils.leftPad("" + point, interval_length, '0');
-            if (varValue.contains("-")) {
-                varValue = "-" + varValue.replace("-", "");
+        variable = null;
+        Object intervalStep = interval.get(intervalPtr++);
+        switch(contentType) {
+            case STRING -> {
+                variable = new StringVariable(varName, intervalStep.toString());
             }
-            var = new StringVariable(varName, varValue);
-        } else {
-            try {
-                final List<WebElement> elements = WebUtils.getMany(path, driver);
-                if (intervalPtr == elements.size()) {
-                    return false;
+            case NUMERIC -> {
+                String point = intervalStep.toString();
+                String varValue = interval_length == 0
+                        ? point : StringUtils.leftPad(point, interval_length, '0');
+                if (varValue.contains("-")) {
+                    varValue = "-" + varValue.replace("-", "");
                 }
-                final WebElement element = elements.get(intervalPtr);
-                if (element == null) {
-                    return false;
-                }
-                PathKeeper newPath = new PathKeeper(
-                        WebUtils.generateCSS(element)
-                        ,PathKeeper.SearchTypes.CSS);
-                var = new SelectorVariable(element, varName, newPath);
-            } catch (BadSyntaxException ex) {
-                log.log(Level.SEVERE, null, ex);
+                variable = new StringVariable(varName, varValue);
             }
-                intervalPtr++;
+            case WEB_ELEMENTS -> {
+                WebElementVariable wvar = (WebElementVariable) intervalStep;
+                variable = new WebElementVariable(varName,wvar.getPath(),wvar.getText(),wvar.getHref(), (WebElement) wvar.getValue());
+            }
         }
-        ActionRunnerManager.addStVariable(var);
-        return var!=null;
+        ActionRunnerManager.addStVariable(variable);
+        return variable!=null;
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected WebElement getWebElement(WebDriver driver) throws BadSyntaxException {
+        final String actionCommand = getAction().getCommand();
+        if (path == null) {
+            throw new BadSyntaxException(actionCommand);
+        }
+        return AbstractSelectorActionRunner.get(driver, path);
+    }
 }

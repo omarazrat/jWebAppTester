@@ -13,11 +13,11 @@
  */
 package oa.com.tests.actionrunners.interfaces;
 
-import java.util.Optional;
-import java.util.ResourceBundle;
 import oa.com.tests.actions.TestAction;
 import oa.com.utils.I18n;
-import org.openqa.selenium.WebDriver;
+
+import java.util.Optional;
+import java.util.ResourceBundle;
 
 /**
  * Definicion basica de un lector de instrucciones para el tester. Estas

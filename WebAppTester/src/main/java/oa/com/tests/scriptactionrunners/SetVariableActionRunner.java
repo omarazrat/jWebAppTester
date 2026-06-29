@@ -17,7 +17,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import lombok.Getter;
 import oa.com.tests.Utils;
-import oa.com.tests.actionrunners.exceptions.BadSyntaxException;
 import oa.com.tests.actionrunners.exceptions.InvalidActionException;
 import oa.com.tests.actionrunners.exceptions.NoActionSupportedException;
 import oa.com.tests.actionrunners.interfaces.AbstractDefaultScriptActionRunner;
@@ -25,14 +24,17 @@ import oa.com.tests.actionrunners.interfaces.AbstractSelectorActionRunner;
 import oa.com.tests.actionrunners.interfaces.PathKeeper;
 import oa.com.tests.actionrunners.interfaces.VariableProvider;
 import oa.com.tests.actions.TestAction;
+import oa.com.tests.globals.ActionRunnerManager;
 import oa.com.tests.lang.SelectorVariable;
 import oa.com.tests.lang.StringVariable;
 import oa.com.tests.lang.Variable;
+import org.openqa.selenium.JavascriptExecutor;
+import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 
 /**
- * Para establecer el valor de una variable en algún valor Params: name value
+ * Para establecer el valor de una variable en algï¿½n valor Params: name value
  * type[Optional], only required for value= css or xpath selector
  *
  * @author nesto
@@ -49,20 +51,68 @@ public class SetVariableActionRunner extends AbstractDefaultScriptActionRunner
         final String actionCommand = getAction().getCommand();
         String keyName = getClass().getSimpleName() + ".attr.name";
         name = Utils.getJSONAttributeML(actionCommand, keyName);
+        if (name == null) {
+            keyName = getClass().getSimpleName() + ".attr.var";
+            name = Utils.getJSONAttributeML(actionCommand, keyName);
+        }
     }
 
     @Override
     public void run(WebDriver driver) throws Exception {
         final String actionCommand = getAction().getCommand();
-        String keyName = getClass().getSimpleName() + ".attr.value";
+        String prefix = getClass().getSimpleName();
+
+        String keyName = prefix + ".attr.selector";
+        String selector = Utils.getJSONAttributeML(actionCommand, keyName);
+        if (selector != null) {
+            keyName = "CssSelectorActionRunner.attr.type";
+            String type = Utils.getJSONAttributeML(actionCommand, keyName);
+            if (type == null) {
+                type = "css";
+            }
+            PathKeeper path = new PathKeeper(selector, type);
+            keyName = prefix + ".attr.parent";
+            String parentName = Utils.getJSONAttributeML(actionCommand, keyName);
+            WebElement element;
+            if (parentName != null) {
+                Variable parentVar = ActionRunnerManager.getVariableByName(parentName);
+                if (parentVar != null && parentVar.getValue() instanceof WebElement) {
+                    try {
+                        element = AbstractSelectorActionRunner.get((WebElement) parentVar.getValue(), path.getType(), path.getPath());
+                    } catch (NoSuchElementException e) {
+                        element = null;
+                    }
+                } else {
+                    element = null;
+                }
+                StringVariable var = new StringVariable(name, element != null ? element.getText() : "");
+                setVariable(var);
+            } else {
+                element = AbstractSelectorActionRunner.get(driver, path.getType(), path.getPath());
+                StringVariable var = new StringVariable(name, element.getText());
+                setVariable(var);
+            }
+            return;
+        }
+
+        keyName = prefix + ".attr.script";
+        String script = Utils.getJSONAttributeML(actionCommand, keyName);
+        if (script != null) {
+            JavascriptExecutor js = (JavascriptExecutor) driver;
+            Object result = js.executeScript(script);
+            StringVariable var = new StringVariable(name, result != null ? result.toString() : "");
+            setVariable(var);
+            return;
+        }
+
+        keyName = prefix + ".attr.value";
         String value = Utils.getJSONAttributeML(actionCommand, keyName);
-        //opcional: tipo
         keyName = "CssSelectorActionRunner.attr.type";
         String type = Utils.getJSONAttributeML(actionCommand, keyName);
         if (type != null) {
             PathKeeper path = new PathKeeper(value, type);
             final WebElement element = AbstractSelectorActionRunner.get(driver, path.getType(), path.getPath());
-            SelectorVariable var = new SelectorVariable(element, name, path);
+            SelectorVariable var = new SelectorVariable(name, path,element);
             setVariable(var);
         }else{
             StringVariable var = new StringVariable(name, value);

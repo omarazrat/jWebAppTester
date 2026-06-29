@@ -19,6 +19,8 @@ import oa.com.tests.actionrunners.exceptions.BadSyntaxException;
 import oa.com.tests.actionrunners.exceptions.NoActionSupportedException;
 import oa.com.tests.actionrunners.interfaces.AbstractDefaultScriptActionRunner;
 import oa.com.tests.actions.TestAction;
+import oa.com.tests.lang.WebElementVariable;
+import oa.com.tests.lang.StringVariable;
 import oa.com.tests.swing.MainApp;
 import java.awt.HeadlessException;
 import java.io.BufferedReader;
@@ -28,10 +30,7 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.lang.reflect.Constructor;
-import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.ResourceBundle;
+import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import static java.util.stream.Collectors.joining;
@@ -48,15 +47,9 @@ import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.edge.EdgeDriver;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.ie.InternetExplorerDriver;
-import org.openqa.selenium.opera.OperaDriver;
 import org.openqa.selenium.safari.SafariDriver;
 import oa.com.tests.actionrunners.interfaces.ScriptActionRunner;
 import java.lang.reflect.InvocationTargetException;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
 import java.util.concurrent.ConcurrentSkipListSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -76,8 +69,6 @@ import oa.com.tests.scriptactionrunners.ForActionRunner;
 import oa.com.tests.actionrunners.interfaces.PluginInterface;
 import oa.com.tests.actionrunners.interfaces.listeners.PluginStoppedListener;
 import oa.com.utils.WebUtils;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
@@ -149,6 +140,7 @@ public class ActionRunnerManager implements PluginInterface {
         for (AbstractDefaultPluginRunner plugin : plugins) {
 //            Logger.getLogger("WebAppTester").log(Level.INFO, "asignando {0} a plugin {1}", new Object[]{instance, plugin});
             plugin.setActionManager(instance);
+            runnersCls.addAll(plugin.getActionRunners());
         }
 
     }
@@ -163,7 +155,7 @@ public class ActionRunnerManager implements PluginInterface {
         return instance.passwords.contains(word);
     }
 
-    // <editor-fold defaultstate="collapsed" desc="Manejo de plugins en ejecución y sus auditores de eventos">
+    // <editor-fold defaultstate="collapsed" desc="Manejo de plugins en ejecuciï¿½n y sus auditores de eventos">
     public static void registerPluginListenerSt(AbstractDefaultPluginRunner plugin, PluginStoppedListener listener) {
         instance.registerPluginListener(plugin, listener);
     }
@@ -285,9 +277,6 @@ public class ActionRunnerManager implements PluginInterface {
                 case INTERNET_EXPLORER:
                     driver = new InternetExplorerDriver();
                     break;
-                case OPERA:
-                    driver = new OperaDriver();
-                    break;
                 case SAFARI:
                 default:
                     driver = new SafariDriver();
@@ -383,7 +372,7 @@ public class ActionRunnerManager implements PluginInterface {
     private static List<Class<? extends ScriptActionRunner>> findRunnersCls() throws ClassNotFoundException, IOException {
         final Class<? extends ScriptActionRunner>[] classes = Utils.getClasses("oa.com.tests.scriptactionrunners", ScriptActionRunner.class);
         List<Class<? extends ScriptActionRunner>> resp
-                = Arrays.asList(classes);
+                = new LinkedList<>(Arrays.asList(classes));
         return resp;
     }
 
@@ -399,7 +388,7 @@ public class ActionRunnerManager implements PluginInterface {
         List<Exception> resp = new LinkedList<>();
         final List<String> filteredLines = new LinkedList<>();
         BufferedReader reader = new BufferedReader(new FileReader(file));
-        //Filtrado de líneas de archivo
+        //Filtrado de lï¿½neas de archivo
         String commandLine = "";
         for (String line = reader.readLine(); line != null; line = reader.readLine()) {
             line = line.trim();
@@ -476,7 +465,9 @@ public class ActionRunnerManager implements PluginInterface {
             VariableProvider varprovider = (VariableProvider) runner;
 //            log.info(varprovider.getVariable().getName()+"="+varprovider.getVariable().getValue());
             Variable variable = varprovider.getVariable();
-            instance.addVariable(variable);
+            if (variable != null) {
+                instance.addVariable(variable);
+            }
         }
     }
 
@@ -485,9 +476,9 @@ public class ActionRunnerManager implements PluginInterface {
     }
 
     private void addVariable(Variable variable) {
-        if (variables.contains(variable)) {
-            variables.remove(variable);
-        }
+        variables.removeAll(
+            variables.stream().filter(var->var.getName().equals(variable.getName()))
+            .toList());
         variables.add(variable);
     }
 
@@ -519,18 +510,20 @@ public class ActionRunnerManager implements PluginInterface {
         String resp = actionCommand;
         //Variables [:variable]
         resp = parseVariables(resp);
-        resp = resp.replace("[::", "¨{:");
+        resp = resp.replace("[::", "ï¿½{:");
         //Teclas especiales.[%keys]
         resp = parseKeys(resp);
-        resp = resp.replace("[%%", "¨{%");
-        //Contraseñas [$PWD]
+        resp = resp.replace("[%%", "ï¿½{%");
+        //Contraseï¿½as [$PWD]
         resp = instance.parsePWDs(resp);
         resp = resp.replace("[$$", "[$");
+        //Second pass to resolve variables introduced by first pass
+        resp = parseVariables(resp);
         return resp;
     }
 
     /**
-     * Decodifica una cadena de texto con una contraseña en su interior
+     * Decodifica una cadena de texto con una contraseï¿½a en su interior
      *
      * @param pwdString
      * @return
@@ -621,93 +614,90 @@ public class ActionRunnerManager implements PluginInterface {
      */
     private static String parseVariables(String actionCommand)
             throws InvalidVarNameException, InvalidParamException, ParseException, BadSyntaxException {
-        String regexp = "(" + sqOpen + ":[0-9|a-z|A-Z|\\-|_]*" + sqClose + ")";
+        String regexp = "(" + sqOpen + ":[0-9|a-z|A-Z|\\-|_]+(?:\\:[a-z]+)?" + sqClose + ")";
         Pattern pattern = Pattern.compile(regexp);
         Matcher matcher = pattern.matcher(actionCommand);
 
         if (!matcher.find()) {
             return actionCommand;
         }
+        matcher.reset();
 
-        String resp = actionCommand;
-        boolean isSelector = false;
-        for (int i = 1; i <= matcher.groupCount(); i++) {
-            String varDef = matcher.group(i);
+        StringBuffer sb = new StringBuffer();
+        while (matcher.find()) {
+            String varDef = matcher.group(1);
+            String inner = varDef.substring(1, varDef.length() - 1).substring(1);
+            String[] parts = inner.split(":");
+            String varName = parts[0];
+            String qualifier = parts.length > 1 ? parts[1] : null;
 
-            final PathKeeper.SearchTypes varType = getVariableType(varDef);
-            isSelector = varType != null;
-            String selector = resolveSelector4VarDef(varDef);
-            if (isSelector) {
-                PathKeeper.SearchTypes commandType = getJSONType(actionCommand);
-                if(!commandType.equals(varType)){
-                    WebDriver driver = ActionRunnerManager.getStDriver();
+            String resolvedValue = null;
+            Variable variable = null;
+            try {
+                variable = getVariable("[:" + varName + "]");
+                if(variable instanceof SelectorVariable selectorVariable){
+                    PathKeeper.SearchTypes searchType = selectorVariable.getFinder().getType();
+                    WebDriver driver = getStDriver();
                     By varSelector = null;
-                    switch(varType){
+                    switch(searchType){
                         case CSS:
-                            varSelector = By.cssSelector(selector);
+                            varSelector = By.cssSelector(selectorVariable.getValue().toString());
                             break;
                         case XPATH:
                         default:
-                            varSelector = By.xpath(selector);
+                            varSelector = By.xpath(selectorVariable.getValue().toString());
                     }
-                    WebElement variableElement = driver.findElement(varSelector);
-                    switch(varType){
-                        case CSS:
-                            selector = WebUtils.generateXPATH(variableElement);
-                            break;
-                        case XPATH:
-                        default:
-                            selector = WebUtils.generateCSS(variableElement);
+                    try {
+                        WebElement variableElement = driver.findElement(varSelector);
+                        switch(searchType){
+                            case CSS:
+                                resolvedValue = WebUtils.generateXPATH(variableElement);
+                                break;
+                            case XPATH:
+                            default:
+                                resolvedValue = WebUtils.generateCSS(variableElement);
+                        }
+                    } catch (Exception e) {
+                        log.log(Level.WARNING, "Could not resolve SelectorVariable: {0}", varName);
                     }
                 }
+                else if(variable instanceof StringVariable stringVariable){
+                    resolvedValue = variable.getValue().toString();
+                }
+                else if(variable instanceof WebElementVariable webElemVariable){
+                    if("path".equals(qualifier)) {
+                        resolvedValue = webElemVariable.getPath().getPath();
+                    }
+                    else if("href".equals(qualifier)){
+                        resolvedValue = webElemVariable.getHref();
+                    }
+                    else{
+                        resolvedValue = webElemVariable.getText();
+                    }
+                }
+            } catch (InvalidVarNameException e) {
+                log.log(Level.SEVERE, "Error parsing variable", e);
             }
-            resp = resp.replace(varDef, selector);
+            if (resolvedValue == null) {
+                resolvedValue = varDef;
+            }
+            matcher.appendReplacement(sb, Matcher.quoteReplacement(resolvedValue));
         }
-        return resp;
-    }
-
-    private static PathKeeper.SearchTypes getJSONType(String actionCommand) throws ParseException, BadSyntaxException {
-        PathKeeper.SearchTypes commandType;
-        JSONParser parser = new JSONParser();
-        TestAction ta = new TestAction(actionCommand);
-        JSONObject object = (JSONObject) parser.parse(ta.getCommand());
-        Object objType = object.get("type");
-        commandType = (objType==null?
-                PathKeeper.SearchTypes.CSS:
-                PathKeeper.SearchTypes.valueOf(objType.toString()));
-        return commandType;
-    }
-
-    private boolean parseable(String value) {
-//        [:variable]
-//        //Teclas especiales.[%keys]
-//        //Contraseñas [$PWD]
-        Pattern pattern = Pattern.compile("$.*" + sqOpen + "[:|%|\\$]" + sqClose + ".*^");
-        Matcher matcher = pattern.matcher(value);
-        return matcher.matches();
+        matcher.appendTail(sb);
+        return sb.toString();
     }
 
     /**
-     * Retorna el selector para una variable que está en un texto con su nombre.
-     *
-     * @param varDef El texto con el nombre de la variable en el formato
-     * [:NOMBRE_VARIABLE]
+     * Busca la variable con nombre solicitado
+     * @param varDef
      * @return
+     * @throws InvalidVarNameException Si no hay una variable para ese nombre.
      */
-    private static String resolveSelector4VarDef(String varDef) throws InvalidVarNameException {
-        Variable var = getVariable(varDef);
-        if (var instanceof SelectorVariable) {
-            return ((SelectorVariable) var).getFinder().getPath();
-        }
-        return var.getValue().toString();
-    }
-
-    private static PathKeeper.SearchTypes getVariableType(String varDef) throws InvalidVarNameException {
-        Variable var = getVariable(varDef);
-        if (var instanceof SelectorVariable) {
-            return ((SelectorVariable) var).getFinder().getType();
-        }
-        return null;
+    public static Variable getVariableByName(String varName) {
+        return instance.variables.stream()
+                .filter(var -> var.getName().equals(varName))
+                .findAny()
+                .orElse(null);
     }
 
     private static Variable getVariable(String varDef) throws InvalidVarNameException {
@@ -784,7 +774,7 @@ public class ActionRunnerManager implements PluginInterface {
      * comando suministrado
      *
      * @param actionCommand El comando para el cual se busca el ejecutor
-     * @param filePath Ruta al archivo que se está procesando
+     * @param filePath Ruta al archivo que se estï¿½ procesando
      * @param log
      * @param command
      * @return
@@ -810,7 +800,7 @@ public class ActionRunnerManager implements PluginInterface {
     }
 
     private boolean isValidCommand(String commandLine) {
-        final Pattern pattern = Pattern.compile("^\\w.*=\\{.*\\}$");
+        final Pattern pattern = Pattern.compile("^.+=\\{.*\\}$");
         final Matcher matcher = pattern.matcher(commandLine);
         return matcher.matches();
     }

@@ -18,6 +18,6 @@ package oa.com.tests.actionrunners.enums;
  * @author nesto
  */
 public enum BROWSERTYPE {
-    CHROME, EDGE, FIREFOX, INTERNET_EXPLORER, OPERA, SAFARI
+    CHROME, EDGE, FIREFOX, INTERNET_EXPLORER,  SAFARI
     
 }

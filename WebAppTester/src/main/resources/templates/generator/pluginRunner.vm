@@ -1,0 +1,2 @@
+##Location: src/main/resources/META-INF/services/oa.com.tests.plugins.AbstractDefaultPluginRunner
+${package}${dot}${ClassName}

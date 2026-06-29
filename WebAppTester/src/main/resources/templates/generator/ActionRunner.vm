@@ -1,0 +1,44 @@
+##Location: src/main/java/$package_dir/scriptactionrunners/DummyActionRunner.java
+$LICENSE
+package $package${dot}scriptactionrunners;
+
+import oa.com.tests.actionrunners.exceptions.InvalidActionException;
+import oa.com.tests.actionrunners.exceptions.NoActionSupportedException;
+import oa.com.tests.actionrunners.interfaces.AbstractDefaultScriptActionRunner;
+import oa.com.tests.actions.TestAction;
+import org.openqa.selenium.WebDriver;
+import javax.swing.JOptionPane;
+
+$ACTION_RUNNER_DOC
+public class DummyActionRunner extends AbstractDefaultScriptActionRunner {
+    private final String tagName="dummyActionRunner";
+
+    public DummyActionRunner(TestAction action) throws NoActionSupportedException, InvalidActionException {
+        super(action);
+    }
+
+    $ACTION_RUNNER_RUN_DOC
+    @Override
+    public void run(WebDriver driver) throws Exception {
+        JOptionPane.showMessageDialog(null,driver.getCurrentUrl(),tagName,JOptionPane.INFORMATION_MESSAGE);
+    }
+
+    $ACTION_RUNNER_GAN_DOC
+    @Override
+    public String getActionName() {
+        return tagName.toLowerCase();
+    }
+
+    $ACTION_RUNNER_GAL_DOC
+    @Override
+    public String getActionLog() {
+        return "displaying the url of the page";
+    }
+
+    $ACTION_RUNNER_M_DOC
+    @Override
+    public boolean matches(TestAction action) {
+        return action.getCommand().toLowerCase().trim()
+        .startsWith(tagName.toLowerCase());
+    }
+}
