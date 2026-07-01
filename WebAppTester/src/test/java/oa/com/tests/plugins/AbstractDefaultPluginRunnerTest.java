@@ -76,7 +76,7 @@ public class AbstractDefaultPluginRunnerTest {
     @Test
     @Order(1)
     public void fnSetBrowser() throws IOException, InvalidVarNameException, InvalidParamException, Exception {
-        for(BROWSERTYPE type:new BROWSERTYPE[]{BROWSERTYPE.FIREFOX,BROWSERTYPE.CHROME}){
+        for(BROWSERTYPE type:new BROWSERTYPE[]{BROWSERTYPE.FIREFOX,BROWSERTYPE.OPERA,BROWSERTYPE.CHROME}){
         Plugin.fnSetBrowser(type);
         //Time for the browser to start
         fnPause(4);

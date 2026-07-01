@@ -20,7 +20,7 @@ import java.util.logging.Logger;
  * Un ejecutor de cualquier acción no incluida en un script.
  * @author nesto
  */
-interface ActionRunner {
+public interface ActionRunner {
 
     /**
      * Ejecucion del script correspondiente.

@@ -20,6 +20,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 import oa.com.tests.Utils;
+import oa.com.tests.actionrunners.exceptions.BadSyntaxException;
 import oa.com.tests.actionrunners.exceptions.InvalidActionException;
 import oa.com.tests.actionrunners.exceptions.NoActionSupportedException;
 import oa.com.tests.actionrunners.interfaces.AbstractSelectorActionRunner;
@@ -53,25 +54,25 @@ public class ScrollActionRunner extends AbstractSelectorActionRunner {
     public ScrollActionRunner(TestAction action) throws NoActionSupportedException, InvalidActionException {
         super(action);
         final String command = getAction().getCommand();
-        try {
+        boolean hasXY = false;
+        //has selector param?
+        try { //has x,y arguments?
             setX(getParamInt("x", command));
-        } catch (NumberFormatException | ParseException e) {
-            setX(0);
-        }
-        try {
             setY(getParamInt("y", command));
-        } catch (NumberFormatException | ParseException e) {
-            setY(0);
+            hasXY = true;
+        } catch (NumberFormatException nfe) {
+            final String errMsg = globals.getString("ScrollRunner.attr.err.noNumbers");
+            throw new InvalidActionException(errMsg);
+        } catch (ParseException pe) {
+            System.out.println("parseExcept.");
+            final String errMsg = globals.getString("ScrollRunner.attr.err.parseEx");
+            throw new InvalidActionException(errMsg);
         }
     }
 
     private int getParamInt(String attr, final String command) throws NumberFormatException, ParseException {
         String key = ScrollActionRunner.class.getSimpleName() + ".attr." + attr;
-        String val = Utils.getJSONAttributeML(command, key);
-        if (val == null) {
-            throw new NumberFormatException("null");
-        }
-        return Integer.parseInt(val);
+        return Integer.parseInt(Utils.getJSONAttributeML(command, key));
     }
 
     @Override

@@ -1,0 +1,265 @@
+ir={https://www.wolframalpha.com/}
+
+esperar={}
+
+escribir={
+ "selector":"#__next > div > div._1MeJ._3eup > div > div > div._2Ejx > section > form > div > div > input",
+ "texto":"Constantinopla"
+}
+
+clic={ 
+  "selector":"button[type='submit']"
+}
+
+esperar={
+}
+
+pausa={"tiempo":"3 s"}
+#WebAppTester: Probador de formularios online
+#El programa utiliza Selenium para abrir un navegador web y ejecuta en �l, comandos escritos por el usuario.
+#Descargue el controlador de Selenium para su navegador favorito (recuerde revisar la versi�n de su navegador) 
+#desde https://www.selenium.dev/downloads/ y deje el controlador en la misma carpeta en que ejecutar� el programa.
+#Cada l�nea que comienza con #, no se tiene en cuenta y ser� tratada como comentario.
+#El programa lee la carpeta "scripts" y con todas las carpetas en su interior arma un �rbol.
+#El �rbol se compone de carpetas y de acciones representadas en cada uno de los archivos con extension .txt en cada carpeta
+#Si se encuentra un archivo _start.txt en una carpeta, se ejecutar� ese archivo antes de ejecutar cualquier otra acci�n en la carpeta.
+#Si se encuentra un archivo _end.txt en una carpeta, se ejecutar� ese archivo despu�s de ejecutar cualquier acci�n en la carpeta.
+#Ejemplo de estructura
+#[scripts]
+#scripts/_start.txt
+#scripts/_end.txt
+#[scripts/administracion]
+#scripts/administracion/_start.txt
+#scripts/administracion/crearpregunta.txt
+#scripts/administracion/listarpreguntas.txt
+#
+#Si desde el programa se solicita la ejecuci�n del comando "scripts/administracion/listarpreguntas", el programa ejecutar�
+#los siguientes comandos en orden:
+#scripts/_start.txt
+#scripts/administracion/_start.txt
+#scripts/administracion/listarpreguntas.txt
+#scripts/_end.txt
+#
+#Los archivos _start.txt y _end.txt no son obligatorios, son solo una forma de colocar acciones como autenticarse antes de entrar a una 
+#p�gina en la cual se ejecutar� un comando o cerrar sesi�n despu�s de salir de cierta p�gina
+#
+#Cada acci�n es un conjunto de instrucciones que ser�n ejecutadas por el navegador de internet.
+#Cada instrucci�n tiene el formato "acci�n={comando}"
+#[Acciones soportadas]
+#Descomente los ejemplos a continuaci�n para activar cada uno.
+#ir - Abre una p�gina internet. 
+#Ejemplo:
+#ir={https://duckduckgo.com/}
+#esperar - Espera a que la p�gina cargue completamente despues de un cambio de URL o despues de hacer clic en algun lado.
+#esperar� a que cierto objeto (dado su selector), aparezca o simplemente a que la p�gina cargue completa
+#Argumentos:
+# - selector : El selector para el objeto a esperar. Puede ser un selector css o xpath
+# - tipo (opcional): El tipo de selector que se est� usando: "css/xpath". Si no se especifica, se usar� css
+#Ejemplos:
+#esperar={}
+#esperar={
+#  "selector":"#duckbar",
+#}
+#esperar={
+#  "selector":"//*[@id="search_form_input_homepage"]",
+#  "tipo":"xpath"
+#}
+#escribir - Escribe texto en un componente de la pagina dado un selector css.
+#Argumentos:
+# - selector : El selector para el objeto en el cual escribir. Puede ser un selector css o xpath
+# - texto : Lo que se va a escribir en el componente
+# - tipo (opcional): El tipo de selector que se est� usando: "css/xpath". Si no se especifica, se usar� css
+#Ejemplo:
+#escribir={
+# "selector":"#search_form_input_homepage",
+# "texto":"inicio"
+#}
+#escribir={
+# "selector":"#search_form_input_homepage",
+# "tipo" : "css";
+# "texto":"inicio"
+#}
+#Puede enviar comandos especiales (ALT, F1,ENTER, ESCAPE, etc)
+#escribiendolo de la siguiente forma:
+#[%Keys.CONTROL]
+#Utilice las constantes definidas en https://www.selenium.dev/selenium/docs/api/java/org/openqa/selenium/Keys.html
+#Si requiere enviar combinaciones de comandos, puede escribirlo as�:
+#[%Keys.CONTROL,Keys.ALT]
+#Adem�s puede agregar otras letras as�:
+#[%Keys.CONTROL,Keys.ALT]r
+#Ejemplo:
+#escribir={
+# "selector":"#search_form_input_homepage",
+# "texto":"[%Keys.CONTROL,Keys.ALT]r"
+#}
+#Si necesita escribir el texto "[%", sin referirse a ning�n comando, escr�balo as�:
+#"[%%"
+#
+#clic - Hace clic en un componente de la pagina dado un selector css.
+#Argumentos:
+#- selector : (Opcional) El selector para el objeto sobre el cual hacer clic. Puede ser un selector css o xpath
+# - tipo (opcional): El tipo de selector que se est� usando: "css/xpath". Si no se especifica, se usar� css
+#Si no se especifica un selector, se lanza el evento clic donde quiera que est� ubicado el cursor.
+#Ejemplo:
+#clic={ 
+#  "selector":"#search_button_homepage"
+#}
+#
+#doble clic - Hace doble clic en algun elemento de la pagina, dado su selector.
+#Argumentos:
+#- selector : (Opcional) El selector para el objeto sobre el cual hacer doble clic. Puede ser un selector css o xpath
+# - tipo (opcional): El tipo de selector que se est� usando: "css/xpath". Si no se especifica, se usar� css
+#Si no se especifica un selector, se lanza el evento doble clic donde quiera que est� ubicado el cursor.
+#Ejemplo:
+#doble clic={
+#    "selector": "/html/body",
+#     "tipo": "xpath"
+#}
+#
+#clic derecho - Hace clic derecho en cualquier elemento de la pagina, dado su selector.
+#Argumentos:
+#- selector : (Opcional) El selector para el objeto sobre el cual hacer clic derecho. Puede ser un selector css o xpath
+# - tipo (opcional): El tipo de selector que se est� usando: "css/xpath". Si no se especifica, se usar� css
+#Si no se especifica un selector, se lanza el evento clic derecho donde quiera que est� ubicado el cursor.
+#Ejemplo:
+#clic derecho={
+#    "selector": "#Identificacion"
+#}
+#
+# ubicar puntero raton - Ubica el puntero del rat�n en una posici�n espec�fica
+#Parametros:
+ #- tipoMovimiento (opcional): Una de las siguientes opciones:
+#    FROM_UL_CORNER (por omisi�n)- Para ubicar el puntero en una posici�n relativa a la esquina superior izquierda.
+#    FROM_CUR_LOCATION - Para ubicar el puntero movi�ndolo desde su  ubicaci�n actual.
+#    FROM_CNTR_OBJECT - Para ubicarlo desde el centro de un objeto espec�fico.
+ #- x: el n�mero de pixeles a desplazar horizontalmente(>0 a la derecha, <0 a la izquierda)
+ #- y: el n�mero de pixeles a desplazar verticalmente(>0 abajo, <0 arriba)
+ #- selector (opcional): El selector para el objeto sobre el cual hacer el desplazamiento. Si no se especifica se toma la p�gina activa (body).
+#S�lo utilizar con FROM_CNTR_OBJECT
+ #- tipo (opcional): El tipo de selector que se est� usando: "css/xpath". Si no se especifica, se usar� css
+#
+#Ejemplos:
+#```
+#ubicar puntero raton={
+#    "tipoMovimiento":"FROM_UL_CORNER",
+#    "x":"150",
+#    "y":"350"
+#}
+#```
+#```
+#ubicar puntero raton={
+#    "tipoMovimiento":"FROM_CNTR_OBJECT",
+#    "x":"150",
+#    "y":"350",
+#    "selector":"img:nth-of-type(2)"
+#}
+#```
+#
+#desplazar - Realiza un desplazamiento por la pantalla horizontalmente (x) o verticalmente (Y)
+# una cierta cantidad de pixeles.
+#Argumentos:
+# - x: el n�mero de pixeles a desplazar horizontalmente(>0 a la derecha, <0 a la izquierda)
+# - y: el n�mero de pixeles a desplazar verticalmente(>0 abajo, <0 arriba)
+# - selector (opcional): El selector para el objeto sobre el cual hacer el desplazamiento. Si no se especifica se toma la p�gina activa (body)
+# - tipo (opcional): El tipo de selector que se est� usando: "css/xpath". Si no se especifica, se usar� css
+#Ejemplos:
+#
+#desplazar={
+#   "x":"0",
+#   "y":"100"
+#}
+#
+#desplazar={
+#   "x":"10",
+#   "y":"-100"
+#}
+#
+#desplazar={
+#   "x":"10",
+#   "y":"-100",
+#   "selector":"//*[@id='main-content-inner']",
+#   "tipo": "xpath"
+#}
+#
+#pausa - Espera cierto tiempo, antes de continuar con la siguiente instrucci�n.
+#Argumentos:
+#tiempo: NUMERO UNIDADES, donde UNIDADES puede tener uno de los siguientes valores: S=milisegundos,s=segundos, m=minutos, h=horas, d=dias
+#Ejemplos:
+#Para esperar 3 segundos
+#pausa={"tiempo":"3 s"}
+#Para esperar 10 minutos
+#pausa={"tiempo":"10 m"}
+#
+#seleccionar opcion - Pide al usuario seleccionar una opci�n de una lista y guarda el valor seleccionado
+#en una variable.
+#Argumentos:
+#- selector: Obligatorio. El selector css que corresponde a los elementos HTML a mostrar</ol>
+#- subselector: Opcional. Ruta complementaria, para determinar el valor de cada opci�n.
+# - tipo (opcional): El tipo de selector que se est� usando en selector y subselector:  "css/xpath". Si no se especifica, se usar� css
+#  que se mostrar� al usuario. Por omisi�n se tomar� el texto de cada elemento
+#  web asociado con la ruta en el par�metro "selector"
+#- variable: Obligatorio. Nombre de la variable que se va a asignar con el elemento que el usuario
+#  seleccione
+#- titulo: Opcional. T�tulo que tendr� la caja de texto que se va a mostrar al usuario.
+#- mensaje: Opcional. Mensaje a mostrar en la caja de texto que se va a mostrar al usuario.
+#- orden alfabetico: Opcional. ordenar alfab�ticamente las opciones a mostrar (si/no)
+#
+#Ejemplo:
+#seleccionar opcion={
+# "selector":"div.central-featured-lang",
+# "subselector": "a",
+# "orden alfabetico":"yes",
+# "titulo":"Wikipedia",
+# "mensaje":"Seleccione un lenguaje",
+# "variable":"Lenguaje"
+#}
+#
+#Asignar variable - Es una forma de guardar texto asociado a un nombre.
+#Argumentos:
+#-nombre : Nombre que tendr� la variable. Caracteres permitidos en el nombre: n�meros, letras y los signos _ -. Ejemplos:"MI_CLAVE","commentario-02"
+#-valor : El texto a ingresar en esa variable
+#
+#Ejemplo:
+#asignar={"nombre":"comentario","valor":"Me gusta esto"}
+#
+#Cambiar de navegador: Puede cambiar entre los siguientes navegadores:
+# - CHROME,
+# - EDGE,
+# - FIREFOX,
+# - INTERNET_EXPLORER,
+# - OPERA,
+# - SAFARI
+#Ejemplo:
+#navegador={SAFARI}
+#
+# Nota: al abrirse el nuevo navegador, iniciar� en la p�gina predeterminada, perdiendo cualquier navegaci�n o autenticaci�n realizada
+# previamente.
+#
+#Variables
+#Utilice variables ya definidas como parte de sus instrucciones colocando el nombre 
+#de la variable entre los signos [] as�: [:NOMBRE_VARIABLE]
+#Ejemplo:
+#clic={
+# "selector":"[:Lenguaje] > a"
+#}
+#
+#Contrase�as
+#Cuando necesite incluir alguna palabra en un comando, sin que otra persona pueda verla, utilice el bot�n 
+#"Encriptar contrase�a" de la aplicaci�n y escriba el resultado as� en su archivo de comandos:
+#[$SU_CONTRASE�A_ENCRIPTADA]
+#Recuerde: la palabra (hash) usada para desencriptar una contrase�a, var�a de un equipo a otro.
+#Ejemplo:
+#
+#escribir={
+# "selector":"#pwd",
+# "texto":"[$1nBI+Edj/WttkFqNjWZ5UQ==]"
+#}
+#
+#Problemas conocidos:
+#- Los selectores no funcionar�n dentro de elementos IFRAME.
+#
+#Referencias de Selectores: 
+# https://w3.org/wiki/CSS_/_Selectores_CSS
+# https://www.w3schools.com/cssref/css_selectors.asp
+# https://www.w3schools.com/xml/xpath_syntax.asp
+# https://docs.scrapy.org/en/latest/topics/selectors.html

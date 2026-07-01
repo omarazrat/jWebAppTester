@@ -18,16 +18,11 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import static java.util.stream.Collectors.joining;
-
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.Setter;
 import oa.com.tests.actionrunners.exceptions.BadSyntaxException;
 import oa.com.tests.actionrunners.exceptions.ExceptionList;
 import oa.com.tests.actionrunners.exceptions.InvalidActionException;
 import oa.com.tests.actionrunners.exceptions.NoActionSupportedException;
 import oa.com.tests.actionrunners.interfaces.AbstractDefaultScriptActionRunner;
-import oa.com.tests.actionrunners.interfaces.PathKeeper;
 import oa.com.tests.actionrunners.interfaces.ScriptActionRunner;
 import oa.com.tests.actions.TestAction;
 import static oa.com.tests.globals.ActionRunnerManager.detectRunner;
@@ -38,7 +33,6 @@ import static oa.com.tests.globals.ActionRunnerManager.testIterativeCommand;
 import static oa.com.tests.plugins.AbstractDefaultPluginRunner.parse;
 import oa.com.tests.scriptactionrunners.EndActionRunner;
 import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
 
 /**
  *
@@ -46,9 +40,7 @@ import org.openqa.selenium.WebElement;
  */
 public abstract class AbstractIteratorActionRunner
         extends AbstractDefaultScriptActionRunner {
-    @Setter(AccessLevel.PROTECTED)
-    @Getter(AccessLevel.PROTECTED)
-    private WebDriver driver;
+
     private int openedContexts = 0;
     private String absolutePath;
     private Logger log;
@@ -110,56 +102,37 @@ public abstract class AbstractIteratorActionRunner
 
     @Override
     public void run(WebDriver driver) throws Exception {
-        setDriver(driver);
         List<Exception> resp = new LinkedList<>();
         while (iterate(driver)) {
             for (int i = 0; i < instructions.size(); i++) {
-                String actionCommand;
+                String rawCommand = instructions.get(i);
                 try {
-                    actionCommand = parse(instructions.get(i));
-                } catch (Exception ex) {
-                    log.log(Level.SEVERE, "Error parsing instruction: {0}", instructions.get(i));
-                    log.log(Level.SEVERE, ex.getMessage(), ex);
-                    BadSyntaxException badSyntaxException = new BadSyntaxException(prepareBadSystaxExMsg(instructions.get(i), absolutePath));
-                    resp.add(badSyntaxException);
-                    continue;
-                }
-                ScriptActionRunner runner = null;
-                //Runner detection 
-                try {
-                    runner = detectRunner(actionCommand, absolutePath, log);
-                } catch (NoActionSupportedException nase) {
-                    resp.add(nase);
-                }
-                if (runner == null) {
-                    continue;
-                }
+                    String actionCommand = parse(rawCommand);
+                    ScriptActionRunner runner = null;
+                    try {
+                        runner = detectRunner(actionCommand, absolutePath, log);
+                    } catch (NoActionSupportedException nase) {
+                        resp.add(nase);
+                    }
+                    if (runner == null) {
+                        continue;
+                    }
 
-                try {
                     final boolean isIterator = runner instanceof AbstractIteratorActionRunner;
                     if (isIterator) {
                         AbstractIteratorActionRunner iterator = (AbstractIteratorActionRunner) runner;
                         iterator.prepare(driver);
-                        i += iterator.seed(instructions.subList(i+1, instructions.size() - 1), absolutePath, log);
+                        i += iterator.seed(instructions.subList(i + 1, instructions.size() - 1), absolutePath, log);
                     }
-                    //runner execution
                     execRunner(runner, log);
                 } catch (Exception ex) {
-                    BadSyntaxException badSyntaxException = new BadSyntaxException(prepareBadSystaxExMsg(actionCommand, absolutePath));
-                    log.log(Level.SEVERE, actionCommand, ex);
+                    BadSyntaxException badSyntaxException = new BadSyntaxException(prepareBadSystaxExMsg(rawCommand, absolutePath));
+                    log.log(Level.SEVERE, rawCommand, ex);
                     resp.add(badSyntaxException);
                 }
             }
         }
     }
-
-    /**
-     * Obtiene un elemento Web, que cambia en cada iteraci�n
-     * @param driver
-     * @return El elemento especificado internamente con alg�n {@link PathKeeper}
-     * @throws BadSyntaxException
-     */
-    protected abstract WebElement getWebElement(WebDriver driver) throws BadSyntaxException ;
 
     private void addInstruction(String actionCommand) {
         instructions.add(actionCommand);

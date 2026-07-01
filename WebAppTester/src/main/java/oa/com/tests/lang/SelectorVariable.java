@@ -13,25 +13,36 @@
  */
 package oa.com.tests.lang;
 
-import lombok.*;
+import lombok.Data;
 import oa.com.tests.actionrunners.interfaces.PathKeeper;
+import oa.com.utils.WebUtils;
 import org.openqa.selenium.WebElement;
 
 /**
  *
  * @author nesto
  */
-@Getter
-@Setter
-@ToString(callSuper = true)
+@Data
 public class SelectorVariable extends Variable{
-    /**
-     * Ruta Css para llegar a este objeto
-     */
     private PathKeeper finder;
+    private WebElement value;
+    private String cachedText;
+    private String cachedCss;
+    private String cachedHref;
 
-    public SelectorVariable(String name,PathKeeper selector,WebElement value) {
-        super(TYPE.WEB_SELECTOR,name,value);
-        setFinder(selector);
+    public SelectorVariable(WebElement value, String name, PathKeeper selector) {
+        super(TYPE.WEB_SELECTOR);
+        this.value = value;
+        this.finder = selector;
+        this.name = name;
+        this.cachedText = value != null ? value.getText() : "";
+        this.cachedCss = selector != null ? selector.getPath() : (value != null ? WebUtils.generateCSS(value) : "");
+        this.cachedHref = value != null ? value.getAttribute("href") : "";
     }
+
+    @Override
+    public boolean equals(Object o) {
+        return super.equals(o);
+    }
+    
 }

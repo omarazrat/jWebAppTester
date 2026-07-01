@@ -1,398 +1,290 @@
-# jWebAppTester
-
-WebAppTester: Tester for online forms / Probador de formularios online / 在线表单测试工具
-
-This program uses Selenium to open a web browser and run user-written commands.
-
----
+**jWebAppTester**
 
 ## English
 
-### Overview
-WebAppTester executes script files containing commands that control a web browser.  
-Commands follow the format: `action={json_params}`
+WebAppTester: Web form tester using Selenium.
 
-### Script File Format
-- Lines starting with `#` are comments.
-- Empty lines are ignored.
-- Multi-line commands are joined until valid JSON is formed.
-- Files are read from the `scripts/` folder.
+### Variable Resolution
 
-### Variables
-- `[:varname]` — Runtime variable (set via `set` command)
-- `[:varname:text]` — Variable resolved as text (default)
-- `[:varname:path]` — Variable resolved as CSS/XPath path
-- `[:varname:href]` — Variable resolved as element's `href` attribute (from `for` loops with selector)
-- `[%Keys.xxx%]` — Special keys (CONTROL, ESCAPE, TAB, ENTER, etc.)
-- `[$encrypted]` — Decrypted password (use `Crypt password` button to generate)
+`set` stores a variable. How it's resolved depends on the parameters:
 
-### Command Reference
-
-| Action | Command | Description | JSON Parameters |
-|--------|---------|-------------|----------------|
-| **go** | `go={url}` | Navigate to URL | `url` as plain text inside `{}` |
-| **click** | `click={...}` | Click on element | `"selector"` (CSS/XPath), `"type"` (css/xpath) |
-| **double click** | `double click={...}` | Double-click on element | `"selector"`, `"type"` |
-| **right click** | `right click={...}` | Right-click on element | `"selector"`, `"type"` |
-| **write** | `write={...}` | Type text into element | `"selector"`, `"type"`, `"text"` |
-| **wait** | `wait={...}` | Wait for element to appear | `"selector"`, `"type"` (default: `body`) |
-| **pause** | `pause={...}` | Pause execution | `"time"` (e.g., `5s`, `100S`, `2m`, `1h`, `1d`) |
-| **scroll** | `scroll={...}` | Scroll page or element | `"x"`, `"y"`, `"selector"` (optional) |
-| **set** | `set={...}` | Set a variable | `"name"`/`"var"`, `"value"` (string), or `"selector"` + `"type"` (extracts text), or `"script"` (JavaScript result) |
-| **browser** | `browser={...}` | Switch browser | browser type as plain text: `CHROME`, `EDGE`, `FIREFOX` |
-| **for** | `for={...}` | Iterative loop | `"var"`, `"exp"` (range `{1..10}` or space-separated list) |
-| **end** | `end={}` | End iterative block | (no parameters) |
-| **place mouse pointer** | `place mouse pointer={...}` | Move mouse | `"x"`, `"y"`, `"offsetType"` (FROM_UL_CORNER / FROM_CNTR_OBJECT / FROM_CUR_LOCATION) |
-| **pick choice** | `pick choice={...}` | Show selection dialog | `"selector"`, `"subselector"`, `"variable"`, `"title"`, `"message"`, `"sorted"` |
-
-### Examples
-
+**set with `"value"` (plain string):**
 ```
-# Navigate to a website
-go={https://example.com}
+set={"name":"myvar","value":"hello"}
+```
+→ `[:myvar]` resolves to `"hello"`
 
-# Click on a button
-click={"selector":"#submit-btn"}
+**set with `"value"` + `"type"` (CSS/XPath selector, stores a WebElement):**
+```
+set={"name":"elem","value":"div.title","type":"css"}
+```
+→ `[:elem]` → element's text
+→ `[:elem:text]` → element's text
+→ `[:elem:css]` → CSS selector path
+→ `[:elem:href]` (or any attribute) → `getAttribute("href")`
 
-# Type into a text field
-write={"selector":"#username","text":"admin"}
+**set with `"selector"` (extracts text from element):**
+```
+set={"name":"title","selector":"h1.title"}
+```
+→ `[:title]` → text of h1.title
 
-# Wait for element to load
-wait={"selector":".result-table"}
+**set with `"selector"` + `"parent"` (scoped within a parent element):**
+```
+for={"selector":"ul.items > li","var":"item"}
+    set={"name":"title","selector":"a.link","parent":"item"}
+```
+→ `[:title]` → text of `a.link` inside each `<li>`
 
-# Pause for 2 seconds
-pause={"time":"2s"}
+The `parent` parameter uses the parent variable's cached CSS path, concatenated with the child selector (`#parent-item-css a.link`), resolved by `driver.findElement()`. No parent WebElement is needed.
 
-# Set a string variable
-set={"name":"url","value":"https://example.com"}
+**set with `"selector"` + `"parent"` + `"attr"` (extract attribute):**
+```
+set={"name":"url","selector":"a.link","parent":"item","attr":"href"}
+```
+→ `[:url]` → href value of a.link
 
-# Set a variable from element text (CSS selector, type defaults to css)
-set={"name":"profesion","selector":".col-lg-9 > div:nth-child(1) > div:nth-child(2) > div:nth-child(1) > span:nth-child(1)"}
+### Tab Commands
 
-# Set a variable from element text (explicit type)
-set={"name":"heading","selector":"#main-title","type":"css"}
+Each command accepts an optional `"tab":"id"` parameter to execute in a different tab without switching global context:
 
-# Set a variable from element text using XPath
-set={"name":"price","selector":"//span[@class='price']","type":"xpath"}
-
-# Set a variable by executing JavaScript (React SPAs)
-set={"name":"price","script":"return window.__APP_INITIAL_STATE__.productData.priceInfo.regularPrice;"}
-
-# Use a variable
-go={[:url]}
-
-# Scroll 100 pixels down
-scroll={"x":0,"y":100}
-
-# Double-click on an element
-double click={"selector":"#item1"}
-
-# Right-click
-right click={"selector":"#context-menu"}
-
-# Loop from 1 to 5
-for={"var":"i","exp":"{1..5}"}
-    click={"selector":"#row-[:i]"}
-end={}
-
-# Loop over a list
-for={"var":"name","exp":"Alice Bob Charlie"}
-    write={"selector":"#name","text":"[:name]"}
-end={}
-
-# Iterate over elements and extract href attributes
-for={"var":"product","selector":"div.owned-brands__container div.card a"}
-	go={[:product:href]}
-end={}
-
-# Switch browser
-browser={FIREFOX}
-
-# Pick a choice from a list
-pick choice={
-    "selector":"div.options",
-    "subselector":"a",
-    "variable":"selected",
-    "title":"Select an option",
-    "message":"Please choose:"
-}
-
-# Move mouse to coordinates
-place mouse pointer={"x":100,"y":200}
-
-# Encrypted password
-write={"selector":"#pass","text":"[$AbCdEf12345]"}
+**newtab** / **nuevapestaña** — Opens URL in a new tab and registers it:
+```
+newtab={"url":"https://example.com","id":"exTab"}
 ```
 
-### Supported Browsers
-- `CHROME` — Google Chrome
-- `EDGE` — Microsoft Edge
-- `FIREFOX` — Mozilla Firefox
-- `INTERNET_EXPLORER` — Internet Explorer
-- `SAFARI` — Apple Safari
+**closetab** / **cerrarpestaña** — Closes a tab by id:
+```
+closetab={"id":"exTab"}
+```
 
-### Selenium IDE Import
-You can import Selenium IDE (.side) files using the "Load Selenium IDE script" button.
+**tab** / **pestaña** — Switches the global context to a registered tab:
+```
+tab={"id":"exTab"}
+```
 
-### Password Encryption
-Use the "Crypt password" button to generate encrypted strings for use with `[$...]` syntax.
+### For Loop
+
+Iterates over CSS selector matches, creating a loop variable for each:
+```
+for={"selector":"ul.items > li","var":"item"}
+    set={"name":"title","selector":"a.link","parent":"item"}
+end={}
+```
+
+The loop variable (`item`) caches `text`, `css` path, and `href` at creation time, then releases the WebElement:
+- `[:item]` or `[:item:text]` → element's text (cached fallback if stale)
+- `[:item:css]` → CSS selector path
+- `[:item:href]` → href attribute
+- `parent:"item"` → uses cached CSS + child selector concatenation via `driver.findElement()`
+
+The cache enables variable access even after page navigation (e.g., Ocupacol profile fetch). Parent scoping uses CSS path concatenation, so no WebElement reference is kept.
+
+### Fetch
+
+Makes an HTTP GET request to a JSON API and stores fields as variables:
+```
+fetch={"url":"[:url]","regex":"id-(\\d+)","baseUrl":"https://api.example.com/","params":{"include":"relation1,relation2"},"byPath":{"name":"data.attributes.name","relName":"included.eplan_catalog_entries.{data.relationships.rel.data.id}.attributes.name"},"prefix":""}
+```
+- `url` — source URL (extracted from a link attribute)
+- `regex` — extracts group(1) from url to build the API call
+- `baseUrl` — prepended to the extracted group to form the final URL
+- `params` — optional JSON object appended as URL query string (e.g., `?include=...`)
+- `byPath` — dot-separated JSON paths mapped to variable names. Use `included.{type}.{id|{ref}}.rest` to access the JSON:API `included` array, where `{ref}` is a sub-path resolved against the root. Example: `included.eplan_catalog_entries.{data.relationships.product_group.data.id}.attributes.name` resolves the catalog entry ID dynamically and fetches its `name`.
+- `prefix` — optional prefix for variable names (e.g., `prefix:"p"` → `[:p_name]`)
 
 ---
 
 ## Español
 
-### Descripción General
-WebAppTester ejecuta archivos de script que contienen comandos para controlar un navegador web.  
-Los comandos siguen el formato: `acción={parámetros_json}`
+WebAppTester: Probador de formularios web mediante Selenium.
 
-### Formato de Archivo de Script
-- Las líneas que comienzan con `#` son comentarios.
-- Las líneas vacías se ignoran.
-- Los comandos multilínea se unen hasta formar un JSON válido.
-- Los archivos se leen desde la carpeta `scripts/`.
+### Resolución de Variables
 
-### Variables
-- `[:nombre]` — Variable de ejecución (establecida con el comando `asignar`)
-- `[:nombre:texto]` — Variable resuelta como texto (predeterminado)
-- `[:nombre:ruta]` — Variable resuelta como ruta CSS/XPath
-- `[:nombre:href]` — Variable resuelta como el atributo `href` del elemento (desde bucles `for` con selector)
-- `[%Keys.xxx%]` — Teclas especiales (CONTROL, ESCAPE, TAB, ENTER, etc.)
-- `[$encriptado]` — Contraseña desencriptada (use el botón `Encriptar contraseña` para generar)
+`set` almacena una variable. Su resolución depende de los parámetros:
 
-### Referencia de Comandos
-
-| Acción | Comando | Descripción | Parámetros JSON |
-|--------|---------|-------------|-----------------|
-| **ir** | `ir={url}` | Navegar a URL | `url` como texto plano dentro de `{}` |
-| **clic** | `clic={...}` | Clic en elemento | `"selector"` (CSS/XPath), `"tipo"` (css/xpath) |
-| **doble clic** | `doble clic={...}` | Doble clic en elemento | `"selector"`, `"tipo"` |
-| **clic derecho** | `clic derecho={...}` | Clic derecho en elemento | `"selector"`, `"tipo"` |
-| **escribir** | `escribir={...}` | Escribir texto en elemento | `"selector"`, `"tipo"`, `"texto"` |
-| **esperar** | `esperar={...}` | Esperar a que aparezca elemento | `"selector"`, `"tipo"` (predeterminado: `body`) |
-| **pausa** | `pausa={...}` | Pausar ejecución | `"tiempo"` (ej: `5s`, `100S`, `2m`, `1h`, `1d`) |
-| **desplazar** | `desplazar={...}` | Desplazar página o elemento | `"x"`, `"y"`, `"selector"` (opcional) |
-| **asignar** | `asignar={...}` | Establecer una variable | `"nombre"`/`"var"`, `"valor"` (texto), o `"selector"` + `"tipo"` (extrae texto), o `"script"` (resultado JavaScript) |
-| **navegador** | `navegador={...}` | Cambiar de navegador | tipo de navegador como texto plano: `CHROME`, `EDGE`, `FIREFOX` |
-| **for** | `for={...}` | Bucle iterativo | `"var"`, `"exp"` (rango `{1..10}` o lista separada por espacios) |
-| **end** | `end={}` | Fin del bloque iterativo | (sin parámetros) |
-| **ubicar puntero raton** | `ubicar puntero raton={...}` | Mover el ratón | `"x"`, `"y"`, `"tipoMovimiento"` (FROM_UL_CORNER / FROM_CNTR_OBJECT / FROM_CUR_LOCATION) |
-| **seleccionar opcion** | `seleccionar opcion={...}` | Mostrar diálogo de selección | `"selector"`, `"subselector"`, `"variable"`, `"titulo"`, `"mensaje"`, `"ordenado"` |
-
-### Ejemplos
-
+**set con `"value"` (texto plano):**
 ```
-# Navegar a un sitio web
-ir={https://ejemplo.com}
+set={"name":"myvar","value":"hola"}
+```
+→ `[:myvar]` se resuelve a `"hola"`
 
-# Hacer clic en un botón
-clic={"selector":"#btn-enviar"}
+**set con `"value"` + `"type"` (selector CSS/XPath, almacena un WebElement):**
+```
+set={"name":"elem","value":"div.title","type":"css"}
+```
+→ `[:elem]` → texto del elemento
+→ `[:elem:text]` → texto del elemento
+→ `[:elem:css]` → ruta del selector CSS
+→ `[:elem:href]` (o cualquier atributo) → `getAttribute("href")`
 
-# Escribir en un campo de texto
-escribir={"selector":"#usuario","texto":"admin"}
+**set con `"selector"` (extrae texto del elemento):**
+```
+set={"name":"titulo","selector":"h1.title"}
+```
+→ `[:titulo]` → texto de h1.title
 
-# Esperar a que cargue un elemento
-esperar={"selector":".tabla-resultados"}
+**set con `"selector"` + `"parent"` (búsqueda dentro de un elemento padre):**
+```
+for={"selector":"ul.items > li","var":"item"}
+    set={"name":"titulo","selector":"a.link","parent":"item"}
+```
+→ `[:titulo]` → texto de `a.link` dentro de cada `<li>`
 
-# Pausar por 2 segundos
-pausa={"tiempo":"2s"}
+El parámetro `parent` usa el CSS cacheado de la variable padre, concatenado con el selector hijo (`#css-padre a.link`), resuelto por `driver.findElement()`. No necesita el WebElement padre.
 
-# Establecer una variable de texto
-asignar={"nombre":"url","valor":"https://ejemplo.com"}
+**set con `"selector"` + `"parent"` + `"attr"` (extrae atributo):**
+```
+set={"name":"url","selector":"a.link","parent":"item","attr":"href"}
+```
+→ `[:url]` → valor del href de a.link
 
-# Extraer texto de un elemento CSS
-asignar={"nombre":"profesion","selector":".col-lg-9 > div:nth-child(1) > div:nth-child(2) > span"}
+### Comandos de Pestañas
 
-# Extraer texto con XPath
-asignar={"nombre":"titulo","selector":"//h1","tipo":"xpath"}
+Cada comando acepta un parámetro opcional `"tab":"id"` para ejecutar en una pestaña diferente sin cambiar el contexto global:
 
-# Establecer variable ejecutando JavaScript (SPA React)
-asignar={"nombre":"precio","script":"return window.__APP_INITIAL_STATE__.productData.priceInfo.regularPrice;"}
-
-# Usar una variable
-ir={[:url]}
-
-# Desplazar 100 píxeles hacia abajo
-desplazar={"x":0,"y":100}
-
-# Doble clic en un elemento
-doble clic={"selector":"#item1"}
-
-# Clic derecho
-clic derecho={"selector":"#menu-contextual"}
-
-# Bucle del 1 al 5
-for={"var":"i","exp":"{1..5}"}
-    clic={"selector":"#fila-[:i]"}
-end={}
-
-# Bucle sobre una lista
-for={"var":"nombre","exp":"Ana Juan Carlos"}
-    escribir={"selector":"#nombre","texto":"[:nombre]"}
-end={}
-
-# Iterar sobre elementos y extraer atributos href
-for={"var":"producto","selector":"div.owned-brands__container div.card a"}
-	ir={[:producto:href]}
-end={}
-
-# Cambiar de navegador
-navegador={FIREFOX}
-
-# Seleccionar una opción de una lista
-seleccionar opcion={
-    "selector":"div.opciones",
-    "subselector":"a",
-    "variable":"seleccionado",
-    "titulo":"Seleccione una opción",
-    "mensaje":"Por favor elija:"
-}
-
-# Mover el ratón a coordenadas
-ubicar puntero raton={"x":100,"y":200}
-
-# Contraseña encriptada
-escribir={"selector":"#pass","texto":"[$AbCdEf12345]"}
+**newtab** / **nuevapestaña** — Abre URL en nueva pestaña y la registra:
+```
+nuevapestaña={"url":"https://example.com","id":"exTab"}
 ```
 
-### Navegadores Soportados
-- `CHROME` — Google Chrome
-- `EDGE` — Microsoft Edge
-- `FIREFOX` — Mozilla Firefox
-- `INTERNET_EXPLORER` — Internet Explorer
-- `SAFARI` — Apple Safari
+**closetab** / **cerrarpestaña** — Cierra una pestaña por su id:
+```
+cerrarpestaña={"id":"exTab"}
+```
 
-### Importación de Selenium IDE
-Puede importar archivos Selenium IDE (.side) usando el botón "Cargar script de Selenium IDE".
+**tab** / **pestaña** — Cambia el contexto global a una pestaña registrada:
+```
+pestaña={"id":"exTab"}
+```
 
-### Encriptación de Contraseñas
-Use el botón "Encriptar contraseña" para generar cadenas encriptadas para usar con la sintaxis `[$...]`.
+### Bucle For
+
+Itera sobre elementos que coinciden con un selector CSS, creando una variable de bucle para cada uno:
+```
+for={"selector":"ul.items > li","var":"item"}
+    set={"name":"title","selector":"a.link","parent":"item"}
+end={}
+```
+
+La variable de bucle (`item`) cachea `text`, `css` y `href` al crearse, y luego libera el WebElement:
+- `[:item]` o `[:item:text]` → texto del elemento (usa cache si está stale)
+- `[:item:css]` → ruta del selector CSS
+- `[:item:href]` → atributo href
+- `parent:"item"` → usa CSS cacheado + selector hijo concatenado, resuelto por `driver.findElement()`
+
+El cache permite acceder a la variable incluso tras navegar a otra página. El scoping padre-hijo usa concatenación de CSS, por lo que no se conserva ninguna referencia al WebElement.
+
+### Fetch
+
+Hace una petición HTTP GET a una API JSON y guarda campos como variables:
+```
+fetch={"url":"[:url]","regex":"id-(\\d+)","baseUrl":"https://api.example.com/","params":{"include":"relation1,relation2"},"byPath":{"name":"data.attributes.name","relName":"included.eplan_catalog_entries.{data.relationships.rel.data.id}.attributes.name"},"prefix":""}
+```
+- `url` — URL de origen (extraída de un atributo de enlace)
+- `regex` — extrae group(1) de la url para construir la llamada API
+- `baseUrl` — se antepone al grupo extraído para formar la URL final
+- `params` — objeto JSON opcional que se añade como query string a la URL (ej. `?include=...`)
+- `byPath` — rutas JSON separadas por punto mapeadas a nombres de variable. Usa `included.{type}.{id|{ref}}.rest` para acceder al array `included` de JSON:API, donde `{ref}` es una sub-ruta resuelta contra la raíz. Ejemplo: `included.eplan_catalog_entries.{data.relationships.product_group.data.id}.attributes.name` resuelve dinámicamente el ID del catálogo y obtiene su `name`.
+- `prefix` — prefijo opcional para nombres de variable (ej. `prefix:"p"` → `[:p_name]`)
 
 ---
 
 ## 中文
 
-### 概述
-WebAppTester 执行包含浏览器控制命令的脚本文件。  
-命令格式：`操作={json参数}`
+WebAppTester: 基于 Selenium 的网页表单测试工具。
 
-### 脚本文件格式
-- 以 `#` 开头的行为注释。
-- 空行将被忽略。
-- 多行命令会合并直到形成有效的 JSON。
-- 文件从 `scripts/` 文件夹读取。
+### 变量解析
 
-### 变量
-- `[:变量名]` — 运行时变量（通过设置命令创建）
-- `[:变量名:文字]` — 解析为文本的变量（默认）
-- `[:变量名:路径]` — 解析为 CSS/XPath 路径的变量
-- `[:变量名:href]` — 解析为元素 `href` 属性的变量（来自带选择器的 `循环`）
-- `[%Keys.xxx%]` — 特殊按键（CONTROL、ESCAPE、TAB、ENTER 等）
-- `[$加密文本]` — 解密后的密码（使用加密密码按钮生成）
-
-### 命令参考
-
-| 操作 | 命令 | 描述 | JSON 参数 |
-|------|------|------|-----------|
-| **访问** | `访问={网址}` | 导航到网址 | 网址为 `{}` 内的纯文本 |
-| **单击** | `单击={...}` | 单击元素 | `"选择器"` (CSS/XPath), `"类型"` (css/xpath) |
-| **双击** | `双击={...}` | 双击元素 | `"选择器"`, `"类型"` |
-| **右击** | `右击={...}` | 右键单击元素 | `"选择器"`, `"类型"` |
-| **写入** | `写入={...}` | 在元素中输入文本 | `"选择器"`, `"类型"`, `"文本"` |
-| **等待** | `等待={...}` | 等待元素出现 | `"选择器"`, `"类型"` (默认: `body`) |
-| **暂停** | `暂停={...}` | 暂停执行 | `"时间"` (例如: `5s`, `100S`, `2m`, `1h`, `1d`) |
-| **滚动** | `滚动={...}` | 滚动页面或元素 | `"x"`, `"y"`, `"选择器"` (可选) |
-| **设置** | `设置={...}` | 设置变量 | `"名称"`/`"变量"`, `"值"` (文本), 或 `"选择器"` + `"类型"` (提取文本), 或 `"脚本"` (JavaScript 结果) |
-| **浏览器** | `浏览器={...}` | 切换浏览器 | 浏览器类型为纯文本: `CHROME`, `EDGE`, `FIREFOX` |
-| **循环** | `循环={...}` | 迭代循环 | `"变量"`, `"表达式"` (范围 `{1..10}` 或空格分隔列表) |
-| **结束** | `结束={}` | 结束迭代块 | (无参数) |
-| **移动鼠标** | `移动鼠标={...}` | 移动鼠标 | `"x"`, `"y"`, `"偏移类型"` (FROM_UL_CORNER / FROM_CNTR_OBJECT / FROM_CUR_LOCATION) |
-| **选择选项** | `选择选项={...}` | 显示选择对话框 | `"选择器"`, `"子选择器"`, `"变量"`, `"标题"`, `"消息"`, `"排序"` |
-
-### 示例
-
+**带 `"value"` 的 set（纯文本）：**
 ```
-# 导航到网站
-访问={https://example.com}
+set={"name":"myvar","value":"hello"}
+```
+→ `[:myvar]` 解析为 `"hello"`
 
-# 单击按钮
-单击={"选择器":"#submit-btn"}
+**带 `"value"` + `"type"` 的 set（CSS/XPath 选择器，存储 WebElement）：**
+```
+set={"name":"elem","value":"div.title","type":"css"}
+```
+→ `[:elem]` → 元素的文本
+→ `[:elem:text]` → 元素的文本
+→ `[:elem:css]` → CSS 选择器路径
+→ `[:elem:href]`（或任何属性）→ `getAttribute("href")`
 
-# 在文本框中输入
-写入={"选择器":"#username","文本":"admin"}
+**带 `"selector"` 的 set（提取元素文本）：**
+```
+set={"name":"title","selector":"h1.title"}
+```
+→ `[:title]` → h1.title 的文本
 
-# 等待元素加载
-等待={"选择器":".result-table"}
+**带 `"selector"` + `"parent"` 的 set（在父元素内查找）：**
+```
+for={"selector":"ul.items > li","var":"item"}
+    set={"name":"title","selector":"a.link","parent":"item"}
+```
+→ `[:title]` → 每个 `<li>` 中 `a.link` 的文本
 
-# 暂停 2 秒
-暂停={"时间":"2s"}
+`parent` 参数使用父变量的缓存 CSS 路径，与子选择器拼接（`#父元素-css a.link`），由 `driver.findElement()` 解析。无需父元素的 WebElement。
 
-# 设置字符串变量
-设置={"名称":"url","值":"https://example.com"}
+**带 `"selector"` + `"parent"` + `"attr"` 的 set（提取属性）：**
+```
+set={"name":"url","selector":"a.link","parent":"item","attr":"href"}
+```
+→ `[:url]` → a.link 的 href 值
 
-# 从 CSS 元素提取文本
-设置={"名称":"profesion","选择器":".col-lg-9 > div:nth-child(1) > div:nth-child(2) > span"}
+### 标签页命令
 
-# 使用 XPath 提取文本
-设置={"名称":"标题","选择器":"//h1","类型":"xpath"}
+每个命令可接受可选的 `"tab":"id"` 参数以在不同标签页中执行，无需切换全局上下文：
 
-# 通过执行 JavaScript 设置变量 (React SPA)
-设置={"名称":"价格","脚本":"return window.__APP_INITIAL_STATE__.productData.priceInfo.regularPrice;"}
-
-# 使用变量
-访问={[:url]}
-
-# 向下滚动 100 像素
-滚动={"x":0,"y":100}
-
-# 双击元素
-双击={"选择器":"#item1"}
-
-# 右键单击
-右击={"选择器":"#context-menu"}
-
-# 从 1 循环到 5
-循环={"变量":"i","表达式":"{1..5}"}
-    单击={"选择器":"#row-[:i]"}
-结束={}
-
-# 遍历列表
-循环={"变量":"name","表达式":"Alice Bob Charlie"}
-    写入={"选择器":"#name","文本":"[:name]"}
-结束={}
-
-# 遍历元素并提取 href 属性
-循环={"变量":"产品","选择器":"div.owned-brands__container div.card a"}
-    访问={[:产品:href]}
-结束={}
-
-# 切换浏览器
-浏览器={FIREFOX}
-
-# 从列表中选择选项
-选择选项={
-    "选择器":"div.options",
-    "子选择器":"a",
-    "变量":"selected",
-    "标题":"选择选项",
-    "消息":"请选择："
-}
-
-# 将鼠标移动到坐标
-移动鼠标={"x":100,"y":200}
-
-# 加密密码
-写入={"选择器":"#pass","文本":"[$AbCdEf12345]"}
+**newtab** / **nuevapestaña** — 在新标签页中打开 URL 并注册：
+```
+newtab={"url":"https://example.com","id":"exTab"}
 ```
 
-### 支持的浏览器
-- `CHROME` — 谷歌浏览器
-- `EDGE` — 微软 Edge
-- `FIREFOX` — 火狐浏览器
-- `INTERNET_EXPLORER` — 互联网浏览器
-- `SAFARI` — 苹果 Safari
+**closetab** / **cerrarpestaña** — 按 ID 关闭标签页：
+```
+closetab={"id":"exTab"}
+```
 
-### Selenium IDE 导入
-您可以使用"加载 Selenium IDE 脚本"按钮导入 Selenium IDE（.side）文件。
+**tab** / **pestaña** — 将全局上下文切换到已注册的标签页：
+```
+tab={"id":"exTab"}
+```
 
-### 密码加密
-使用"加密密码"按钮生成加密字符串，用于 `[$...]` 语法。
+### 按标签提取
+
+通过匹配标签文本从详情表中提取值：
+```
+extract={"prefix":"p","byLabel":{"name":"名称","desc":"描述"}}
+```
+创建变量 `p_name`、`p_desc`，值为对应单元格的内容。
+
+### For 循环
+
+遍历 CSS 选择器匹配的元素，为每个元素创建循环变量：
+```
+for={"selector":"ul.items > li","var":"item"}
+    set={"name":"title","selector":"a.link","parent":"item"}
+end={}
+```
+
+循环变量 (`item`) 在创建时缓存了 `text`、`css` 路径和 `href`，然后释放 WebElement：
+- `[:item]` 或 `[:item:text]` → 元素文本（元素失效时使用缓存值）
+- `[:item:css]` → CSS 选择器路径
+- `[:item:href]` → href 属性
+- `parent:"item"` → 使用缓存 CSS + 子选择器拼接，由 `driver.findElement()` 解析
+
+缓存机制确保即使页面导航后仍可访问变量值。父-子作用域使用 CSS 路径拼接，因此不保留任何 WebElement 引用。
+
+### Fetch
+
+向 JSON API 发送 HTTP GET 请求，并将字段存储为变量：
+```
+fetch={"url":"[:url]","regex":"id-(\\d+)","baseUrl":"https://api.example.com/","params":{"include":"relation1,relation2"},"byPath":{"name":"data.attributes.name","relName":"included.eplan_catalog_entries.{data.relationships.rel.data.id}.attributes.name"},"prefix":""}
+```
+- `url` — 源 URL（从链接属性中提取）
+- `regex` — 从 url 提取 group(1) 以构建 API 调用
+- `baseUrl` — 前置到提取的 group 以形成最终 URL
+- `params` — 可选的 JSON 对象，将作为 URL 查询字符串附加（例如 `?include=...`）
+- `byPath` — 点分隔的 JSON 路径映射到变量名。使用 `included.{type}.{id|{ref}}.rest` 访问 JSON:API 的 `included` 数组，其中 `{ref}` 是一个子路径，相对于根解析。示例：`included.eplan_catalog_entries.{data.relationships.product_group.data.id}.attributes.name` 动态解析目录条目 ID 并获取其 `name`。
+- `prefix` — 变量名的可选前缀（例如 `prefix:"p"` → `[:p_name]`）

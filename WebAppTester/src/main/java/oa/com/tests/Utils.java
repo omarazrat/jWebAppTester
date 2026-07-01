@@ -14,11 +14,24 @@
 package oa.com.tests;
 
 import oa.com.tests.globals.ActionRunnerManager;
-import java.io.*;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.io.StringReader;
+import java.io.StringWriter;
+import java.io.Writer;
 import java.net.URL;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.util.*;
+import java.util.ArrayDeque;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Queue;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.logging.Level;
@@ -27,20 +40,7 @@ import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toList;
 import javax.swing.tree.TreePath;
 import oa.com.utils.I18n;
-import org.apache.commons.cli.CommandLine;
-import org.apache.commons.cli.CommandLineParser;
-import org.apache.commons.cli.DefaultParser;
-import org.apache.commons.cli.Options;
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.velocity.Template;
-import org.apache.velocity.VelocityContext;
-import org.apache.velocity.app.Velocity;
-import org.apache.velocity.app.VelocityEngine;
-import org.apache.velocity.context.Context;
-import org.apache.velocity.exception.ResourceNotFoundException;
-import org.apache.velocity.runtime.RuntimeConstants;
-import org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
@@ -443,122 +443,5 @@ public abstract class Utils {
             }
         }
         return null;
-    }
-
-    /**
-     * Crea un nuevo proyecto a partir de los par�metros dados.
-     * @param args
-     * -d carpeta en la cual crear el proyecto. Por omisi�n: ${user.home}
-     * -a -artifact Artefacto de Maven para esta implementaci�n. Por omisi�n: ${user.name}.Plugin
-     * -g -group Grupo del artefacto maven a crear. Por omisi�n: "oa.com.tests"
-     * -v -version Version de Java con la cual compilar. M�nimo 18, m�ximo 26
-     * -l -lang Lenguaje a utilizar para la generaci�n del plugin. Soportados: es, en, fr, zh. Por omisi�n: en
-     */
-    public static void main(String [] args) throws IOException, org.apache.commons.cli.ParseException {
-        String strArgs = Arrays.stream(args).collect(joining(" "));
-        final String defaultFolder = System.getProperty("user.home"),
-                userName = System.getProperty("user.name"),
-                slash = System.getProperty("file.separator"),
-                defaultJavaVersion = "26",
-                defaultLanguage = "en",
-                defaultGroup = "oa.com.tests",
-                defaultArtifact = userName + ".Plugin";
-        //Captura de argumentos
-        ResourceBundle applicationBundle = ResourceBundle.getBundle("application");
-        Options options = new Options();
-        options.addOption("d",true,applicationBundle.getString("generator.d.desc"));
-        String description = applicationBundle.getString("generator.a.desc");
-        options.addOption("a",true, description);
-        options.addOption("artifact",true,description);
-        description= applicationBundle.getString("generator.g.desc");
-        options.addOption("g",true,description);
-        options.addOption("group",true,description);
-        description= applicationBundle.getString("generator.v.desc");
-        options.addOption("v",true,description);
-        options.addOption("version",true,description);
-        description=applicationBundle.getString("generator.l.desc");
-        options.addOption("l",true,description);
-        options.addOption("language",true,description);
-        CommandLineParser parser = new DefaultParser();
-        CommandLine cmd = parser.parse(options, args);
-        String folder = getArgument(cmd, defaultFolder, "-d"),
-                artifact = getArgument(cmd, defaultArtifact,"-a","-artifact"),
-                group = getArgument(cmd, defaultGroup,"-g","-group"),
-                javaVersion = getArgument(cmd, defaultJavaVersion,"-v","-version"),
-                language = getArgument(cmd, defaultLanguage,"-l","-lang"),
-                package_dir=group.replace(".",slash),
-                className= StringUtils.capitalize(artifact);
-        //TODO: Validaci�n de argumentos
-
-        //Procesamiento de plantillas
-        Locale locale = Locale.of(language);
-        ResourceBundle generatorBundle = ResourceBundle.getBundle("generator", locale);
-        Context ctx = new VelocityContext();
-        ctx.put("package_dir",package_dir);
-        ctx.put("ClassName",className);
-        ctx.put("package",group);
-        ctx.put("artifact",artifact);
-        ctx.put("group",group);
-        ctx.put("JavaVersion",javaVersion);
-        ctx.put("dot",".");
-        //CHECK THIS OUT
-        ctx.put("seleniumTesterLibVersion","1.0.2");
-        for(String key: new String[]{"LICENSE", "CLASS_DOC","GETBUTTONACTIONCOMMAND_DOC","GetButtonActionCommand",
-        "COMMENT_ACTIONLISTENER_CODE","SETACTIONMANAGER_DOC","GETICON_DOC","DESTROY_DOC","DESTROY_DOC_OTHER_ACTIONS",
-        "GETACTIONLISTENER_DOC","SETACTIONMANAGER_CODE","ACTION_RUNNER_DOC","ACTION_RUNNER_RUN_DOC","ACTION_RUNNER_GAN_DOC",
-        "ACTION_RUNNER_GAL_DOC","ACTION_RUNNER_M_DOC","GETACTIONRUNNERS_DOC"}) {
-            ctx.put(key, generatorBundle.getString(key));
-        }
-        final String mainPath = folder + slash + "src" + slash + "main",
-                mainResources = mainPath + slash + "resources",
-                packagePath = mainPath + slash + "java" + slash + package_dir,
-                scriptActionRunnersPath = packagePath + slash + "scriptactionrunners",
-                imagePath = mainResources + slash + "imgs",
-                servicesPath = mainResources + slash + "META-INF" + slash + "services",
-                iconPath = "templates/generator/imgs/icon.png";
-        for(String path: new String[]{scriptActionRunnersPath,imagePath,servicesPath}) {
-            Files.createDirectories(Paths.get(path));
-        }
-        processTemplate(ctx, "templates/generator/pom.vm",folder + slash + "pom.xml");
-        processTemplate(ctx,"templates/generator/ActionRunner.vm", scriptActionRunnersPath + slash + "DummyActionRunner.java");
-        processTemplate(ctx,"templates/generator/PluginEntry.vm", packagePath + slash + className + ".java");
-        processTemplate(ctx,"templates/generator/pluginRunner.vm", servicesPath + slash + "oa.com.tests.plugins.AbstractDefaultPluginRunner");
-        InputStream imgStream = null;
-        imgStream = Utils.class.getResourceAsStream(iconPath);
-        if(imgStream == null) {
-            imgStream = new FileInputStream("src/main/resources/"+iconPath);
-        }
-        FileOutputStream outputStream = new FileOutputStream(imagePath + slash + className+".png");
-        IOUtils.copy(imgStream, outputStream);
-        imgStream.close();
-        outputStream.close();
-    }
-
-    private static void processTemplate(Context ctx,String templatePath,String destinationPath) throws IOException {
-        try (Writer out = new FileWriter(destinationPath)) {
-            for(String path: new String[]{"src/main/resources/" +templatePath,templatePath}) {
-                try {
-                    Template template = Velocity.getTemplate(path);
-                    template.merge(ctx, out);
-                    return;
-                }catch(ResourceNotFoundException _){}
-            }
-        }
-    }
-
-    /**
-     * Busca el valor de un argumento dado a la l�nea de comandos.
-     * @param commandLine
-     * @param defaultValue
-     * @param names
-     * @return
-     */
-    private static String getArgument(CommandLine commandLine, String defaultValue, String ... names) {
-        for (String name : names) {
-            if (commandLine.hasOption(name)) {
-                return commandLine.getOptionValue(name);
-            }
-        }
-        return defaultValue;
     }
 }

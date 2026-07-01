@@ -25,7 +25,7 @@ import oa.com.tests.plugins.AbstractDefaultPluginRunner;
 import org.openqa.selenium.WebDriver;
 
 /**
- * Gestor de comandos específicos para su plugtin.
+ *
  * @author nesto
  */
 public interface PluginInterface {

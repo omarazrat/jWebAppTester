@@ -13,6 +13,7 @@
  */
 package oa.com.tests.actionrunners.interfaces;
 
+import java.util.LinkedList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -65,7 +66,7 @@ public abstract class AbstractSelectorActionRunner
         return get(driver, selector);
     }
 
-    public static WebElement get(WebDriver driver, PathKeeper selector) {
+    private WebElement get(WebDriver driver, PathKeeper selector) {
         if (selector.hasPath()) {
             return get(driver, selector.getType(), selector.getPath());
         } else { //mal diligenciado?

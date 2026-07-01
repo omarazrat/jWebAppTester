@@ -35,7 +35,7 @@ import oa.com.tests.actionrunners.interfaces.ScriptActionRunner;
 import org.openqa.selenium.WebDriver;
 
 /**
- * Definición de acción para implementación nativa.
+ * Definiciï¿½n de acciï¿½n para implementaciï¿½n nativa.
  *
  * @author nesto
  */
@@ -50,7 +50,7 @@ public abstract class AbstractDefaultPluginRunner {
 
     /**
      * Constructora para plugins escritos en java, que no requieren dll's
-     * Coloque sus inicializaciones aquì
+     * Coloque sus inicializaciones aquï¿½
      *
      * @param actionManager
      */
@@ -59,15 +59,15 @@ public abstract class AbstractDefaultPluginRunner {
 
     // <editor-fold defaultstate="collapsed" desc="Required to implement methods">
     /**
-     * Asegúrese de que este mensaje cabrá en el botón de 32 pixeles de altura
-     * por máximo 190 px ancho
+     * Asegï¿½rese de que este mensaje cabrï¿½ en el botï¿½n de 32 pixeles de altura
+     * por mï¿½ximo 190 px ancho
      *
      * @return
      */
     public abstract String getButtonActionCommand();
 
     /**
-     * Este auditor de eventos se activará con el click del botón
+     * Este auditor de eventos se activarï¿½ con el click del botï¿½n
      *
      * @return
      */
@@ -75,7 +75,7 @@ public abstract class AbstractDefaultPluginRunner {
 
     // </editor-fold>
     /**
-     * Retorne aquì todas las librerìas que use su plugin
+     * Retorne aquï¿½ todas las librerï¿½as que use su plugin
      *
      * @return
      */
@@ -84,7 +84,7 @@ public abstract class AbstractDefaultPluginRunner {
     }
 
     /**
-     * Se utilizará en los mensajes de inicialización del plugin.
+     * Se utilizarï¿½ en los mensajes de inicializaciï¿½n del plugin.
      *
      * @return
      */
@@ -93,7 +93,7 @@ public abstract class AbstractDefaultPluginRunner {
     }
 
     /**
-     * Opcional, ícono para su botón (se redimensionará al tamaaño del botón!!)
+     * Opcional, ï¿½cono para su botï¿½n (se redimensionarï¿½ al tamaaï¿½o del botï¿½n!!)
      *
      * @return
      */
@@ -105,6 +105,20 @@ public abstract class AbstractDefaultPluginRunner {
     //Metodos delegados
     public void setActionManager(PluginInterface actionManager) {
         this.actionManager = actionManager;
+    }
+
+    public List<Class<? extends ScriptActionRunner>> getActionRunners() {
+        return List.of();
+    }
+
+    /**
+     * Devuelve true si este plugin reconoce el comando dado.
+     * Por omisi\u00f3n retorna false; las subclases deben sobreescribirlo.
+     * @param commandLine L\u00ednea de comando completa (sin espacios al inicio/fin)
+     * @return true si el comando pertenece a este plugin
+     */
+    public boolean isValidCommand(String commandLine) {
+        return false;
     }
 
     public static List<Exception> exec(File file, Logger log) throws InvalidVarNameException, FileNotFoundException, IOException, InvalidParamException,Exception {
@@ -137,14 +151,6 @@ public abstract class AbstractDefaultPluginRunner {
     @Override
     public int hashCode() {
         return getClass().hashCode();
-    }
-
-    /**
-     * Subclases deben impolementar este método para exponer ejecutores que serán agregadas a la lista.
-     * @return
-     */
-    public List<Class<? extends ScriptActionRunner>> getActionRunners(){
-        return List.of();
     }
 
     // <editor-fold defaultstate="collapsed" desc="Shortcut functions">
