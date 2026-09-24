@@ -445,8 +445,11 @@ public class ActionRunnerManager implements PluginInterface {
                 continue;
             }
 
-            final boolean isEnd = runner instanceof EndActionRunner;
             try {
+                final boolean isEnd = runner instanceof EndActionRunner;
+                if (isEnd) {
+                    continue;
+                }
                 final boolean isIterator = runner instanceof AbstractIteratorActionRunner;
                 if (isIterator) {
                     AbstractIteratorActionRunner iterator = (AbstractIteratorActionRunner) runner;

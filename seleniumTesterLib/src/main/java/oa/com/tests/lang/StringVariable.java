@@ -11,16 +11,21 @@
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  */
-package oa.com.tests.actionrunners.interfaces;
+package oa.com.tests.lang;
 
-import oa.com.tests.lang.Variable;
+import lombok.Data;
 
-/**
- * Definición para ejecutores que generen una variable.
- * @author nesto
- */
-public interface VariableProvider {
+@Data
+public class StringVariable extends Variable{
+    public StringVariable(String name,String value) {
+        super(TYPE.STRING);
+        this.name=name;
+        this.value = value;
+    }
 
-    Variable getVariable();
-    
+    @Override
+    public boolean equals(Object o) {
+        return super.equals(o);
+    }
+
 }

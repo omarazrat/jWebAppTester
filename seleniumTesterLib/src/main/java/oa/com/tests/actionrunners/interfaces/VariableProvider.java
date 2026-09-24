@@ -11,28 +11,12 @@
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  */
-package oa.com.tests.lang;
+package oa.com.tests.actionrunners.interfaces;
 
-import lombok.Data;
-import lombok.EqualsAndHashCode;
+import oa.com.tests.lang.Variable;
 
-/**
- *
- * @author nesto
- */
-@Data
-//Does not work!
-//@EqualsAndHashCode(callSuper = true)
-public class StringVariable extends Variable{
-    public StringVariable(String name,String value) {
-        super(TYPE.STRING);
-        this.name=name;
-        this.value = value;
-    }
+public interface VariableProvider {
 
-    @Override
-    public boolean equals(Object o) {
-        return super.equals(o);
-    }
-    
+    Variable getVariable();
+
 }

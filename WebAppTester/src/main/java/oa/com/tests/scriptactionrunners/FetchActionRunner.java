@@ -81,6 +81,7 @@ public class FetchActionRunner extends AbstractDefaultScriptActionRunner
         Logger log = Logger.getLogger("WebAppTester");
         log.log(Level.INFO, "fetch URL: {0}", resolvedUrl);
         HttpClient client = HttpClient.newBuilder()
+                .version(HttpClient.Version.HTTP_1_1)
                 .connectTimeout(Duration.ofSeconds(10))
                 .build();
         HttpRequest request = HttpRequest.newBuilder()

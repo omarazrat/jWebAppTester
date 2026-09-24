@@ -1,3 +1,6 @@
+#IMPORTANT: Before any code change, re-read the ARCHITECTURAL CONSIDERATIONS section below.
+After any code change, ALWAYS run `mvn -Dmaven.test.skip=true clean package`, never just `compile`.
+
 I don't want my source code to be changed unless I explicitly accept or request to do so. When I ask for the solution to any problem, show me your suggestions and I'll be the one applying them.
 When I ask my source code to be changed, follow these rules:
 

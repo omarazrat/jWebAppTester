@@ -15,6 +15,7 @@ package oa.com.tests.actionrunners;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import static java.util.stream.Collectors.joining;
@@ -118,6 +119,11 @@ public abstract class AbstractIteratorActionRunner
                         continue;
                     }
 
+                    final boolean isEnd = runner instanceof EndActionRunner;
+                    if (isEnd) {
+                        continue;
+                    }
+
                     final boolean isIterator = runner instanceof AbstractIteratorActionRunner;
                     if (isIterator) {
                         AbstractIteratorActionRunner iterator = (AbstractIteratorActionRunner) runner;
@@ -132,6 +138,9 @@ public abstract class AbstractIteratorActionRunner
                 }
             }
         }
+        ResourceBundle bundle = ResourceBundle.getBundle("application");
+        String endMsg = bundle.getString("EndActionRunner.action.log");
+        log.log(Level.INFO, endMsg);
     }
 
     private void addInstruction(String actionCommand) {

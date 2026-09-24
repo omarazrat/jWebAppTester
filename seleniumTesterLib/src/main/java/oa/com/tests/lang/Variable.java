@@ -13,16 +13,11 @@
  */
 package oa.com.tests.lang;
 
-import java.util.Objects;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 
-/**
- * Una variable en el entorno de ejecuci�n de pruebas
- * @author nesto
- */
 @Getter
 @EqualsAndHashCode(of = {"name"})
 @RequiredArgsConstructor
@@ -32,21 +27,12 @@ public abstract class Variable {
         NUMBER,
         WEB_SELECTOR,
         OBJECT}
-    /**
-     * Tipo de esta variable
-     * @return 
-     */
+
     @NonNull
     protected TYPE type;
-    /**
-     * Nombre de la variable.Distintivo entre una y otra.
-     * @return 
-     */
+
     protected String name;
-    /**
-     * Valor de la variable
-     * @return 
-     */
+
     protected Object value;
 
 }

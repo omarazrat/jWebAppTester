@@ -13,6 +13,7 @@
  */
 package oa.com.tests.scriptactionrunners;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -44,9 +45,9 @@ import oa.com.tests.actionrunners.AbstractIteratorActionRunner;
 
 /**
  * for estilo linux argumentos: var=nombre de la variable a usar expr
- * [Opcional]=expresi�n a utilizar que puede ser de dos formas:
- * selector[Opcional]=selector css/xpath cuyos hijos ser�n utilizados como
- * opciones. type[Opcional]=Tipo del selector (css/xpath). Por momisi�n = css
+ * [Opcional]=expresión a utilizar que puede ser de dos formas:
+ * selector[Opcional]=selector css/xpath cuyos hijos serán utilizados como
+ * opciones. type[Opcional]=Tipo del selector (css/xpath). Por omisión = css
  * <ul>
  * <li>{a..b} Recorrido de la variable "var" entre los numeros a y b. b puede
  * ser menor que a.</li>
@@ -63,6 +64,7 @@ public class ForActionRunner extends AbstractIteratorActionRunner {
     private int intervalPtr = 0;
     private int interval_length = 0;
     private String varName;
+    private List<Variable> cachedVars;
     private static Logger log = Logger.getLogger("WebAppTester");
     
     public ForActionRunner(TestAction action) throws NoActionSupportedException, InvalidActionException {
@@ -71,6 +73,8 @@ public class ForActionRunner extends AbstractIteratorActionRunner {
 
     @Override
     public void prepare(WebDriver driver) throws Exception {
+        intervalPtr = 0;
+        cachedVars = null;
         String key = getClass().getSimpleName() + ".attr.var";
         final String actionCommand = getAction().getCommand();
         varName = Utils.getJSONAttributeML(actionCommand, key);
@@ -121,6 +125,16 @@ public class ForActionRunner extends AbstractIteratorActionRunner {
                 throw new InvalidParamException("only selectors of type CSS are supported");
             }
             path = new PathKeeper(selector, type);
+            final List<WebElement> elements = WebUtils.getMany(path, driver);
+            cachedVars = new ArrayList<>(elements.size());
+            for (WebElement element : elements) {
+                PathKeeper newPath = new PathKeeper(
+                        WebUtils.generateCSS(element),
+                        PathKeeper.SearchTypes.CSS);
+                SelectorVariable selectorVar = new SelectorVariable(element, varName, newPath);
+                selectorVar.setValue(null);
+                cachedVars.add(selectorVar);
+            }
         }
     }
 
@@ -160,13 +174,11 @@ public class ForActionRunner extends AbstractIteratorActionRunner {
 
     @Override
     public boolean iterate(WebDriver driver) {
-        final boolean usingInterval = interval != null;
-        final int listSize = usingInterval ? interval.size() : Integer.MAX_VALUE;
-        if (intervalPtr >= listSize) {
-            return false;
-        }
-        Variable var = null;
-        if (usingInterval) {
+        if (interval != null) {
+            final int listSize = interval.size();
+            if (intervalPtr >= listSize) {
+                return false;
+            }
             String point = interval.get(intervalPtr++);
             String varValue
                     = interval_length == 0
@@ -175,31 +187,17 @@ public class ForActionRunner extends AbstractIteratorActionRunner {
             if (varValue.contains("-")) {
                 varValue = "-" + varValue.replace("-", "");
             }
-            var = new StringVariable(varName, varValue);
+            Variable var = new StringVariable(varName, varValue);
+            ActionRunnerManager.addStVariable(var);
+            return true;
         } else {
-            try {
-                final List<WebElement> elements = WebUtils.getMany(path, driver);
-                if (intervalPtr >= elements.size()) {
-                    return false;
-                }
-                final WebElement element = elements.get(intervalPtr);
-                if (element == null) {
-                    return false;
-                }
-                PathKeeper newPath = new PathKeeper(
-                        WebUtils.generateCSS(element)
-                        ,PathKeeper.SearchTypes.CSS);
-                SelectorVariable selectorVar = new SelectorVariable(element, varName, newPath);
-                selectorVar.setValue(null);
-                var = selectorVar;
-            } catch (Exception ex) {
-                log.log(Level.SEVERE, null, ex);
+            if (cachedVars == null || intervalPtr >= cachedVars.size()) {
                 return false;
             }
-                intervalPtr++;
+            Variable var = cachedVars.get(intervalPtr++);
+            ActionRunnerManager.addStVariable(var);
+            return var != null;
         }
-        ActionRunnerManager.addStVariable(var);
-        return var!=null;
     }
 
 }
