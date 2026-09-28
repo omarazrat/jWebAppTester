@@ -25,7 +25,17 @@ import java.util.ResourceBundle;
  */
 public class I18n {
     private static final String defaultLang="en";
+    /**
+     * Idiomas con plantillas de scripts por omision.
+     */
     public static final String []supportedLangs={defaultLang,"es"};
+    /**
+     * Idiomas cuyos bundles <i>application_lang.properties</i> aportan los
+     * alias de comandos y parametros aceptados en los scripts.
+     * Un idioma puede tener alias sin tener plantillas: agregar un idioma aqui
+     * no obliga a crear los archivos de la carpeta templates.
+     */
+    public static final String []aliasLangs={defaultLang,"es","zh"};
     /**
      * Agrega el código del lenguaje activo para la máquina virtual actual, al string
      * proporcionado como parámetro
@@ -60,14 +70,16 @@ public class I18n {
         return aliases("application",key);
     }
     /**
-     * Retorna todos los alias de una clave en un archivo de propiedades
+     * Retorna todos los alias de una clave en un archivo de propiedades.
+     * Se buscan en los bundles de todos los idiomas de
+     * <i>aliasLangs</i>, no solo en el idioma en uso.
      * @param bundleName
      * @param key
      * @return 
      */
     public static List<String> aliases(String bundleName,String key){
         LinkedList<String> resp = new LinkedList<>();
-        for (String langCode : I18n.supportedLangs) {
+        for (String langCode : I18n.aliasLangs) {
             try {
                 final ResourceBundle bundle = ResourceBundle.getBundle(bundleName+"_" + langCode);
                 if (bundle != null

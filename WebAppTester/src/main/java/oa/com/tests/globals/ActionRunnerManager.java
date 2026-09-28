@@ -888,7 +888,7 @@ public class ActionRunnerManager implements PluginInterface {
     }
 
     private boolean isValidCommand(String commandLine) {
-        final Pattern pattern = Pattern.compile("^\\w.*=\\{.*\\}$");
+        final Pattern pattern = Pattern.compile("^[^\\s].*=\\{.*\\}$");
         final Matcher matcher = pattern.matcher(commandLine);
         return matcher.matches();
     }
